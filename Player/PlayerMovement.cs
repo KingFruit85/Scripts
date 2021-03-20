@@ -34,16 +34,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GetComponent<Dash>().DashAbility(looking);
-        }
-    }
+    
 
     void Update()
     {
+
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
         Move();
@@ -100,7 +95,8 @@ public class PlayerMovement : MonoBehaviour
         float moveX = movement.x * moveSpeed;
         float moveY = movement.y * moveSpeed;
 
-        if (GameObject.Find("Player").GetComponent<Dash>().isPlayerDashing())
+        // If in mid dash dont change directon
+        if (GetComponent<Human>() && GetComponent<Human>().isPlayerDashing())
         {
             return;
         }

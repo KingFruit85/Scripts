@@ -25,15 +25,16 @@ public class PlayerCombat : MonoBehaviour
     private Shaker shaker;
     private bool arrowKnocked = false;
     private PlayerMovement.Looking playerIsLooking;
+    private PlayAnimations pa;
 
     public PlayerStats PS { get; private set; }
 
     void Start()
     {
         enemyLayers = LayerMask.GetMask("enemies");
-        GameObject.Find("Player").AddComponent<Human>();
         SR = GetComponent<SpriteRenderer>();
         an = GetComponent<Animator>();
+        pa = GetComponent<PlayAnimations>();
         shaker = GameObject.Find("Main Camera").GetComponent<Shaker>();
     }
 
@@ -115,22 +116,22 @@ public class PlayerCombat : MonoBehaviour
             default: throw new System.Exception("PlayerMovement.Looking state not valid");
             
             case PlayerMovement.Looking.Left:
-                an.Play("Human_Attack_Left"); 
+                an.Play(pa.attackLeft); 
                 shaker.CombatShaker("Left");
                 break;
 
             case PlayerMovement.Looking.Right:
-                an.Play("Human_Attack_Right"); 
+                an.Play(pa.attackRight); 
                 shaker.CombatShaker("Right");
                 break;
 
             case PlayerMovement.Looking.Up:
-                an.Play("Human_Attack_Up"); 
+                an.Play(pa.attackUp); 
                 shaker.CombatShaker("Up");
                 break;
 
             case PlayerMovement.Looking.Down:
-                an.Play("Human_Attack_Down"); 
+                an.Play(pa.attackDown); 
                 shaker.CombatShaker("Down");
                 break;
         }
@@ -193,13 +194,11 @@ public class PlayerCombat : MonoBehaviour
             if (rangedWeaponName == "Short Bow")
             {
                 GetComponent<BowPickup>().ShootBow();
-                PS.RemoveArrows(1);
 
             }
             else if (rangedWeaponName == "Gold Bow")
             {
                 GetComponent<GoldBowPickup>().ShootBow();
-                PS.RemoveArrows(1);
 
             }
         }

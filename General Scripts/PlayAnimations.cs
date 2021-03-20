@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayAnimations : MonoBehaviour
 {
-    private string idleLeft, idleRight, walkLeft, walkRight, 
+    public string idleLeft, idleRight, walkLeft, walkRight, 
                    death, currentState, lastFacingDirection,
-                   walkDown,walkUp,idleDown,idleUp;
+                   walkDown,walkUp,idleDown,idleUp,attackLeft,attackRight,
+                   attackUp,attackDown;
+
     public Animator animator;
     public Vector2 direction;
     public Vector2 previousDirection;
@@ -14,10 +16,17 @@ public class PlayAnimations : MonoBehaviour
     private Vector2 movement;
     private AIMovement AIMovement;  
 
+    public Human human;
+    public Ghost ghost;
+    public Worm worm;
+
+
     void Awake()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        human = GetComponent<Human>();
+
 
         if (TryGetComponent(out AIMovement aim))
         {
@@ -26,47 +35,53 @@ public class PlayAnimations : MonoBehaviour
 
         if (gameObject.tag == "Ghost")
         {
-            idleLeft = "Ghost_Idle_Left";
-            idleRight = "Ghost_Idle_Right";
-            walkLeft = "Ghost_Walk_Left";
-            walkRight = "Ghost_Walk_Right";
-            walkDown = "Ghost_Walk_Down";
-            walkUp = "Ghost_Walk_Up";
-            death = "Ghost_Death";
+            idleLeft = ghost.idleLeft;
+            idleRight = ghost.idleRight;
+            walkLeft = ghost.walkLeft;
+            walkRight = ghost.walkRight;
+            walkUp = ghost.walkUp;
+            walkDown = ghost.walkDown;
+            idleUp = ghost.idleUp;
+            idleDown = ghost.idleDown;
+            death = ghost.death;
+            attackLeft = ghost.attackLeft;
+            attackRight = ghost.attackRight;
+            attackUp = ghost.attackUp;
+            attackDown = ghost.attackDown;
         }
         
         if (gameObject.tag == "Player")
         {
-            idleLeft = "Human_Idle_Left";
-            idleRight = "Human_Idle_Right";
-            walkLeft = "Human_Walk_Left";
-            walkRight = "Human_Walk_Right";    
-            walkUp = "Human_Move_Up";
-            walkDown = "Human_Move_Down";
-            idleUp = "Human_Idle_Up";
-            idleDown = "Human_Idle_Down";
+            idleLeft = human.idleLeft;
+            idleRight = human.idleRight;
+            walkLeft = human.walkLeft;
+            walkRight = human.walkRight;
+            walkUp = human.walkUp;
+            walkDown = human.walkDown;
+            idleUp = human.idleUp;
+            idleDown = human.idleDown;
+            attackLeft = human.attackLeft;
+            attackRight = human.attackRight;
+            attackUp = human.attackUp;
+            attackDown = human.attackDown;
         }
 
         if (gameObject.tag == "Worm")
         {
-            idleLeft = "worm_walk";
-            idleRight = "worm_walk_right";
-            walkLeft = "worm_walk";
-            walkRight = "worm_walk_right";
-            death = "worm_death";
+            idleLeft = worm.idleLeft;
+            idleRight = worm.idleRight;
+            walkLeft = worm.walkLeft;
+            walkRight = worm.walkRight;
+            walkUp = worm.walkUp;
+            walkDown = worm.walkDown;
+            death = worm.death;
+            attackLeft = worm.attackLeft;
+            attackRight = worm.attackRight;
+            attackUp = worm.attackUp;
+            attackDown = worm.attackDown;
         }
     }
 
-    // public void LoadAnimations(string type)
-    // {
-    //     // here i need to be able to dynamically load differnt sprite/animations to the player based on whatever killed them
-
-    //     switch (type)
-    //     {
-    //         default:
-    //         case "Human": return 
-    //     }
-    // }
 
     public void SetPlayerKnockedAnimation()
     {
@@ -196,25 +211,55 @@ public class PlayAnimations : MonoBehaviour
         currentState = newState;
     }
 
+    // Sets the active sprite to an idle sprite if the host stops moving
     private void SetSpriteDirection()
-    {
+    {   
+        string ch = GetComponent<PlayerStats>().currentHost;
+
         if (rb.velocity.x == 0 && rb.velocity.y == 0)
         {
             if (lastFacingDirection == "right")
-            {    
-                ChangeAnimationState(idleRight);
+            {
+                switch (ch)
+                {
+                    default:
+                    case "Human":ChangeAnimationState(human.idleRight);break;
+                    case "Ghost":ChangeAnimationState(ghost.idleRight);break;
+                    case "Worm" :ChangeAnimationState(worm.idleRight);break;
+                }
             }
+
             else if (lastFacingDirection == "left")
             {
-                ChangeAnimationState(idleLeft);
+                switch (ch)
+                {
+                    default:
+                    case "Human":ChangeAnimationState(human.idleLeft);break;
+                    case "Ghost":ChangeAnimationState(ghost.idleLeft);break;
+                    case "Worm" :ChangeAnimationState(worm.idleLeft);break;
+                }
             }
+
             else if (lastFacingDirection == "up")
             {
-                ChangeAnimationState(idleUp);
+                switch (ch)
+                {
+                    default:
+                    case "Human":ChangeAnimationState(human.idleUp);break;
+                    case "Ghost":ChangeAnimationState(ghost.idleUp);break;
+                    case "Worm" :ChangeAnimationState(worm.idleUp);break;
+                }
             }
+
             else if (lastFacingDirection == "down")
             {
-                ChangeAnimationState(idleDown);
+                switch (ch)
+                {
+                    default:
+                    case "Human":ChangeAnimationState(human.idleDown);break;
+                    case "Ghost":ChangeAnimationState(ghost.idleDown);break;
+                    case "Worm" :ChangeAnimationState(worm.idleDown);break;
+                }
             }
         }
     }

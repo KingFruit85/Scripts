@@ -1,46 +1,55 @@
 using System.Collections;
 using UnityEngine;
+using static PlayerMovement;
+
 public class Human : MonoBehaviour
 {
-    private string idleLeft;
-    private string idleRight;
-    private string walkLeft;
-    private string walkRight;
-    private string walkUp;
-    private string walkDown;
-    private string idleUp;
-    private string idleDown;
-    private string death;
-    private string knockLeft;
-    private string knockRight;
-    private string knockUp;
-    private string knockDown;
+    public string idleLeft = "Human_Idle_Left";
+    public string idleRight = "Human_Idle_Right";
+    public string walkLeft = "Human_Walk_Left";
+    public string walkRight = "Human_Walk_Right";
+    public string walkUp = "Human_Move_Up";
+    public string walkDown = "Human_Move_Down";
+    public string idleUp = "Human_Idle_Up";
+    public string idleDown = "Human_Idle_Down";
+    public string death;
+    public string knockLeft = "Human_KnockArrow_Left";
+    public string knockRight = "Human_KnockArrow_Right";
+
+    public string attackLeft = "Human_Attack_Left";
+    public string attackRight = "Human_Attack_Right";
+    public string attackUp = "Human_Attack_Up";
+    public string attackDown = "Human_Attack_Down";
+
+    public string knockUp;
+    public string knockDown;
+
     public int swordDamage = 10;
     public float swordRange = 0.5f;
 
-    public Human()
+    private Rigidbody2D rb;
+    private Animator anim;
+    private Shaker shaker;
+
+    public float moveSpeed = 5;
+
+    void Awake()
     {
-        idleLeft = "Human_Idle_Left";
-        idleRight = "Human_Idle_Right";
-        walkLeft = "Human_Walk_Left";
-        walkRight = "Human_Walk_Right";    
-        walkUp = "Human_Move_Up";
-        walkDown = "Human_Move_Down";
-        idleUp = "Human_Idle_Up";
-        idleDown = "Human_Idle_Down";
-        // death = "Human_Death";
-        knockLeft = "Human_KnockArrow_Left";
-        knockRight = "Human_KnockArrow_Right";
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        shaker = GameObject.Find("Main Camera").GetComponent<Shaker>();
+        GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
     }
 
-    public float dashSpeed = 80f;
+    public float dashSpeed = 10f;
     public float dashCoolDown = -9999;
     public float dashDelay = 2f;
-    private bool canDash;
-    private bool isDashing;
+    private bool canDash = true;
+    private bool isDashing = false;
 
     public void Dash()
     {
+        var direction = GetComponent<PlayerMovement>().looking;
         if (canDash)
         {
             canDash = false;
@@ -77,15 +86,12 @@ public class Human : MonoBehaviour
                                 break;
             }
         }
-
     }
 
     private IEnumerator ToggleIsDashingBool()
     {
         isDashing = true;
-        // rb.isKinematic = true;
-        yield return new WaitForSeconds( 0.3f );
-        // rb.isKinematic = false;
+        yield return new WaitForSeconds( 0.1f );
         isDashing = false;
     }
 
@@ -119,9 +125,7 @@ public class Human : MonoBehaviour
             case "Gold Bow":
                 GetComponent<GoldBowPickup>().ShootBow();
                 break;
-
         }
-
     }
 
     void Update()
@@ -130,6 +134,11 @@ public class Human : MonoBehaviour
         {
             canDash = true;
             dashCoolDown = Time.time;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Dash();
         }
     }
 

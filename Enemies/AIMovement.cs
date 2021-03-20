@@ -36,6 +36,13 @@ public class AIMovement : MonoBehaviour
         startingPosition = transform.position;
         roamingPosition = GetRoamingPosition();
         rb = GetComponent<Rigidbody2D>();
+
+        switch (transform.tag)
+        {
+            default:
+            case "Ghost": gameObject.AddComponent<Ghost>();break;
+            case "Worm" : gameObject.AddComponent<Worm>();break;
+        }
     }
 
     private Vector3 GetRoamingPosition()

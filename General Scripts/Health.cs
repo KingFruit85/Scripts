@@ -52,7 +52,7 @@ public class Health : MonoBehaviour
 
 
         //Apply the damage as long as the player isn't in a dash state
-        if (gameObject.tag == "Player" && GameObject.Find("Player").GetComponent<Dash>().isPlayerDashing())
+        if (gameObject.tag == "Player" && GetComponent<Human>().isPlayerDashing())
         {
             return;
         }

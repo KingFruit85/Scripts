@@ -17,9 +17,22 @@ public class GhostBolt : MonoBehaviour
 
     void Update()
     {
-        aim = (player.transform.position - transform.position).normalized;
-        enemyLoc = GameObject.FindGameObjectWithTag("Ghost").transform.position;
+        var shooter = transform.parent.tag;
 
+        switch (shooter)
+        {
+            default:
+            case "Ghost":ShootPlayer();break;
+            case "Player":break;
+        }
+        // enemyLoc = GameObject.FindGameObjectWithTag("Ghost").transform.position;
+
+        
+    }
+
+    private void ShootPlayer()
+    {
+        aim = (player.transform.position - transform.position).normalized;
         rb.AddForce(aim * speed);
     }
 
@@ -33,7 +46,7 @@ public class GhostBolt : MonoBehaviour
 
         if (other.tag == "Player")
         {
-            if (player.GetComponent<Dash>().isPlayerDashing())
+            if (player.GetComponent<Human>().isPlayerDashing())
             {
                 return;
             }
