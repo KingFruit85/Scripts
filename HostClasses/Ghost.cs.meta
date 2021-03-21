@@ -3,7 +3,9 @@ guid: ca0da92a8f3cbb9489d9186c7ba58c05
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - ghostBolt: {fileID: 8673193933999641466, guid: 4143eea551eee3445afa930329e10726,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

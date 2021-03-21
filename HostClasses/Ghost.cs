@@ -28,6 +28,8 @@ public class Ghost : MonoBehaviour
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
         }
 
+        
+
         GetComponent<PlayAnimations>().idleLeft = idleLeft;
         GetComponent<PlayAnimations>().idleRight = idleRight;
         GetComponent<PlayAnimations>().walkLeft = walkLeft;
@@ -36,23 +38,26 @@ public class Ghost : MonoBehaviour
         GetComponent<PlayAnimations>().walkDown = walkDown;
         GetComponent<PlayAnimations>().death = death;
 
+
     }
 
-    public GameObject ghostBolt;
 
     public void GhostBolt()
     {
-        // should fire on closest enemy 
-        
-        var pos = transform.position;
+        // should fire towards mouseclick
 
             GameObject a = Instantiate
                                     (
-                                        ghostBolt,
+                                        Resources.Load("Ghost_Bolt"),
                                         transform.position,
                                         transform.rotation
                                     )
                                     as GameObject;
+                                    a.name = "a";
                                     a.transform.parent = transform;
+
+
+            
+                           
     }
 }

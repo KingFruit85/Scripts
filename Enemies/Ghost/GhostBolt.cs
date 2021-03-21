@@ -9,28 +9,56 @@ public class GhostBolt : MonoBehaviour
     private Vector3 aim;
     private Vector3 enemyLoc;
 
+    private float born;
+    private float lifeTime = 0.5f;
+
+    public string shooter;
+
     void Awake()
     {
         player = GameObject.Find("Player");
         rb = this.GetComponent<Rigidbody2D>();
+        enemyLoc = player.GetComponent<PlayerCombat>().mouseClickPosition; 
+        born = Time.time;
     }
 
     void Update()
     {
-        var shooter = transform.parent.tag;
+        shooter = transform.parent.tag;
 
         switch (shooter)
         {
             default:
-            case "Ghost":ShootPlayer();break;
-            case "Player":break;
+            case "Ghost":ShootAtPlayer();break;
+            case "Player":ShootAtEnemy();break;
         }
-        // enemyLoc = GameObject.FindGameObjectWithTag("Ghost").transform.position;
 
-        
+        if (Time.time >= born + lifeTime)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
-    private void ShootPlayer()
+    public Vector3 getEnemyLocation()
+    {
+        return enemyLoc;
+    }
+
+
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawSphere(enemyLoc, 1.5f);   
+    }
+
+    private void ShootAtEnemy()
+    {   
+        aim = (enemyLoc - transform.position).normalized;
+        rb.AddForce(aim * speed);
+
+    }
+
+    private void ShootAtPlayer()
     {
         aim = (player.transform.position - transform.position).normalized;
         rb.AddForce(aim * speed);
@@ -44,12 +72,25 @@ public class GhostBolt : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        if (other.tag == "Player")
+        // PLayer logic
+        LayerMask mask = LayerMask.GetMask("enemies");
+
+        if (shooter == "Player" && other.gameObject.layer == 8)
         {
-            if (player.GetComponent<Human>().isPlayerDashing())
+             other.GetComponent<Health>().TakeDamage(damage);
+        }
+
+
+        // Ghost logic, should only do damage to player
+        if (shooter == "Ghost" && other.tag == "Player")
+        {
+            // If player is human and dashing dont apply damage
+            if (player.GetComponent<Human>() && player.GetComponent<Human>().isPlayerDashing())
             {
                 return;
             }
+
+            // if player not dashing apply damage
             else
             {
                 player.GetComponent<Health>().TakeDamage(damage);
@@ -57,7 +98,7 @@ public class GhostBolt : MonoBehaviour
                 //add animation
                 Destroy(this.gameObject);
             }
-            
+
         }
     }
 }

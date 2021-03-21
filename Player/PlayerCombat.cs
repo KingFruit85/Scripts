@@ -186,21 +186,14 @@ public class PlayerCombat : MonoBehaviour
             canShoot = false;
             arrowKnocked = false;
 
-            if (playerIsLooking == PlayerMovement.Looking.Left)
+            switch (rangedWeaponName)
             {
-                GetComponent<PlayAnimations>().ResetPlayerAnimations();
+                default: throw new System.Exception("ranged weapon not recognised");
+                case "Short Bow":GetComponent<BowPickup>().ShootBow();break;
+                case "Gold Bow" :GetComponent<GoldBowPickup>().ShootBow();break; 
             }
 
-            if (rangedWeaponName == "Short Bow")
-            {
-                GetComponent<BowPickup>().ShootBow();
-
-            }
-            else if (rangedWeaponName == "Gold Bow")
-            {
-                GetComponent<GoldBowPickup>().ShootBow();
-
-            }
+            GetComponent<PlayAnimations>().ResetPlayerAnimations();
         }
     }
 
@@ -230,20 +223,32 @@ public class PlayerCombat : MonoBehaviour
         GetCurrentSprite();
     }
 
+    public Vector3 mouseClickPosition;
+
     void LateUpdate()
     {
-        SetAttackPoint();  
-        if (Input.GetMouseButtonDown(0))
+        if (GetComponent<PlayerStats>().currentHost == "Human")
+        {
+            SetAttackPoint();  
+        }
+        
+        if (GetComponent<PlayerStats>().currentHost == "Human" && Input.GetMouseButtonDown(0))
         {
             Attack();
         }
 
-        if(Input.GetMouseButtonDown(1) && rangedWeaponEquipped)
+        if (GetComponent<PlayerStats>().currentHost == "Ghost" && Input.GetMouseButtonDown(0))
+        {
+            mouseClickPosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+            GetComponent<Ghost>().GhostBolt();
+        }
+
+        if( GetComponent<PlayerStats>().currentHost == "Human" && Input.GetMouseButtonDown(1) && rangedWeaponEquipped)
         {
             KnockArrow();
         }
 
-        if (Input.GetMouseButtonUp(1) && arrowKnocked)
+        if (GetComponent<PlayerStats>().currentHost == "Human" && Input.GetMouseButtonUp(1) && arrowKnocked)
         {
             RangedAttack();
         }
