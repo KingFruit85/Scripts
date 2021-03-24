@@ -62,7 +62,6 @@ public class AIMovement : MonoBehaviour
         playerPOS = GameObject.FindGameObjectWithTag("Player").transform.position;
         distanceApart = Vector2.Distance(transform.position, playerPOS);
 
-
         switch (state)
         {
             default:throw new System.Exception("Invalid AI movement state");
@@ -141,32 +140,34 @@ public class AIMovement : MonoBehaviour
     {
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        var thrust = 1.5f;
+        
 
         // Hit came from left so knock left
         if (direction == "Left")
         {
-            rb.AddForce(Vector3.left * 1.5f,ForceMode2D.Impulse);    
+            rb.AddForce(-transform.right * thrust, ForceMode2D.Impulse);    
         }
 
         // Hit came from right so knock right
         else if (direction == "Right")
         {
-            rb.AddForce(Vector3.right * 1.5f,ForceMode2D.Impulse);
+            rb.AddForce(transform.right * thrust, ForceMode2D.Impulse);
         }
 
         // Hit came from up so knock up
         else if (direction == "Up")
         {
-            rb.AddForce(Vector3.up * 1.5f,ForceMode2D.Impulse);
+            rb.AddForce(transform.up * thrust, ForceMode2D.Impulse);
         }
 
         // Hit came from down so knock down
         else if (direction == "Down")
         {
-            rb.AddForce(Vector3.down * 1.5f,ForceMode2D.Impulse);
+            rb.AddForce(-transform.up * thrust, ForceMode2D.Impulse);
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(thrust);
         StartCoroutine(EndKnockBack());
     }
     

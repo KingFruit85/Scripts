@@ -5,10 +5,18 @@ public class PlayerMovement : MonoBehaviour
 {
 
     public Vector2 movement;
+    public Vector3 mousePOS;
+    public Camera cam;
     public float moveSpeed;
     private Rigidbody2D rb;
     public SpriteRenderer sr;
     public bool isSlowed = false;
+    public GameObject player;
+    public Vector2 lookDir;
+    public PlayAnimations pa;
+
+    // private Transform aimTransform;
+
     public enum Looking
     {
         Up,
@@ -19,11 +27,18 @@ public class PlayerMovement : MonoBehaviour
 
     public Looking looking;
 
-
-    void Start()
-    {  
+    void Awake()
+    {
+        // aimTransform = transform.Find("Aim");
         rb = GetComponent<Rigidbody2D>();       
         sr = GetComponent<SpriteRenderer>();
+        player = GameObject.Find("Player");
+        pa = GetComponent<PlayAnimations>();
+    }
+    void Start()
+    {  
+        
+        // sword = GameObject.FindGameObjectWithTag("PlayerSword").GetComponent<Rigidbody2D>();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -41,23 +56,30 @@ public class PlayerMovement : MonoBehaviour
 
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
-        Move();
 
-        if (movement.x == -1 && movement.y == 0)
-        {
-            looking = Looking.Left;
-        }
-        if (movement.x == 1 && movement.y == 0)
+        mousePOS = cam.ScreenToWorldPoint(Input.mousePosition);
+
+        
+
+        if (lookDir.x > 0f && Mathf.Abs(lookDir.x) > Mathf.Abs(lookDir.y))
         {
             looking = Looking.Right;
+            pa.ChangeAnimationState(pa.idleRight);
         }
-        if (movement.x == 0 && movement.y == 1)
+        if (lookDir.x < 0f && Mathf.Abs(lookDir.x) > Mathf.Abs(lookDir.y))
+        {
+            looking = Looking.Left;
+            pa.ChangeAnimationState(pa.idleLeft);
+        }
+        if (lookDir.y > 0f && Mathf.Abs(lookDir.x) < Mathf.Abs(lookDir.y))
         {
             looking = Looking.Up;
+            pa.ChangeAnimationState(pa.idleUp);
         }
-        if (movement.x == 0 && movement.y == -1)
+        if (lookDir.y < 0f && Mathf.Abs(lookDir.x) < Mathf.Abs(lookDir.y))
         {
             looking = Looking.Down;
+            pa.ChangeAnimationState(pa.idleDown);
         }
 
         
@@ -71,6 +93,15 @@ public class PlayerMovement : MonoBehaviour
         {
             sr.color = Color.white;
         }
+    }
+
+    void FixedUpdate()
+    {
+        Move();
+
+        lookDir = mousePOS - player.transform.position;
+        // float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg -90f;
+        // sword.rotation = angle;
     }
 
     public Looking playerIsLooking()
@@ -102,7 +133,8 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            rb.velocity = new Vector2(moveX, moveY);
+            rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+            // rb.velocity = new Vector2(moveX, moveY);
         }
     }
 

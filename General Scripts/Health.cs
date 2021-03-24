@@ -47,7 +47,7 @@ public class Health : MonoBehaviour
         //Shake screen
         if (gameObject.tag == "Player")
         {
-            GameObject.Find("Main Camera").GetComponent<Shaker>().Shake(.1f);
+            GameObject.Find("Camera").GetComponent<Shaker>().Shake(.1f);
         }
 
 

@@ -21,15 +21,13 @@ public class Ghost : MonoBehaviour
 
     public float moveSpeed = 1;
 
+
     void Awake()
     {
         if (transform.tag == "Player")
         {
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
         }
-
-        
-
         GetComponent<PlayAnimations>().idleLeft = idleLeft;
         GetComponent<PlayAnimations>().idleRight = idleRight;
         GetComponent<PlayAnimations>().walkLeft = walkLeft;
@@ -37,7 +35,6 @@ public class Ghost : MonoBehaviour
         GetComponent<PlayAnimations>().walkUp = walkUp;
         GetComponent<PlayAnimations>().walkDown = walkDown;
         GetComponent<PlayAnimations>().death = death;
-
 
     }
 
@@ -53,11 +50,7 @@ public class Ghost : MonoBehaviour
                                         transform.rotation
                                     )
                                     as GameObject;
-                                    a.name = "a";
                                     a.transform.parent = transform;
-
-
-            
-                           
+                  
     }
 }

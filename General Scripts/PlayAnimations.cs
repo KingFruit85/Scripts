@@ -15,7 +15,6 @@ public class PlayAnimations : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 movement;
     private AIMovement AIMovement;  
-
     public Human human;
     public Ghost ghost;
     public Worm worm;
@@ -31,56 +30,6 @@ public class PlayAnimations : MonoBehaviour
         if (TryGetComponent(out AIMovement aim))
         {
             AIMovement = GetComponent<AIMovement>();
-        }
-
-        // if (gameObject.tag == "Ghost")
-        // {
-        //     ghost = GetComponent<Ghost>();
-
-        //     idleLeft = ghost.idleLeft;
-        //     idleRight = ghost.idleRight;
-        //     walkLeft = ghost.walkLeft;
-        //     walkRight = ghost.walkRight;
-        //     walkUp = ghost.walkUp;
-        //     walkDown = ghost.walkDown;
-        //     idleUp = ghost.idleUp;
-        //     idleDown = ghost.idleDown;
-        //     death = ghost.death;
-        //     attackLeft = ghost.attackLeft;
-        //     attackRight = ghost.attackRight;
-        //     attackUp = ghost.attackUp;
-        //     attackDown = ghost.attackDown;
-        // }
-        
-        if (gameObject.tag == "Player")
-        {
-            idleLeft = human.idleLeft;
-            idleRight = human.idleRight;
-            walkLeft = human.walkLeft;
-            walkRight = human.walkRight;
-            walkUp = human.walkUp;
-            walkDown = human.walkDown;
-            idleUp = human.idleUp;
-            idleDown = human.idleDown;
-            attackLeft = human.attackLeft;
-            attackRight = human.attackRight;
-            attackUp = human.attackUp;
-            attackDown = human.attackDown;
-        }
-
-        if (gameObject.tag == "Worm")
-        {
-            idleLeft = worm.idleLeft;
-            idleRight = worm.idleRight;
-            walkLeft = worm.walkLeft;
-            walkRight = worm.walkRight;
-            walkUp = worm.walkUp;
-            walkDown = worm.walkDown;
-            death = worm.death;
-            attackLeft = worm.attackLeft;
-            attackRight = worm.attackRight;
-            attackUp = worm.attackUp;
-            attackDown = worm.attackDown;
         }
     }
 
@@ -237,59 +186,6 @@ public class PlayAnimations : MonoBehaviour
         // Reassign the current state
         currentState = newState;
     }
-
-    // Sets the active sprite to an idle sprite if the host stops moving
-    // private void SetSpriteDirection()
-    // {   
-    //     string ch = GetComponent<PlayerStats>().currentHost;
-
-    //     if (rb.velocity.x == 0 && rb.velocity.y == 0)
-    //     {
-    //         if (lastFacingDirection == "right")
-    //         {
-    //             switch (ch)
-    //             {
-    //                 default:
-    //                 case "Human":ChangeAnimationState(human.idleRight);break;
-    //                 case "Ghost":ChangeAnimationState(ghost.idleRight);break;
-    //                 case "Worm" :ChangeAnimationState(worm.idleRight);break;
-    //             }
-    //         }
-
-    //         else if (lastFacingDirection == "left")
-    //         {
-    //             switch (ch)
-    //             {
-    //                 default:
-    //                 case "Human":ChangeAnimationState(human.idleLeft);break;
-    //                 case "Ghost":ChangeAnimationState(ghost.idleLeft);break;
-    //                 case "Worm" :ChangeAnimationState(worm.idleLeft);break;
-    //             }
-    //         }
-
-    //         else if (lastFacingDirection == "up")
-    //         {
-    //             switch (ch)
-    //             {
-    //                 default:
-    //                 case "Human":ChangeAnimationState(human.idleUp);break;
-    //                 case "Ghost":ChangeAnimationState(ghost.idleUp);break;
-    //                 case "Worm" :ChangeAnimationState(worm.idleUp);break;
-    //             }
-    //         }
-
-    //         else if (lastFacingDirection == "down")
-    //         {
-    //             switch (ch)
-    //             {
-    //                 default:
-    //                 case "Human":ChangeAnimationState(human.idleDown);break;
-    //                 case "Ghost":ChangeAnimationState(ghost.idleDown);break;
-    //                 case "Worm" :ChangeAnimationState(worm.idleDown);break;
-    //             }
-    //         }
-    //     }
-    // }
 
     public IEnumerator Kill()
     {

@@ -30,16 +30,34 @@ public class Human : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private Shaker shaker;
-
     public float moveSpeed = 5;
+
+    private GameObject aimTransform;
+    private GameObject sword;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        shaker = GameObject.Find("Main Camera").GetComponent<Shaker>();
+        shaker = GameObject.Find("Camera").GetComponent<Shaker>();
+        aimTransform = GameObject.Find("Aim");
+        sword = GameObject.Find("Sword");
+
+
         GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
+        GetComponent<PlayAnimations>().idleLeft = idleLeft;
+        GetComponent<PlayAnimations>().idleRight = idleRight;
+        GetComponent<PlayAnimations>().walkLeft = walkLeft;
+        GetComponent<PlayAnimations>().walkRight = walkRight;
+        GetComponent<PlayAnimations>().walkUp = walkUp;
+        GetComponent<PlayAnimations>().walkDown = walkDown;
+        GetComponent<PlayAnimations>().death = death;
+        GetComponent<PlayAnimations>().attackLeft = attackLeft;
+        GetComponent<PlayAnimations>().attackRight = attackRight;
+        GetComponent<PlayAnimations>().attackUp = attackUp;
+        GetComponent<PlayAnimations>().attackDown = attackDown;
     }
+
 
     public float dashSpeed = 10f;
     public float dashCoolDown = -9999;
@@ -75,6 +93,7 @@ public class Human : MonoBehaviour
                 case Looking.Left:
                                 rb.velocity = new Vector2(rb.velocity.x - dashSpeed, rb.velocity.y);
                                 anim.Play("Human_Dash_Left");
+                                shaker.CombatShaker("Left");
                                 dashCoolDown = Time.time;
                                 break;
 
@@ -100,10 +119,36 @@ public class Human : MonoBehaviour
         return isDashing;
     }
 
-    public void SwordAttack(Vector2 attackPoint, LayerMask enemyLayers)
+    public PlayerMovement.Looking playerIsLooking;
+
+    public void SwordAttack()
     {
+
+        switch (playerIsLooking)
+        {
+            default: throw new System.Exception("PlayerMovement.Looking state not valid");
+            case PlayerMovement.Looking.Left:
+                anim.Play(attackLeft);
+                shaker.CombatShaker("Left");
+                break;
+                
+            case PlayerMovement.Looking.Right:
+                anim.Play(attackRight);
+                shaker.CombatShaker("Right");
+                break;
+
+            case PlayerMovement.Looking.Up:
+                anim.Play(attackUp);
+                shaker.CombatShaker("Up");
+                break;
+
+            case PlayerMovement.Looking.Down:
+                anim.Play(attackDown);
+                shaker.CombatShaker("Down");
+                break;
+        }   
         // Detect enemies in range of attack
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint, swordRange, enemyLayers);
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(sword.transform.position, swordRange, LayerMask.GetMask("enemies"));
 
         // Damage them
         foreach (Collider2D enemy in hitEnemies)
@@ -130,6 +175,34 @@ public class Human : MonoBehaviour
 
     void Update()
     {
+
+        playerIsLooking = GetComponent<PlayerMovement>().playerIsLooking();
+
+
+        switch (playerIsLooking)
+        {
+            default:return;
+            case PlayerMovement.Looking.Left: 
+                aimTransform.transform.localPosition = new Vector3(0.054f,0.057f,180f);
+                sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                break;
+                
+            case PlayerMovement.Looking.Right:
+                aimTransform.transform.localPosition = new Vector3(-0.05f,0.043f,0);
+                sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                break;
+
+            case PlayerMovement.Looking.Up:
+                aimTransform.transform.localPosition = new Vector3(0.052f,0.055f,0);
+                sword.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                break;
+
+            case PlayerMovement.Looking.Down:
+                aimTransform.transform.localPosition = new Vector3(-0.0287f,0.0485f,0);
+                sword.GetComponent<SpriteRenderer>().sortingOrder = 3;                
+                break;
+        }
+
         if (Time.time > dashCoolDown + dashDelay)
         {
             canDash = true;
@@ -140,6 +213,15 @@ public class Human : MonoBehaviour
         {
             Dash();
         }
+
+        
+
+        Vector3 mouseClickPosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+        mouseClickPosition.z = 0f;
+
+        Vector3 aimDirection = (mouseClickPosition - transform.position).normalized;
+        float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        aimTransform.transform.eulerAngles = new Vector3(0,0,angle);
     }
 
 }

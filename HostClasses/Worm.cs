@@ -4,17 +4,43 @@ using UnityEngine;
 
 public class Worm : MonoBehaviour
 {
-    public string idleLeft = "Worm_Idle_Left";
-    public string idleRight = "Worm_Idle_Right";
-    public string walkLeft = "Worm_Walk_Left";
-    public string walkRight = "Worm_Walk_Right";
-    public string walkUp = "Worm_Walk_Up";
-    public string walkDown = "Worm_Walk_Down";
-    public string idleUp = "Worm_Walk_Up";
-    public string idleDown = "Worm_Idle_Front";
-    public string death = "Worm_Death";
-    public string attackLeft = "Worm_Attack_Left";
-    public string attackRight = "Worm_Attack_Right";
-    public string attackUp = "Worm_Attack_Up";
-    public string attackDown = "Worm_Attack_Down";
+    public string idleLeft = "worm_walk";
+    public string idleRight = "worm_walk";
+    public string walkLeft = "worm_walk";
+    public string walkRight = "worm_walk";
+    public string walkUp = "worm_walk";
+    public string walkDown = "worm_walk";
+    public string idleUp = "worm_walk";
+    public string idleDown = "worm_walk";
+    public string death = "worm_death";
+    public string attackLeft = "worm_bite_left";
+    public string attackRight = "worm_bite_right";
+    public string attackUp = "worm_bite_left";
+    public string attackDown = "worm_bite_left";
+
+    public float moveSpeed = 1;
+
+    void Awake()
+    {
+        if (transform.tag == "Player")
+        {
+            GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
+        }
+        GetComponent<PlayAnimations>().idleLeft = idleLeft;
+        GetComponent<PlayAnimations>().idleRight = idleRight;
+        GetComponent<PlayAnimations>().walkLeft = walkLeft;
+        GetComponent<PlayAnimations>().walkRight = walkRight;
+        GetComponent<PlayAnimations>().walkUp = walkUp;
+        GetComponent<PlayAnimations>().walkDown = walkDown;
+        GetComponent<PlayAnimations>().death = death;
+
+    }
+
+    public void PoisonBite()
+    {
+        return;
+    }
+
 }
+
+

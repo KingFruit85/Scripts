@@ -54,19 +54,25 @@ public class PlayerStats : MonoBehaviour
                     gameObject.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
                     break;
             }
-
-            currentHost = newHost;
-            
-        }
-
-        
+            currentHost = newHost;   
+        }    
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
+            ChangeHostBody("Worm");
+        }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
             ChangeHostBody("Ghost");
+        }
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ChangeHostBody("Human");
         }
     }
 
