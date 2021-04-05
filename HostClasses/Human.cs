@@ -13,63 +13,79 @@ public class Human : MonoBehaviour
     public string idleUp = "Human_Idle_Up";
     public string idleDown = "Human_Idle_Down";
     public string death;
-    public string knockLeft = "Human_KnockArrow_Left";
-    public string knockRight = "Human_KnockArrow_Right";
-
-    public string attackLeft = "Human_Attack_Left";
-    public string attackRight = "Human_Attack_Right";
+    public string attackLeft = "Sword_Stab_Left";
+    public string attackRight = "Sword_Stab_Right";
     public string attackUp = "Human_Attack_Up";
     public string attackDown = "Human_Attack_Down";
-
-    public string knockUp;
-    public string knockDown;
-
     public int swordDamage = 10;
     public float swordRange = 0.5f;
 
     private Rigidbody2D rb;
-    private Animator anim;
+    private Animator playerAnim;
+    private PlayAnimations pa;
+    public Animator swordAnim;
     private Shaker shaker;
     public float moveSpeed = 5;
-
-    private GameObject aimTransform;
-    private GameObject sword;
+    public GameObject swordAim;
+    public GameObject bowAim;
+    public GameObject sword;
+    public GameObject bow;
+    public GameObject player;
+    public bool SwordEquipped;
+    public bool BowEquipped = false;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        playerAnim = GetComponent<Animator>();
         shaker = GameObject.Find("Camera").GetComponent<Shaker>();
-        aimTransform = GameObject.Find("Aim");
-        sword = GameObject.Find("Sword");
+        player = GameObject.Find("Player");
 
+        //This is the current set up i'm using for the weapons, 
+        swordAim = transform.GetChild(1).gameObject;
+                                   
+        sword = swordAim.transform.GetChild(0).gameObject;
+        swordAim.SetActive(true);
 
+        swordAnim = sword.GetComponent<Animator>();
+
+        transform.localScale = new Vector3(2.5f,2.5f,0);
+
+        bowAim = new GameObject();
+        bow = new GameObject();
+        
         GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
-        GetComponent<PlayAnimations>().idleLeft = idleLeft;
-        GetComponent<PlayAnimations>().idleRight = idleRight;
-        GetComponent<PlayAnimations>().walkLeft = walkLeft;
-        GetComponent<PlayAnimations>().walkRight = walkRight;
-        GetComponent<PlayAnimations>().walkUp = walkUp;
-        GetComponent<PlayAnimations>().walkDown = walkDown;
-        GetComponent<PlayAnimations>().death = death;
-        GetComponent<PlayAnimations>().attackLeft = attackLeft;
-        GetComponent<PlayAnimations>().attackRight = attackRight;
-        GetComponent<PlayAnimations>().attackUp = attackUp;
-        GetComponent<PlayAnimations>().attackDown = attackDown;
+
+        //Set the player animations/sprites to the current host creature
+        pa = GetComponent<PlayAnimations>();
+
+        pa.idleLeft = idleLeft;
+        pa.idleRight = idleRight;
+        pa.walkLeft = walkLeft;
+        pa.walkRight = walkRight;
+        pa.walkUp = walkUp;
+        pa.walkDown = walkDown;
+        pa.death = death;
+        pa.attackLeft = attackLeft;
+        pa.attackRight = attackRight;
+        pa.attackUp = attackUp;
+        pa.attackDown = attackDown;
     }
 
 
-    public float dashSpeed = 10f;
-    public float dashCoolDown = -9999;
-    public float dashDelay = 2f;
+    public float dashSpeed = 20f;
+    private float dashCoolDown = -9999;
+    public float dashDelay = .5f;
     private bool canDash = true;
     private bool isDashing = false;
+
 
     public void Dash()
     {
         var direction = GetComponent<PlayerMovement>().looking;
         if (canDash)
         {
+            // Set users in dashing state/invincibility state for a frame or two
             canDash = false;
             StartCoroutine(ToggleIsDashingBool());
 
@@ -78,28 +94,28 @@ public class Human : MonoBehaviour
                 default: throw new System.Exception("invalid dash direction provided");
                 case Looking.Up:
                                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + dashSpeed); 
-                                anim.Play("Human_Dash_Up");
+                                playerAnim.Play("Human_Dash_Up");
                                 shaker.CombatShaker("Up");
                                 dashCoolDown = Time.time;
                                 break;
 
                 case Looking.Down:
                                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y -dashSpeed); 
-                                anim.Play("Human_Dash_Down");
+                                playerAnim.Play("Human_Dash_Down");
                                 shaker.CombatShaker("Down");
                                 dashCoolDown = Time.time;
                                 break;
 
                 case Looking.Left:
                                 rb.velocity = new Vector2(rb.velocity.x - dashSpeed, rb.velocity.y);
-                                anim.Play("Human_Dash_Left");
+                                playerAnim.Play("Human_Dash_Left");
                                 shaker.CombatShaker("Left");
                                 dashCoolDown = Time.time;
                                 break;
 
                 case Looking.Right:
                                 rb.velocity = new Vector2(rb.velocity.x + dashSpeed, rb.velocity.y);
-                                anim.Play("Human_Dash_Right");
+                                playerAnim.Play("Human_Dash_Right");
                                 shaker.CombatShaker("Right");
                                 dashCoolDown = Time.time;
                                 break;
@@ -128,22 +144,22 @@ public class Human : MonoBehaviour
         {
             default: throw new System.Exception("PlayerMovement.Looking state not valid");
             case PlayerMovement.Looking.Left:
-                anim.Play(attackLeft);
+                swordAnim.Play(attackLeft);
                 shaker.CombatShaker("Left");
                 break;
                 
             case PlayerMovement.Looking.Right:
-                anim.Play(attackRight);
+                swordAnim.Play(attackRight);
                 shaker.CombatShaker("Right");
                 break;
 
             case PlayerMovement.Looking.Up:
-                anim.Play(attackUp);
+                swordAnim.Play(attackUp);
                 shaker.CombatShaker("Up");
                 break;
 
             case PlayerMovement.Looking.Down:
-                anim.Play(attackDown);
+                swordAnim.Play(attackDown);
                 shaker.CombatShaker("Down");
                 break;
         }   
@@ -164,7 +180,7 @@ public class Human : MonoBehaviour
             default: throw new System.Exception("Supplied bow name not recognised");
             
             case "Short Bow":
-                GetComponent<BowPickup>().ShootBow();
+                // GetComponent<BowPickup>().ShootBow();
                 break;
 
             case "Gold Bow":
@@ -178,28 +194,33 @@ public class Human : MonoBehaviour
 
         playerIsLooking = GetComponent<PlayerMovement>().playerIsLooking();
 
-
         switch (playerIsLooking)
         {
             default:return;
             case PlayerMovement.Looking.Left: 
-                aimTransform.transform.localPosition = new Vector3(0.054f,0.057f,180f);
-                sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.054f,0.057f,180f);
+                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+
+                // if (BowEquipped == true ) bowAim.transform.localPosition = new Vector3(0f,0.023f,180f);
                 break;
                 
             case PlayerMovement.Looking.Right:
-                aimTransform.transform.localPosition = new Vector3(-0.05f,0.043f,0);
-                sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(-0.05f,0.043f,0);
+                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+
+                // if (BowEquipped == true ) bowAim.transform.localPosition = new Vector3(-0.085f,0.023f, 180f);
                 break;
 
             case PlayerMovement.Looking.Up:
-                aimTransform.transform.localPosition = new Vector3(0.052f,0.055f,0);
-                sword.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.052f,0.055f,0);
+                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
                 break;
 
             case PlayerMovement.Looking.Down:
-                aimTransform.transform.localPosition = new Vector3(-0.0287f,0.0485f,0);
-                sword.GetComponent<SpriteRenderer>().sortingOrder = 3;                
+                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(-0.0287f,0.0485f,0);
+                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;         
+
                 break;
         }
 
@@ -214,14 +235,57 @@ public class Human : MonoBehaviour
             Dash();
         }
 
-        
+        ///WEAPON SELECTION SHOULD PROBABLY BE MOVED TO PlayerCombat.CS
 
-        Vector3 mouseClickPosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-        mouseClickPosition.z = 0f;
+        // If the "1" button is presssed equip the sword
+        if (Input.GetKeyDown(KeyCode.Alpha1) && SwordEquipped == false)
+        {
+            SwordEquipped = true;
+            swordAim.SetActive(true);
+            sword.SetActive(true);
+            player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Sword");
 
-        Vector3 aimDirection = (mouseClickPosition - transform.position).normalized;
+            //Deactivate bow if it currently is held by the player
+            if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
+            {
+                bowAim.SetActive(false);
+                bow.SetActive(false);
+                BowEquipped = false;
+            }  
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2) && BowEquipped == false)
+        {
+            SwordEquipped = false;
+            swordAim.SetActive(false);
+            sword.SetActive(false);
+
+            if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
+            {
+                BowEquipped = true;
+                bowAim.SetActive(true);
+                bow.SetActive(true);
+                player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Bow");
+            }   
+        }
+
+
+        Vector3 mousePOS = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+        mousePOS.z = 0f;
+
+        Vector3 aimDirection = (mousePOS - transform.position).normalized;
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-        aimTransform.transform.eulerAngles = new Vector3(0,0,angle);
+
+        swordAim.transform.eulerAngles = new Vector3(0,0,angle);
+
+        if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
+        {
+            bowAim.transform.eulerAngles = new Vector3(0,0,angle);
+        }
+
     }
+
+    
+
 
 }

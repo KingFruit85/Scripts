@@ -133,8 +133,8 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
-            // rb.velocity = new Vector2(moveX, moveY);
+            // rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+            rb.velocity = new Vector2(moveX, moveY);
         }
     }
 

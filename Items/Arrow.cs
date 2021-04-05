@@ -2,35 +2,35 @@
 
 public class Arrow : MonoBehaviour
 {
-    private Rigidbody2D RB;
+    private Rigidbody2D rb;
+    private int damage = 10;
+    private int arrowSpeed = 10;
+
+    public Vector3 clickPoint;
+    public Vector3 aim;
 
     void Start()
     {
-        RB = GetComponent<Rigidbody2D>();
-        var arrowSpeed = GetComponentInParent<BowPickup>().speed;
-
-        var playerIsLooking = GameObject.Find("Player")
-                               .GetComponent<PlayerMovement>()
-                               .playerIsLooking();
-
-        switch (playerIsLooking)
-        {
-            default: throw new System.Exception("PlayerMovement.Looking state unknown");
-            case PlayerMovement.Looking.Left: RB.AddForce(-Vector3.right * arrowSpeed,ForceMode2D.Impulse);break;
-            case PlayerMovement.Looking.Right: RB.AddForce(Vector3.right * arrowSpeed,ForceMode2D.Impulse);break;
-            case PlayerMovement.Looking.Up: RB.AddForce(Vector3.up * arrowSpeed,ForceMode2D.Impulse);break;
-            case PlayerMovement.Looking.Down: RB.AddForce(Vector3.down * arrowSpeed,ForceMode2D.Impulse);break; 
-        }
+        rb = GetComponent<Rigidbody2D>();
+        aim = (clickPoint - transform.position).normalized;
+        Debug.Log("Aim: "+ aim);
+        Debug.Log("MouseClick " + clickPoint);
+        // transform.LookAt(clickPoint);
+        rb.AddForce(aim * arrowSpeed, ForceMode2D.Impulse);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out Health health) && other.tag != "Player")
+        if (other.gameObject.layer == LayerMask.NameToLayer("enemies"))
         {
-            other.GetComponent<Health>().TakeDamage(GetComponentInParent<BowPickup>().damage);
+            other.GetComponent<Health>().TakeDamage(damage);
             Destroy(gameObject);
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Items"))
+        {
+            return;
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             return;
         }

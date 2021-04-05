@@ -9,8 +9,9 @@ public class PlayerCombat : MonoBehaviour
     public float attackRange = 0.5f;
     public Animator an;
     public string rangedWeaponName;
+    public string equippedWeaponName;
     private bool canShoot = false;
-    private bool rangedWeaponEquipped = false;
+    public bool rangedWeaponEquipped = false;
     private float rangedCooldown = -9999;
     private float arrowSpeed = 1;
     private int arrowDamage = 10;
@@ -29,6 +30,12 @@ public class PlayerCombat : MonoBehaviour
         an = GetComponent<Animator>();
         pa = GetComponent<PlayAnimations>();
         shaker = GameObject.Find("Camera").GetComponent<Shaker>();
+        equippedWeaponName = "Short Sword";
+    }
+
+    public void setEquippedWeaponName(string name)
+    {
+        equippedWeaponName = name;
     }
 
     public void SetRangedWeaponEquipped(bool x)
@@ -99,10 +106,17 @@ public class PlayerCombat : MonoBehaviour
             canShoot = false;
             arrowKnocked = false;
 
-            switch (rangedWeaponName)
+            switch (equippedWeaponName)
             {
                 default: throw new System.Exception("ranged weapon not recognised");
-                case "Short Bow":GetComponent<BowPickup>().ShootBow();break;
+
+                case "Short Bow":
+                //Finds the bow gameobject on the player and triggers its shoot function
+                GameObject.Find("Player").transform.GetComponentInChildren<ShortBow>().ShootBow(mouseClickPosition);
+                break;
+
+
+
                 case "Gold Bow" :GetComponent<GoldBowPickup>().ShootBow();break; 
             }
 
@@ -144,10 +158,15 @@ public class PlayerCombat : MonoBehaviour
 
     void LateUpdate()
     {
-        
+
         if (GetComponent<PlayerStats>().currentHost == "Human" && Input.GetMouseButtonDown(0))
         {
-            Attack();
+            switch (equippedWeaponName)
+            {
+                default:throw new System.Exception("equipped weapon not regognised");
+                case "Short Sword":Attack();break;
+                case "Short Bow": if (arrowKnocked){RangedAttack();}else{KnockArrow();};break;
+            }
         }
 
         if (GetComponent<PlayerStats>().currentHost == "Ghost" && Input.GetMouseButtonDown(0))
@@ -156,14 +175,5 @@ public class PlayerCombat : MonoBehaviour
             GetComponent<Ghost>().GhostBolt();
         }
 
-        if( GetComponent<PlayerStats>().currentHost == "Human" && Input.GetMouseButtonDown(1) && rangedWeaponEquipped)
-        {
-            KnockArrow();
-        }
-
-        if (GetComponent<PlayerStats>().currentHost == "Human" && Input.GetMouseButtonUp(1) && arrowKnocked)
-        {
-            RangedAttack();
-        }
     }
 }

@@ -2,95 +2,48 @@
 
 public class BowPickup : MonoBehaviour
 {
-    public string itemName;
-    public int damage;
-    public int speed;
     private GameObject player;
-    private PlayerCombat playerCombat;
-    private PlayerMovement.Looking playerIsLooking;
-    public float attackDelay;
-    public GameObject arrow;
+    private GameObject shortBow;
 
     void Start()
     {
-        itemName = "Short Bow";
-        damage = 10;
-        attackDelay = 1.5f;
-        speed = 5;
         player = GameObject.Find("Player");
-        playerCombat = player.GetComponent<PlayerCombat>();
-
-        playerIsLooking = GameObject.Find("Player")
-                               .GetComponent<PlayerMovement>()
-                               .playerIsLooking();
-    }
-
-    void Update()
-    {
-        playerIsLooking = player.GetComponent<PlayerMovement>().playerIsLooking();
-    }
-
-    public void ShootBow()
-    {
-        //Ofsets so arrow box collider doesnt clip player collider
-        float x = 0;
-        float y = 0;
-
-        switch (playerIsLooking)
-        {
-            default: throw new System.Exception("PlayerMovement.Looking state not recognised");
-            
-            case PlayerMovement.Looking.Left:
-                playerCombat.an.Play("Human_Attack2_Left");
-                x = -.4f;
-                break;
-
-            case PlayerMovement.Looking.Right:
-                playerCombat.an.Play("Human_Attack2_Right");
-                x = + .4f;
-                break;
-
-            case PlayerMovement.Looking.Up:
-                playerCombat.an.Play("Human_Attack2_Up");
-                y = +.7f;
-                break;
-
-            case PlayerMovement.Looking.Down:
-                playerCombat.an.Play("Human_Attack2_Down");
-                y = -.7f;
-                break;
-        }
-
-        // Spawn arrow on top of player
-        GameObject a = Instantiate(arrow,
-                                new Vector3(player.transform.position.x + x,
-                                            player.transform.position.y + y,
-                                            player.transform.position.z), 
-                                player.transform.rotation);
-
-        // Set arrow as child of player gameobject                     
-        a.transform.parent = player.transform;
-
-        //If player facing left flip the arrow sprite
-        if (playerIsLooking == PlayerMovement.Looking.Left) a.transform.Rotate(new Vector3(0,180,0));  
-        if (playerIsLooking == PlayerMovement.Looking.Up) a.transform.Rotate(new Vector3(0,0,90));  
-        if (playerIsLooking == PlayerMovement.Looking.Down) a.transform.Rotate(new Vector3(0,0,-90)); 
-
-        //Remove 1 arrow from the player inventory
-        player.GetComponent<PlayerStats>().RemoveArrows(1);
+        shortBow = Resources.Load("BowAim") as GameObject;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        
+        if (other.tag == "Player" && player.GetComponent<PlayerCombat>().rangedWeaponEquipped == false)
         {
             player.GetComponent<PlayerStats>().AddArrows(5);
-            player.AddComponent<BowPickup>();
-            player.GetComponent<BowPickup>().arrow = Resources.Load("arrow") as GameObject;
-            playerCombat.SetRangedWeaponEquipped(true);
-            playerCombat.rangedWeaponName = "Short Bow";
-            playerCombat.setRangedAttack(speed,damage,attackDelay);
+            player.GetComponent<PlayerCombat>().SetRangedWeaponEquipped(true);
 
+            // add shortbow game object to player game object
+            GameObject a = Instantiate(shortBow,
+                                new Vector3(player.transform.position.x,
+                                            player.transform.position.y,
+                                            player.transform.position.z), 
+                                            player.transform.rotation);
+
+            // Set arrow as child of player gameobject                     
+            a.transform.parent = player.transform;
+            // newly instanciated objects have "(clone)" at the end of their name, renaming for 
+            a.name = "BowAim";
+            //Updates the gameobject variable in <Human>
+            player.GetComponent<Human>().bowAim = a;
+            //Resets the scale, for some reason it spawns tiny on the player without this. Probably just need to change the scale on teh sprite but I'm being lazy
+            player.GetComponent<Human>().bowAim.transform.localScale =  new Vector3(1.2f,1.2f,0);
+            //Sets it as false for now as we don't want to see the sprite unless we equip it
+            player.GetComponent<Human>().bowAim.SetActive(false);
+            //Removes the pickup sprite from the level
+            Destroy(this.gameObject);
+
+
+        }
+        else if (other.tag == "Player" && player.GetComponent<PlayerCombat>().rangedWeaponEquipped == true)
+        {
+            player.GetComponent<PlayerStats>().AddArrows(5);
             Destroy(this.gameObject);
         }
 

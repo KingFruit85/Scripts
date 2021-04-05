@@ -21,6 +21,8 @@ public class Ghost : MonoBehaviour
 
     public float moveSpeed = 1;
 
+    private PlayAnimations pa;
+
 
     void Awake()
     {
@@ -28,13 +30,18 @@ public class Ghost : MonoBehaviour
         {
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
         }
-        GetComponent<PlayAnimations>().idleLeft = idleLeft;
-        GetComponent<PlayAnimations>().idleRight = idleRight;
-        GetComponent<PlayAnimations>().walkLeft = walkLeft;
-        GetComponent<PlayAnimations>().walkRight = walkRight;
-        GetComponent<PlayAnimations>().walkUp = walkUp;
-        GetComponent<PlayAnimations>().walkDown = walkDown;
-        GetComponent<PlayAnimations>().death = death;
+
+        transform.localScale = new Vector3(3.5f,3.5f,0);
+
+        //Set the player animations/sprites to the current host creature
+        pa = GetComponent<PlayAnimations>();
+        pa.idleLeft = idleLeft;
+        pa.idleRight = idleRight;
+        pa.walkLeft = walkLeft;
+        pa.walkRight = walkRight;
+        pa.walkUp = walkUp;
+        pa.walkDown = walkDown;
+        pa.death = death;
 
     }
 
