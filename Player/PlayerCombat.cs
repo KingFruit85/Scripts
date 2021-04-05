@@ -152,7 +152,6 @@ public class PlayerCombat : MonoBehaviour
         GetCurrentSprite();
 
         mouseClickPosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-
     }
 
 
@@ -165,7 +164,10 @@ public class PlayerCombat : MonoBehaviour
             {
                 default:throw new System.Exception("equipped weapon not regognised");
                 case "Short Sword":Attack();break;
-                case "Short Bow": if (arrowKnocked){RangedAttack();}else{KnockArrow();};break;
+
+                case "Short Bow":
+                    GameObject.Find("Player").transform.GetComponentInChildren<ShortBow>().ShootBow(mouseClickPosition);
+                    break;
             }
         }
 

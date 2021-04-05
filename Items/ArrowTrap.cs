@@ -12,7 +12,7 @@ public class ArrowTrap : MonoBehaviour
 
     void Start()
     {
-        active = false;
+        active = true;
 
         if (shootUp) direction = "up"; spawnPOS = new Vector3(0,1); 
         if (shootDown) direction = "down"; spawnPOS = new Vector3(0,-1);

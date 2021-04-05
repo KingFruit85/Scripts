@@ -36,17 +36,27 @@ public class TrapArrow : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out Health health))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             other.GetComponent<Health>().TakeDamage(damage);
+            Destroy(gameObject);
         }
-        else if (other.tag == "HealthPotion")
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Items"))
         {
             return;
         }
-        else 
+        else if (other.gameObject.layer == LayerMask.NameToLayer("enemies"))
         {
-            Destroy(this.gameObject);
+            return;
+        }
+        else if (other.name == "Sword")
+        {
+            Destroy(gameObject);
+        }
+
+        else if (other.tag == "Wall")
+        {
+            Destroy(gameObject);
         }
     }
     

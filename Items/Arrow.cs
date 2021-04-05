@@ -2,7 +2,6 @@
 
 public class Arrow : MonoBehaviour
 {
-    private Rigidbody2D rb;
     private int damage = 10;
     private int arrowSpeed = 10;
 
@@ -11,14 +10,24 @@ public class Arrow : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
         aim = (clickPoint - transform.position).normalized;
-        Debug.Log("Aim: "+ aim);
-        Debug.Log("MouseClick " + clickPoint);
-        // transform.LookAt(clickPoint);
-        rb.AddForce(aim * arrowSpeed, ForceMode2D.Impulse);
+        //Points the arrow the direction we're shooting
+        float angle = Mathf.Atan2(aim.y,aim.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
     }
 
+    public void SetArrowDamage(int dmg)
+    {
+        damage = dmg;
+    }
+
+    void FixedUpdate()
+    {
+        //Adds force in the direction of the mouseclick to the arrow
+        transform.position += aim * arrowSpeed * Time.deltaTime;
+    }
+
+    //This Function deals with handling collisions, don't love it as is.
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("enemies"))
