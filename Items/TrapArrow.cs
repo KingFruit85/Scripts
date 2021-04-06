@@ -11,7 +11,10 @@ public class TrapArrow : MonoBehaviour
     private Vector2 up = new Vector2(0,1);
     private Vector2 down = new Vector2(0,-1);
     private string direction;
-    public int damage = 10;
+    private int damage = 10;
+
+    public Vector3 lastVelocity;
+
 
     
     void Start()
@@ -34,30 +37,45 @@ public class TrapArrow : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void Update()
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
+        lastVelocity = RB.velocity;
+    }
+
+        void OnCollisionEnter2D(Collision2D coll)
         {
-            other.GetComponent<Health>().TakeDamage(damage);
-            Destroy(gameObject);
-        }
-        else if (other.gameObject.layer == LayerMask.NameToLayer("Items"))
-        {
-            return;
-        }
-        else if (other.gameObject.layer == LayerMask.NameToLayer("enemies"))
-        {
-            return;
-        }
-        else if (other.name == "Sword")
-        {
-            Destroy(gameObject);
+
+
+            if (coll.collider.gameObject.tag == "Player")
+            {
+                coll.gameObject.GetComponent<Health>().TakeDamage(damage);
+                Destroy(gameObject);
+            }
+
+            else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Items"))
+            {
+                return;
+            }
+
+            else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("enemies"))
+            {
+                return;
+            }
+            else if (coll.collider.gameObject.name == "Sword")
+            {
+                var speed = lastVelocity.magnitude;
+                var direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);
+                RB.velocity = direction * speed / 2;
+            }
+            else if (coll.gameObject.tag == "Wall")
+            {
+                Destroy(gameObject);
+            }
+
+
         }
 
-        else if (other.tag == "Wall")
-        {
-            Destroy(gameObject);
-        }
-    }
+
+
     
 }
