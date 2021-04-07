@@ -4,7 +4,7 @@ public class ArrowTrap : MonoBehaviour
 {
     public GameObject arrow;
     private float shotCooldown = -9999;
-    public float shotDelay = 2f;
+    public float shotDelay = 5f;
     public bool shootUp, shootDown, shootLeft, shootRight;
     private string direction;
     private Vector3 spawnPOS;

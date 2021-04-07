@@ -14,6 +14,9 @@ public class TrapArrow : MonoBehaviour
     private int damage = 10;
 
     public Vector3 lastVelocity;
+    public bool deflected = false;
+
+    public GameObject[] trapArrows;
 
 
     
@@ -21,6 +24,8 @@ public class TrapArrow : MonoBehaviour
     {
         RB = GetComponent<Rigidbody2D>();
         direction = GetComponentInParent<ArrowTrap>().GetDirection();
+        trapArrows = GameObject.FindGameObjectsWithTag("TrapArrow");
+
 
         if (direction == "up") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
         if (direction == "down") transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
@@ -40,40 +45,62 @@ public class TrapArrow : MonoBehaviour
     void Update()
     {
         lastVelocity = RB.velocity;
+        trapArrows = GameObject.FindGameObjectsWithTag("TrapArrow");
+
+        foreach (var arrow in trapArrows)
+        {
+            Physics2D.IgnoreCollision(arrow.GetComponent<BoxCollider2D>(),gameObject.GetComponent<BoxCollider2D>());
+        }
+        
     }
 
-        void OnCollisionEnter2D(Collision2D coll)
+    void OnCollisionEnter2D(Collision2D coll)
+    {
+
+        if (coll.collider.gameObject.tag == "Player")
         {
-
-
-            if (coll.collider.gameObject.tag == "Player")
+            if (deflected == false)
             {
                 coll.gameObject.GetComponent<Health>().TakeDamage(damage);
                 Destroy(gameObject);
             }
-
-            else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Items"))
-            {
-                return;
-            }
-
-            else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("enemies"))
-            {
-                return;
-            }
-            else if (coll.collider.gameObject.name == "Sword")
-            {
-                var speed = lastVelocity.magnitude;
-                var direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);
-                RB.velocity = direction * speed / 2;
-            }
-            else if (coll.gameObject.tag == "Wall")
-            {
-                Destroy(gameObject);
-            }
-
-
         }
+
+        else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Items"))
+        {
+            return;
+        }
+
+        else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("enemies"))
+        {
+            return;
+        }
+
+        else if (coll.collider.gameObject.tag == "TrapArrow")
+        {
+            Physics2D.IgnoreCollision(coll.collider.gameObject.GetComponent<BoxCollider2D>(),gameObject.GetComponent<BoxCollider2D>());
+        }
+
+        else if (coll.collider.gameObject.name == "Sword")
+        {
+            var speed = lastVelocity.magnitude;
+            var direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);
+            RB.velocity = direction * speed / 2;
+            deflected = true;
+        }
+        else if (coll.collider.gameObject.tag == "PlayerArrow")
+        {
+            var speed = lastVelocity.magnitude;
+            var direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);
+            RB.velocity = direction * speed * 2;
+        }
+        else if (coll.gameObject.tag == "Wall")
+        {
+            Destroy(gameObject);
+        }
+
+
+    }
 
 
 
