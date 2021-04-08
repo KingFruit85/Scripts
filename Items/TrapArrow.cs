@@ -10,7 +10,7 @@ public class TrapArrow : MonoBehaviour
     private Vector2 right = new Vector2(1,0);
     private Vector2 up = new Vector2(0,1);
     private Vector2 down = new Vector2(0,-1);
-    private string direction;
+    public string direction;
     private int damage = 10;
 
     public Vector3 lastVelocity;
@@ -23,23 +23,41 @@ public class TrapArrow : MonoBehaviour
     void Start()
     {
         RB = GetComponent<Rigidbody2D>();
-        direction = GetComponentInParent<ArrowTrap>().GetDirection();
+        GetComponent<SpriteRenderer>().sortingOrder = 3;
+
+        if (gameObject.transform.parent.tag == "ArrowTrap")
+        {
+            direction = GetComponentInParent<ArrowTrap>().GetDirection();
+
+            if (direction == "up") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
+            if (direction == "down") transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
+            if (direction == "left") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
+            if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));  
+
+            
+        }
+
+        else if (gameObject.transform.parent.name == "arrowTurret")
+        {
+            direction = transform.name;
+        }
+
+
+        switch (direction)
+            {
+                default:break;
+                case "left": RB.AddForce(left * speed ,ForceMode2D.Force); break;
+                case "right": RB.AddForce(right * speed ,ForceMode2D.Force); break;
+                case "up": RB.AddForce(up * speed ,ForceMode2D.Force); break;
+                case "down": RB.AddForce(down * speed ,ForceMode2D.Force); break;
+            }
+
         trapArrows = GameObject.FindGameObjectsWithTag("TrapArrow");
 
 
-        if (direction == "up") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
-        if (direction == "down") transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
-        if (direction == "left") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
-        if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+        
 
-        switch (direction)
-        {
-            default:break;
-            case "left": RB.AddForce(left * speed ,ForceMode2D.Force); break;
-            case "right": RB.AddForce(right * speed ,ForceMode2D.Force); break;
-            case "up": RB.AddForce(up * speed ,ForceMode2D.Force); break;
-            case "down": RB.AddForce(down * speed ,ForceMode2D.Force); break;
-        }
+        
     }
 
     void Update()

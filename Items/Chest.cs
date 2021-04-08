@@ -27,12 +27,14 @@ public class Chest : MonoBehaviour
                 GameObject a = Instantiate
                                     (
                                         treasure,
-                                        new Vector3(pos.x ,pos.y - 1.0f, pos.z),
+                                        new Vector3(pos.x ,pos.y, pos.z),
                                         transform.rotation
                                     )
                                     as GameObject;
                 //sets flag to stop item spawning if chest is closes & reopened
                 hasBeenOpened = true;
+                //Spawn item on top of chest
+                treasure.GetComponent<SpriteRenderer>().sortingOrder = 3;
     }
 
 
