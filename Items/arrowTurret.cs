@@ -6,13 +6,13 @@ public class arrowTurret : MonoBehaviour
 {
     public float shotDelay = 1f;
     public float shotCooldown = -9999;
-    public GameObject arrow;
+    private GameObject arrow;
+    private Vector3 rightSpawn;
+    private Vector3 leftSpawn;
+    private Vector3 topSpawn;
+    private Vector3 bottomSpawn;
 
-    public Vector3 rightSpawn;
-    public Vector3 leftSpawn;
-    public Vector3 topSpawn;
-    public Vector3 bottomSpawn;
-
+    public bool isActive;
 
     void Awake()
     {
@@ -26,7 +26,7 @@ public class arrowTurret : MonoBehaviour
     }
     void Update()
     {
-        if (Time.time > shotCooldown + shotDelay)
+        if (Time.time > shotCooldown + shotDelay && isActive)
         { 
             GameObject rightArrow = Instantiate(arrow,
                                        rightSpawn,

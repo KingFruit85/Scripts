@@ -170,7 +170,7 @@ public class Human : MonoBehaviour
         foreach (Collider2D enemy in hitEnemies)
         {
             if (enemy.GetComponent<Health>())
-            enemy.GetComponent<Health>().TakeDamage(swordDamage);   
+            enemy.GetComponent<Health>().TakeDamage(swordDamage, transform.gameObject);   
         }
     }
 

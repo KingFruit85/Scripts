@@ -19,7 +19,7 @@ public class Ghost : MonoBehaviour
 
     public string death = "Ghost_Death";
 
-    public float moveSpeed = 1;
+    public float moveSpeed = 3;
 
     private PlayAnimations pa;
 

@@ -77,7 +77,7 @@ public class GhostBolt : MonoBehaviour
 
         if (shooter == "Player" && other.gameObject.layer == 8)
         {
-             other.GetComponent<Health>().TakeDamage(damage);
+             other.GetComponent<Health>().TakeDamage( damage, transform.parent.gameObject );
         }
 
 
@@ -93,8 +93,8 @@ public class GhostBolt : MonoBehaviour
             // if player not dashing apply damage
             else
             {
-                player.GetComponent<Health>().TakeDamage(damage);
-                GameObject.Find("Main Camera").GetComponent<Shaker>().Shake(.1f);
+                player.GetComponent<Health>().TakeDamage( damage, transform.parent.gameObject );
+                GameObject.Find("Camera").GetComponent<Shaker>().Shake(.1f);
                 //add animation
                 Destroy(this.gameObject);
             }

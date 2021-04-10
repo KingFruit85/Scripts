@@ -57,7 +57,7 @@ public class PlayerCombat : MonoBehaviour
 
     void Attack()
     {
-        switch (GetComponent<PlayerStats>().currentHost)
+        switch (GetComponent<Health>().currentHost)
         {
             default: throw new System.Exception("currentHost value not recognised");
             case "Human":GetComponent<Human>().SwordAttack();break;
@@ -158,7 +158,7 @@ public class PlayerCombat : MonoBehaviour
     void LateUpdate()
     {
 
-        if (GetComponent<PlayerStats>().currentHost == "Human" && Input.GetMouseButtonDown(0))
+        if (GetComponent<Health>().currentHost == "Human" && Input.GetMouseButtonDown(0))
         {
             switch (equippedWeaponName)
             {
@@ -171,7 +171,7 @@ public class PlayerCombat : MonoBehaviour
             }
         }
 
-        if (GetComponent<PlayerStats>().currentHost == "Ghost" && Input.GetMouseButtonDown(0))
+        if (GetComponent<Health>().currentHost == "Ghost" && Input.GetMouseButtonDown(0))
         {
             
             GetComponent<Ghost>().GhostBolt();

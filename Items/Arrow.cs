@@ -52,7 +52,7 @@ public class Arrow : MonoBehaviour
 
         else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("enemies"))
         {
-            coll.gameObject.GetComponent<Health>().TakeDamage(damage);
+            coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject);
             Destroy(gameObject);
         }
         
