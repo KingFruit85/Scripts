@@ -8,6 +8,7 @@ public class PlayerStats : MonoBehaviour
     private int coinCount;
     private GameObject player;
     public string currentHost;
+    public bool isPhasing = false;
 
     void Awake()
     {
@@ -46,15 +47,19 @@ public class PlayerStats : MonoBehaviour
                     gameObject.AddComponent<Ghost>();
                     gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Ghost>().idleDown);
                     gameObject.GetComponent<PlayAnimations>().ghost = GetComponent<Ghost>();
+                    currentHost = "Ghost";
                     break;
 
                 case "Worm"  : 
                     gameObject.AddComponent<Worm>();
                     gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Worm>().idleDown);
                     gameObject.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
+                    currentHost = "Worm";
                     break;
             }
-            currentHost = newHost;   
+
+            gameObject.GetComponent<Health>().currentHost = newHost;
+
         }    
     }
 

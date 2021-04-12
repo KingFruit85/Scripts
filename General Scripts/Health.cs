@@ -113,15 +113,24 @@ public class Health : MonoBehaviour
 
     // Takes in a damage value to apply and the game object that caused the damage
     public void TakeDamage( int damage, GameObject attacker )
-    {
-        lastHitBy = attacker;
+    {   
+        var isPhasing = false;
+
+        if (gameObject.tag == "Player")
+        {
+            isPhasing = GetComponent<PlayerStats>().isPhasing;
+        }
+
+        //Probably willneed to make this flag more generic at some point, as I'm sure other hosts/enemies may have similar abilities
+        if(!isPhasing)
+        {
+            lastHitBy = attacker;
 
         //Shake screen
         if (gameObject.tag == "Player")
         {
             GameObject.Find("Camera").GetComponent<Shaker>().Shake(.1f);
         }
-
 
         //Apply the damage as long as the player isn't in a dash state
         if (gameObject.tag == "Player" && GetComponent<Human>() && GetComponent<Human>().isPlayerDashing())
@@ -158,6 +167,16 @@ public class Health : MonoBehaviour
                 }   
             }
         }
+        }
+        else
+        {   
+            //Is immune to damage
+            return;
+        }
+
+
+
+        
 
         
          

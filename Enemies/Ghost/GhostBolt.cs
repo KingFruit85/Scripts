@@ -7,7 +7,7 @@ public class GhostBolt : MonoBehaviour
     private Rigidbody2D rb;
     private GameObject player;
     private Vector3 aim;
-    private Vector3 enemyLoc;
+    private Vector3 playerMouseClick;
 
     private float born;
     private float lifeTime = 0.5f;
@@ -16,9 +16,9 @@ public class GhostBolt : MonoBehaviour
 
     void Awake()
     {
-        player = GameObject.Find("Player");
-        rb = this.GetComponent<Rigidbody2D>();
-        enemyLoc = player.GetComponent<PlayerCombat>().mouseClickPosition; 
+        player = GameObject.FindGameObjectWithTag("Player");
+        rb = GetComponent<Rigidbody2D>();
+        playerMouseClick = player.GetComponent<PlayerCombat>().mouseClickPosition; 
         born = Time.time;
     }
 
@@ -33,29 +33,16 @@ public class GhostBolt : MonoBehaviour
             case "Player":ShootAtEnemy();break;
         }
 
-        if (Time.time >= born + lifeTime)
+        if (Time.time >= born + lifeTime && shooter != "Player")
         {
             Destroy(this.gameObject);
         }
     }
 
-    public Vector3 getEnemyLocation()
-    {
-        return enemyLoc;
-    }
-
-
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.DrawSphere(enemyLoc, 1.5f);   
-    }
-
     private void ShootAtEnemy()
     {   
-        aim = (enemyLoc - transform.position).normalized;
+        aim = (playerMouseClick - transform.position);
         rb.AddForce(aim * speed);
-
     }
 
     private void ShootAtPlayer()

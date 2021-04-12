@@ -51,7 +51,7 @@ public class GhostAttacks : MonoBehaviour
             {
                 fireGhostBolt();
                 lastAttacked = Time.time;
-            }
+            }            
         }
         
     }

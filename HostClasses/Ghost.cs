@@ -12,24 +12,24 @@ public class Ghost : MonoBehaviour
     public string walkDown = "Ghost_Walk_Down";
     public string idleUp = "Ghost_Walk_Up"; // Replace this when posible
     public string idleDown = "Ghost_Idle_Front";
-    public string attackLeft = "";
-    public string attackRight = "";
-    public string attackUp = "";
-    public string attackDown = "";
-
     public string death = "Ghost_Death";
-
     public float moveSpeed = 3;
-
     private PlayAnimations pa;
-
+    private SpriteRenderer sr;
+    public bool isPhasing;
+    private bool isPlayer = false;
 
     void Awake()
     {
         if (transform.tag == "Player")
         {
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
+            isPlayer = true;
         }
+
+        isPhasing = false;
+
+        sr = GetComponent<SpriteRenderer>();
 
         transform.localScale = new Vector3(3.5f,3.5f,0);
 
@@ -59,5 +59,23 @@ public class Ghost : MonoBehaviour
                                     as GameObject;
                                     a.transform.parent = transform;
                   
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && isPhasing == false && isPlayer)
+        {
+            sr.material.color = new Color(1f, 1f, 1f, 0.2f);
+            isPhasing = true;
+            GetComponent<PlayerStats>().isPhasing = true;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && isPhasing == true && isPlayer)
+        {
+            sr.material.color = new Color(1f, 1f, 1f, 1f);
+            isPhasing = false;
+            GetComponent<PlayerStats>().isPhasing = false;
+
+        }
     }
 }

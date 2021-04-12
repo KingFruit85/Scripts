@@ -16,9 +16,12 @@ public class TrapArrow : MonoBehaviour
     private Vector3 lastVelocity;
     public bool deflected = false;
 
+    private GameObject player;
+
     void Start()
     {
         RB = GetComponent<Rigidbody2D>();
+        player = GameObject.Find("Player");
 
         // Check what object is firing me and fire in the appropriate direction
         if (gameObject.transform.parent.tag == "ArrowTrap")
@@ -54,6 +57,11 @@ public class TrapArrow : MonoBehaviour
 
         // Removes any deflected arrows that are laying about doing nothing
         if (deflected && RB.velocity.x > -5f && RB.velocity.y > - 5f) Destroy(gameObject, .5f);
+
+        if (player.GetComponent<PlayerStats>().isPhasing)
+        {
+            Physics2D.IgnoreCollision(player.GetComponent<CapsuleCollider2D>(),gameObject.GetComponent<BoxCollider2D>());
+        }
     }   
 
     void OnCollisionEnter2D(Collision2D coll)
@@ -61,11 +69,13 @@ public class TrapArrow : MonoBehaviour
         
         if (coll.collider.gameObject.tag == "Player")
         {
-            if (deflected == false)
+    
+            if (!deflected)
             {
                 coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject);
                 Destroy(gameObject);
             }
+            
         }
 
         else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Items"))
