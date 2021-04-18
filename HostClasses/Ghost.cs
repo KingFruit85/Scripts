@@ -24,7 +24,10 @@ public class Ghost : MonoBehaviour
         if (transform.tag == "Player")
         {
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
+            //Due to the sprite scaling when you change from a human to a ghost the capsule collider is too large to move horizontally though 1 unit tall corridors
+            GetComponent<CapsuleCollider2D>().size = new Vector2(0.1f,0.2f);
             isPlayer = true;
+
         }
 
         isPhasing = false;
@@ -48,16 +51,19 @@ public class Ghost : MonoBehaviour
 
     public void GhostBolt()
     {
-        // should fire towards mouseclick
+        if (!isPhasing)
+        {
+            // should fire towards mouseclick
 
-            GameObject a = Instantiate
-                                    (
-                                        Resources.Load("Ghost_Bolt"),
-                                        transform.position,
-                                        transform.rotation
-                                    )
-                                    as GameObject;
-                                    a.transform.parent = transform;
+                GameObject a = Instantiate
+                                        (
+                                            Resources.Load("Ghost_Bolt"),
+                                            transform.position,
+                                            transform.rotation
+                                        )
+                                        as GameObject;
+                                        a.transform.parent = transform;
+        }
                   
     }
 
@@ -65,9 +71,15 @@ public class Ghost : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && isPhasing == false && isPlayer)
         {
-            sr.material.color = new Color(1f, 1f, 1f, 0.2f);
+            sr.material.color = new Color(1f, 1f, 1f, 0.5f);
             isPhasing = true;
             GetComponent<PlayerStats>().isPhasing = true;
+
+            var doors = GameObject.FindGameObjectsWithTag("Door");
+            foreach (var door in doors)
+            {
+                door.GetComponent<Door>().isCurrentlyPhasable = true;
+            }
 
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isPhasing == true && isPlayer)
@@ -75,6 +87,12 @@ public class Ghost : MonoBehaviour
             sr.material.color = new Color(1f, 1f, 1f, 1f);
             isPhasing = false;
             GetComponent<PlayerStats>().isPhasing = false;
+
+            var doors = GameObject.FindGameObjectsWithTag("Door");
+            foreach (var door in doors)
+            {
+                door.GetComponent<Door>().isCurrentlyPhasable = false;
+            }
 
         }
     }

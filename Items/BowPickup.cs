@@ -13,8 +13,9 @@ public class BowPickup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+
         
-        if (other.tag == "Player" && player.GetComponent<PlayerCombat>().rangedWeaponEquipped == false)
+        if (other.tag == "Player" && player.GetComponent<PlayerCombat>().rangedWeaponEquipped == false && player.GetComponent<PlayerStats>().currentHost == "Human")
         {
             player.GetComponent<PlayerStats>().AddArrows(5);
             player.GetComponent<PlayerCombat>().SetRangedWeaponEquipped(true);
@@ -41,7 +42,7 @@ public class BowPickup : MonoBehaviour
 
 
         }
-        else if (other.tag == "Player" && player.GetComponent<PlayerCombat>().rangedWeaponEquipped == true)
+        else if (other.tag == "Player" && player.GetComponent<PlayerCombat>().rangedWeaponEquipped == true && player.GetComponent<PlayerStats>().currentHost == "Human")
         {
             player.GetComponent<PlayerStats>().AddArrows(5);
             Destroy(this.gameObject);

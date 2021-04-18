@@ -201,16 +201,21 @@ public class Human : MonoBehaviour
             case PlayerMovement.Looking.Left: 
                 if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.054f,0.057f,180f);
                 if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+
                 break;
                 
             case PlayerMovement.Looking.Right:
                 if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(-0.05f,0.043f,0);
                 if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                // if (BowEquipped == true ) bow.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
                 break;
 
             case PlayerMovement.Looking.Up:
                 if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.052f,0.055f,0);
                 if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 1;
+                // if (BowEquipped == true ) bow.GetComponent<SpriteRenderer>().sortingOrder = 1;
+
 
                 break;
 

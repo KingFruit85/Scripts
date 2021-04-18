@@ -17,6 +17,7 @@ public class PlayerStats : MonoBehaviour
         currentHost = "Human";
     }
 
+    //For testing use
     void ChangeHostBody(string newHost)
     {
 
@@ -41,6 +42,7 @@ public class PlayerStats : MonoBehaviour
                     gameObject.AddComponent<Human>();
                     gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Human>().idleDown);
                     gameObject.GetComponent<PlayAnimations>().human = GetComponent<Human>();
+                    currentHost = "Human";
                     break; 
 
                 case "Ghost" : 

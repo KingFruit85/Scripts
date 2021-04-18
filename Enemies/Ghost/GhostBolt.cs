@@ -81,7 +81,6 @@ public class GhostBolt : MonoBehaviour
             else
             {
                 player.GetComponent<Health>().TakeDamage( damage, transform.parent.gameObject );
-                GameObject.Find("Camera").GetComponent<Shaker>().Shake(.1f);
                 //add animation
                 Destroy(this.gameObject);
             }
