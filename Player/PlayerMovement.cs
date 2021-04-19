@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();       
         sr = GetComponent<SpriteRenderer>();
         player = GameObject.Find("Player");
+        cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
     }
 
     void OnTriggerEnter2D(Collider2D other)

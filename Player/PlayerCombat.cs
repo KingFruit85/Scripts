@@ -29,7 +29,7 @@ public class PlayerCombat : MonoBehaviour
         SR = GetComponent<SpriteRenderer>();
         an = GetComponent<Animator>();
         pa = GetComponent<PlayAnimations>();
-        shaker = GameObject.Find("Camera").GetComponent<Shaker>();
+        shaker = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>();
         equippedWeaponName = "Short Sword";
     }
 

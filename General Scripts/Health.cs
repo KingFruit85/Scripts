@@ -129,7 +129,7 @@ public class Health : MonoBehaviour
         //Shake screen
         if (gameObject.tag == "Player")
         {
-            GameObject.Find("Camera").GetComponent<Shaker>().Shake(.1f);
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>().Shake(.1f);
         }
 
         //Apply the damage as long as the player isn't in a dash state

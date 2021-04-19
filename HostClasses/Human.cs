@@ -38,7 +38,7 @@ public class Human : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
-        shaker = GameObject.Find("Camera").GetComponent<Shaker>();
+        shaker = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>();
         player = GameObject.Find("Player");
 
         //This is the current set up i'm using for the weapons, 
