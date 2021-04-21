@@ -18,6 +18,7 @@ public class WormAttacks : MonoBehaviour
     private Vector2 attackPointLeft;
     private Vector2 attackPointRight;
     private float attackRange = 0.4f;
+    [SerializeField]
     private string currentSprite;
 
 
@@ -33,9 +34,18 @@ public class WormAttacks : MonoBehaviour
 
     private void SetCurrentSprite()
     {
-        // Gets the current  sprite with the junk text trimmed off
+        // Gets the current sprite with the junk text trimmed off
         currentSprite = sr.sprite.ToString();
         currentSprite = currentSprite.Substring(0,currentSprite.LastIndexOf(" " ) - 1).Trim();
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Display the explosion radius when selected
+        Gizmos.color = new Color(1, 1, 0, 0.75F);
+        Gizmos.DrawSphere(attackPointRight, .5f);
+        Gizmos.DrawSphere(attackPointLeft, .5f);
+
     }
 
     void SetAttackPoint()
@@ -43,6 +53,7 @@ public class WormAttacks : MonoBehaviour
         // Set the ranges
         attackPointLeft = new Vector2(rb.position.x - attackRange - 0.3f ,rb.position.y);
         attackPointRight = new Vector2(rb.position.x + attackRange + 0.3f ,rb.position.y);
+
         
         // Set the attackable area
         switch (currentSprite)

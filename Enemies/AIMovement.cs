@@ -29,6 +29,8 @@ public class AIMovement : MonoBehaviour
     private float aggroRange = 5f;
     private Vector3 playerPOS;
     private Rigidbody2D rb;
+    [SerializeField]
+    private bool isSlowed;
 
     void Awake()
     {
@@ -82,6 +84,16 @@ public class AIMovement : MonoBehaviour
             case State.Attacking:
                 Attack();
                 break;
+        }
+
+        // Visual for slowed effect
+        if (isSlowed)
+        {
+            GetComponent<SpriteRenderer>().color = Color.green;
+        }
+        else if (!isSlowed)
+        {
+            GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
 
@@ -184,5 +196,22 @@ public class AIMovement : MonoBehaviour
         {
             state = State.GoingBackToStart;           
         }
+    }
+
+     public void DazeForSeconds(int seconds)
+    {
+        isSlowed = true;
+        StartCoroutine(SlowSpeed(seconds));  
+    }
+
+    private IEnumerator SlowSpeed(int seconds)
+    {   
+        // Half speed for provided seconds
+        speed = speed / 2;
+        yield return new WaitForSeconds(seconds);
+
+        //Restore to default speed
+        speed = speed * 2;
+        isSlowed = false;
     }
 }

@@ -117,13 +117,13 @@ public class PlayAnimations : MonoBehaviour
 
         if (gameObject.tag != "Player")
         {
-            if (signX == -1)
+            if (signX == 1)
             {
                 ChangeAnimationState(walkLeft);
                 previousDirection = direction;
             }
 
-            else if (signX == 1)
+            else if (signX == -1)
             {
                 ChangeAnimationState(walkRight);
                 previousDirection = direction;

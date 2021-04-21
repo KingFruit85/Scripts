@@ -177,5 +177,11 @@ public class PlayerCombat : MonoBehaviour
             GetComponent<Ghost>().GhostBolt();
         }
 
+        if (GetComponent<Health>().currentHost == "Worm" && Input.GetMouseButtonDown(0))
+        {
+            
+            GetComponent<Worm>().PoisonBite();
+        }
+
     }
 }

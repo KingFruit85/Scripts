@@ -34,7 +34,7 @@ public class TrapArrow : MonoBehaviour
             if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));  
         }
 
-        else if (gameObject.transform.parent.name == "arrowTurret")
+        else if (gameObject.transform.parent.tag == "ArrowTurret")
         {
             direction = transform.name;
         }
