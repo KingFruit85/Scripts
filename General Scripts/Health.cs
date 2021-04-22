@@ -121,6 +121,17 @@ public class Health : MonoBehaviour
             isPhasing = GetComponent<PlayerStats>().isPhasing;
         }
 
+        // Check to see if it is an enemy 
+        if (gameObject.layer == 8)
+        {
+            switch (gameObject.tag)
+            {
+                default:throw new System.Exception("unknown recipient of damage");
+                case "Ghost": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
+                case "Worm": gameObject.GetComponent<WormAttacks>().ResetAttackDelay();break;
+            }
+        }
+
         //Probably willneed to make this flag more generic at some point, as I'm sure other hosts/enemies may have similar abilities
         if(!isPhasing)
         {

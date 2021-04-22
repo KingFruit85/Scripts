@@ -48,6 +48,11 @@ public class WormAttacks : MonoBehaviour
 
     }
 
+    public void ResetAttackDelay()
+    {
+        lastAttacked = Time.time;
+    }
+
     void SetAttackPoint()
     {
         // Set the ranges

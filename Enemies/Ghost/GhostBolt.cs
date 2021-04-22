@@ -33,7 +33,7 @@ public class GhostBolt : MonoBehaviour
             case "Player":ShootAtEnemy();break;
         }
 
-        if (Time.time >= born + lifeTime && shooter != "Player")
+        if (Time.time >= born + lifeTime)
         {
             Destroy(this.gameObject);
         }

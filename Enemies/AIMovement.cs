@@ -204,7 +204,7 @@ public class AIMovement : MonoBehaviour
         StartCoroutine(SlowSpeed(seconds));  
     }
 
-    private IEnumerator SlowSpeed(int seconds)
+    public IEnumerator SlowSpeed(int seconds)
     {   
         // Half speed for provided seconds
         speed = speed / 2;

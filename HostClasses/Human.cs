@@ -17,7 +17,7 @@ public class Human : MonoBehaviour
     public string attackRight = "Sword_Stab_Right";
     public string attackUp = "Human_Attack_Up";
     public string attackDown = "Human_Attack_Down";
-    public int swordDamage = 10;
+    public int swordDamage = 30;
     public float swordRange = 0.5f;
 
     private Rigidbody2D rb;
