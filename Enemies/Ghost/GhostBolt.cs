@@ -24,9 +24,24 @@ public class GhostBolt : MonoBehaviour
         born = Time.time;
     }
 
-    void Update()
+    void Start()
     {
         shooter = transform.parent.tag;
+
+        // Stops the bolt colliding with whoever is firing it
+        if (shooter == "Player")
+        {
+            Physics2D.IgnoreCollision(gameObject.GetComponent<BoxCollider2D>(), player.GetComponent<CapsuleCollider2D>());   
+        }
+        else
+        {
+            Physics2D.IgnoreCollision(gameObject.GetComponent<BoxCollider2D>(), transform.parent.GetComponent<CapsuleCollider2D>());   
+            
+        }
+    }
+
+    void Update()
+    {
 
         switch (shooter)
         {
@@ -61,42 +76,7 @@ public class GhostBolt : MonoBehaviour
         rb.AddForce(aim * speed);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // if (other.tag == "Wall")
-        // {
-        //     //Add animation
-        //     Destroy(this.gameObject);
-        // }
-
-        // PLayer logic
-        // LayerMask mask = LayerMask.GetMask("enemies");
-
-        // if (shooter == "Player" && other.gameObject.layer == 8)
-        // {
-        //      other.GetComponent<Health>().TakeDamage( damage, transform.parent.gameObject );
-        // }
-
-
-        // Ghost logic, should only do damage to player
-        // if (shooter == "Ghost" && other.tag == "Player")
-        // {
-        //     // If player is human and dashing dont apply damage
-        //     if (player.GetComponent<Human>() && player.GetComponent<Human>().isPlayerDashing())
-        //     {
-        //         return;
-        //     }
-
-        //     // if player not dashing apply damage
-        //     else
-        //     {
-        //         player.GetComponent<Health>().TakeDamage( damage, transform.parent.gameObject );
-        //         //add animation
-        //         Destroy(this.gameObject);
-        //     }
-
-        // }
-    }
+  
 
     void OnCollisionEnter2D(Collision2D coll)
     {
@@ -104,7 +84,6 @@ public class GhostBolt : MonoBehaviour
 
         if (other.name == "Sword")
         {
-            Debug.Log("Hit!");
             // Deflect the bolt away from the sword
             float speed = lastVelocity.magnitude;
             Vector3 direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);

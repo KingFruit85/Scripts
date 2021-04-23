@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static PlayerMovement;
 
 public class Ghost : MonoBehaviour
 {
@@ -51,6 +52,7 @@ public class Ghost : MonoBehaviour
 
     public void GhostBolt()
     {
+
         if (!isPhasing)
         {
             // should fire towards mouseclick
@@ -69,30 +71,20 @@ public class Ghost : MonoBehaviour
 
     void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.Space) && isPhasing == false && isPlayer)
         {
             sr.material.color = new Color(1f, 1f, 1f, 0.5f);
             isPhasing = true;
             GetComponent<PlayerStats>().isPhasing = true;
-
-            var doors = GameObject.FindGameObjectsWithTag("Door");
-            foreach (var door in doors)
-            {
-                door.GetComponent<Door>().isCurrentlyPhasable = true;
-            }
-
+            Physics2D.IgnoreLayerCollision(12,8,true);
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isPhasing == true && isPlayer)
         {
             sr.material.color = new Color(1f, 1f, 1f, 1f);
             isPhasing = false;
             GetComponent<PlayerStats>().isPhasing = false;
-
-            var doors = GameObject.FindGameObjectsWithTag("Door");
-            foreach (var door in doors)
-            {
-                door.GetComponent<Door>().isCurrentlyPhasable = false;
-            }
+            Physics2D.IgnoreLayerCollision(12,8,false);
 
         }
     }

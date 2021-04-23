@@ -9,7 +9,7 @@ public class HealthBar : MonoBehaviour
     public void SetMaxHealth(int health)
     {
         healthSlider.maxValue = health;
-        healthSlider.value = health;
+        // healthSlider.value = health;
         healthFill.color = gradient.Evaluate(1f); 
     }
 

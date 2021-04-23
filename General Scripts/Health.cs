@@ -59,8 +59,8 @@ public class Health : MonoBehaviour
 
     public void SwapHost(GameObject newHost, GameObject oldHost)
     {
-
-        //Remove the current host script
+        
+        //Remove the old host script
         switch (currentHost)
         {
             default:throw new System.Exception("failed to remove hurrent host script, unknown host");
@@ -99,8 +99,9 @@ public class Health : MonoBehaviour
         // Transfer health stats
         maxHealth = newHost.GetComponent<Health>().maxHealth;
         currentHealth = newHost.GetComponent<Health>().currentHealth;
-        healthBar = newHost.GetComponentInChildren<HealthBar>();
-        healthBar.SetHealth(currentHealth);
+        gameObject.GetComponentInChildren<HealthBar>().SetMaxHealth(maxHealth);
+        gameObject.GetComponentInChildren<HealthBar>().SetHealth(currentHealth);
+        
 
         //Update the current host variable
         currentHost = newHost.tag;
@@ -158,6 +159,7 @@ public class Health : MonoBehaviour
 
             RemoveHealth(damage);
             
+            healthBar = GetComponentInChildren<HealthBar>();
             healthBar.SetHealth(currentHealth);
 
             var playerIsLooking = GameObject.Find( "Player" )
