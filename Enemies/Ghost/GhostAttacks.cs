@@ -8,20 +8,9 @@ public class GhostAttacks : MonoBehaviour
     [SerializeField]
     private SpriteRenderer sr;
     private GameObject player;
-    private float attackDelay = 5.0f;
+    private float attackDelay = 1.5f;
     private float lastAttacked = -9999;
-    [SerializeField]
-    private GameObject[] trapArrows;
-    private GameObject[] playerArrows;
 
-    [SerializeField]
-    private float distanceToTrapArrow;
-    [SerializeField]
-
-    private float distanceToPlayerArrow;
-
-    [SerializeField]
-    private bool isPhasing;
 
     public void Start()
     {
@@ -71,32 +60,6 @@ public class GhostAttacks : MonoBehaviour
                 lastAttacked = Time.time;
             }            
         }
-
-        // trapArrows = GameObject.FindGameObjectsWithTag("TrapArrow");
-        // playerArrows = GameObject.FindGameObjectsWithTag("PlayerArrow");
-
-
-        // for (int i = 0; i < trapArrows.Length; i++)
-        // {
-        //     distanceToTrapArrow = Vector2.Distance(trapArrows[i].transform.position,transform.position);
-        //     distanceToPlayerArrow = Vector2.Distance(playerArrows[i].transform.position,transform.position);
-
-        //     if (distanceToTrapArrow < 3.5f || distanceToPlayerArrow < 3.5)
-        //     {
-        //         isPhasing = true;
-        //         sr.material.color = new Color(1f, 1f, 1f, 0.5f);
-        //         gameObject.GetComponent<CapsuleCollider2D>().isTrigger = true;
-        //     }
-        //     else
-        //     {
-        //         isPhasing = false;
-        //         sr.material.color = new Color(1f, 1f, 1f, 1f);
-        //         gameObject.GetComponent<CapsuleCollider2D>().isTrigger = false;
-
-        //     }
-
-
-        // }
         
     }
 }
