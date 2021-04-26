@@ -12,7 +12,7 @@ public class ArrowTrap : MonoBehaviour
 
     void Start()
     {
-        active = true;
+        // active = true;
 
         if (shootUp) direction = "up"; spawnPOS = new Vector3(0,1); 
         if (shootDown) direction = "down"; spawnPOS = new Vector3(0,-1);
@@ -28,6 +28,20 @@ public class ArrowTrap : MonoBehaviour
     public void Activate()
     {
         active = true;
+    }
+
+    public void ActivateOnce()
+    {
+        active = true;
+
+        //just shoot one arrow for traps and stuff
+        GameObject a = Instantiate(arrow,
+                                       transform.position,
+                                       Quaternion.identity)
+                                       as GameObject;
+
+        a.transform.parent = transform;
+        active = false;
     }
 
     public string GetDirection()

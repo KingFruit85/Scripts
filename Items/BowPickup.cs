@@ -33,6 +33,7 @@ public class BowPickup : MonoBehaviour
             a.name = "BowAim";
             //Updates the gameobject variable in <Human>
             player.GetComponent<Human>().bowAim = a;
+            player.GetComponent<Human>().bow = a.transform.Find("Bow").gameObject;
             //Resets the scale, for some reason it spawns tiny on the player without this. Probably just need to change the scale on teh sprite but I'm being lazy
             player.GetComponent<Human>().bowAim.transform.localScale =  new Vector3(1.2f,1.2f,0);
             //Sets it as false for now as we don't want to see the sprite unless we equip it

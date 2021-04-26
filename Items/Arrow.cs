@@ -60,7 +60,7 @@ public class Arrow : MonoBehaviour
         {
             var speed = lastVelocity.magnitude;
             var direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);
-            rb.velocity = direction * speed / 2;
+            rb.velocity = direction * speed * 2;
         }
         
         else if (coll.gameObject.tag == "Wall")

@@ -14,21 +14,9 @@ public class HealthPotion : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            var player = GameObject.Find("Player")
-                                   .GetComponent<Health>();
-
-            if (player.currentHealth < player.maxHealth)
-            {
-                if ((player.currentHealth + HealthAmount) > player.maxHealth)
-                {
-                    player.currentHealth = player.maxHealth;
-                }
-                else
-                {
-                    player.AddHealth(HealthAmount); 
-                }
-                Destroy(gameObject);
-            }
+            var player = other.gameObject.GetComponent<Health>();
+            player.AddHealth(HealthAmount); 
+            Destroy(gameObject);
         }
     }
 }

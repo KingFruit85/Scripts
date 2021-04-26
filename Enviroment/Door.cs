@@ -5,11 +5,21 @@ public class Door : MonoBehaviour
     public bool openTrigger;
     public Sprite closedDoor;
     public Sprite openDoor;
-    public bool isCurrentlyPhasable = false;
+
+    public bool startOpen, startClosed;
+
+
 
     void Awake()
     {
-        GetComponent<SpriteRenderer>().sprite = closedDoor;
+        if (startOpen)
+        {
+            OpenDoor();
+        }
+        else
+        {
+            CloseDoor();
+        }
     }
     public void OpenDoor()
     {
@@ -17,18 +27,13 @@ public class Door : MonoBehaviour
             GetComponent<BoxCollider2D>().enabled = false;
     }
 
-    void Update()
+    public void CloseDoor()
     {
-        if (isCurrentlyPhasable)
-        {
-            GetComponent<BoxCollider2D>().isTrigger = true;
-        }
-
-        if (!isCurrentlyPhasable)
-        {
-            GetComponent<BoxCollider2D>().isTrigger = false;
-        }
+            GetComponent<SpriteRenderer>().sprite = closedDoor;
+            GetComponent<BoxCollider2D>().enabled = true;
     }
+
+  
 
 
 

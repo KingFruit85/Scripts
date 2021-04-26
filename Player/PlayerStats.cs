@@ -70,19 +70,28 @@ public class PlayerStats : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             ChangeHostBody("Worm");
-            GameObject.Find("SwordAim").SetActive(false);
+            if (GameObject.Find("SwordAim") != null)
+            {
+                GameObject.Find("SwordAim").SetActive(false);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.G))
         {
             ChangeHostBody("Ghost");
-            GameObject.Find("SwordAim").SetActive(false);
+            if (GameObject.Find("SwordAim") != null)
+            {
+                GameObject.Find("SwordAim").SetActive(false);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.H))
         {
             ChangeHostBody("Human");
-            GameObject.Find("SwordAim").SetActive(true);
+            if (GameObject.Find("SwordAim") != null)
+            {
+                GameObject.Find("SwordAim").SetActive(true);
+            }
         }
     }
 

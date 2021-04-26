@@ -5,21 +5,20 @@ public class Health : MonoBehaviour
 {
     public int maxHealth;
     public int currentHealth;
+    public string currentHost;
+
     public HealthBar healthBar;
-    private Rigidbody2D rb;
     public SpriteRenderer sr;
     public GameObject lastHitBy;
 
-    public string currentHost;
 
     void Awake()
     {
+        sr = GetComponent<SpriteRenderer>();
+
         currentHealth = maxHealth;
         healthBar = GetComponentInChildren<HealthBar>();
         healthBar.SetMaxHealth(maxHealth);
-
-        rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
 
         if (gameObject.tag == "Player")
         {
@@ -29,10 +28,16 @@ public class Health : MonoBehaviour
 
     public void AddHealth(int amount)
     {
-        if (currentHealth < maxHealth)
+        if (currentHealth + amount < maxHealth)
         {
             currentHealth += amount;
         }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+
+        healthBar.SetHealth(currentHealth);
     }
 
     public void RemoveHealth(int amount)
@@ -47,8 +52,7 @@ public class Health : MonoBehaviour
                     default:FindObjectOfType<GameManager>().EndGame();break;
                     case "Ghost":SwapHost(lastHitBy, transform.gameObject);break;
                     case "Worm":SwapHost(lastHitBy, transform.gameObject);break;
-                }
-                
+                }   
             }
             else
             {
@@ -159,8 +163,7 @@ public class Health : MonoBehaviour
 
             RemoveHealth(damage);
             
-            healthBar = GetComponentInChildren<HealthBar>();
-            healthBar.SetHealth(currentHealth);
+            gameObject.GetComponentInChildren<HealthBar>().SetHealth(currentHealth);
 
             var playerIsLooking = GameObject.Find( "Player" )
                                    .GetComponent<PlayerMovement>()
@@ -185,14 +188,7 @@ public class Health : MonoBehaviour
         {   
             //Is immune to damage
             return;
-        }
-
-
-
-        
-
-        
-         
+        } 
     }
 
     private IEnumerator FlashColor(Color color, float duration)

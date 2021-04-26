@@ -5,6 +5,7 @@ using UnityEngine;
 public class AddRoom : MonoBehaviour
 {
     private RoomTemplates templates;
+    public bool up,down,left,right;
 
     void Start()
     {

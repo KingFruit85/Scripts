@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static PlayerMovement;
 
 public class Ghost : MonoBehaviour
 {
@@ -28,7 +27,6 @@ public class Ghost : MonoBehaviour
             //Due to the sprite scaling when you change from a human to a ghost the capsule collider is too large to move horizontally though 1 unit tall corridors
             GetComponent<CapsuleCollider2D>().size = new Vector2(0.1f,0.2f);
             isPlayer = true;
-
         }
 
         isPhasing = false;
@@ -77,7 +75,11 @@ public class Ghost : MonoBehaviour
             sr.material.color = new Color(1f, 1f, 1f, 0.5f);
             isPhasing = true;
             GetComponent<PlayerStats>().isPhasing = true;
+            //Can pass through enemies
             Physics2D.IgnoreLayerCollision(12,8,true);
+            //Does not pick up items
+            Physics2D.IgnoreLayerCollision(12,10,true);
+
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isPhasing == true && isPlayer)
         {
@@ -85,6 +87,8 @@ public class Ghost : MonoBehaviour
             isPhasing = false;
             GetComponent<PlayerStats>().isPhasing = false;
             Physics2D.IgnoreLayerCollision(12,8,false);
+            Physics2D.IgnoreLayerCollision(12,10,false);
+
 
         }
     }

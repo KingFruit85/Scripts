@@ -5,8 +5,11 @@ public class Rune : MonoBehaviour
     public Sprite deactivatedSprite;
     public Sprite activatedSprite;
     public GameObject myUnlock;
+    public FlameBowl flameBowl;
+    public Barrier[] barriers;
     private SpriteRenderer SR;
-    public int MyCode;
+    public string MyCode;
+    public GameObject myTrap;
 
     void Awake()
     {
@@ -21,6 +24,22 @@ public class Rune : MonoBehaviour
             SR.sprite = activatedSprite;
             myUnlock.GetComponent<Barrier>()
                     .SubmitCode(MyCode);
+        }
+
+        if (flameBowl)
+        {
+            flameBowl.Light();
+        }
+    }
+
+    void UnlockBarriers()
+    {
+        if (barriers != null || barriers.Length > 0)
+        {
+            foreach (var barrier in barriers)
+            {
+                Destroy(barrier);
+            }
         }
     }
 

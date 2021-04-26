@@ -2,11 +2,11 @@
 
 public class FlameBowl : MonoBehaviour
 {
-   private Animator anim;
+   public Animator anim;
    void Awake()
    {
        anim = GetComponent<Animator>();
-       Light();
+       UnLight();
    }
 
    public void Light()
