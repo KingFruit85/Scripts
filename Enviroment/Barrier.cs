@@ -18,7 +18,11 @@ public class Barrier : MonoBehaviour
 
     public void SubmitCode(string code)
     {
-        submittedCode.Add(code);
+        // gate to stop same rune being submitted twice
+        if (!submittedCode.Contains(code))
+        {
+            submittedCode.Add(code);  
+        }
     }
 
     void Update()
@@ -28,7 +32,6 @@ public class Barrier : MonoBehaviour
             //Play a success sound?
             gameObject.SetActive(false);
             isBarrierDown = true;
-            Debug.Log("Right Code");
 
             if (door)
             {
@@ -48,7 +51,6 @@ public class Barrier : MonoBehaviour
         if(submittedCode.Count == unlockCode.Count && !unlockCode.SequenceEqual(submittedCode))
         {
             //Play a sound indicating failure maybe?
-            Debug.Log("Wrong Code");
             Debug.Log(submittedCode.Count);
             // If there is a trap linked up to the rune fire it
             switch (submittedCode[submittedCode.Count-1])
@@ -61,6 +63,7 @@ public class Barrier : MonoBehaviour
             }
             
             // Reset the runes so player can try again
+            // Checks if it has a linked flamebowl and resets that also
             if (redRune)
             {
                 redRune.GetComponent<Rune>().ResetRune();

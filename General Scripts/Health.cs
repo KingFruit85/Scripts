@@ -10,6 +10,9 @@ public class Health : MonoBehaviour
     public HealthBar healthBar;
     public SpriteRenderer sr;
     public GameObject lastHitBy;
+    public GameObject currentRoom;
+
+    public bool isBoss;
 
 
     void Awake()
@@ -24,6 +27,8 @@ public class Health : MonoBehaviour
         {
             currentHost = GetComponent<PlayerStats>().currentHost;
         }
+
+        isBoss = false;
     }
 
     public void AddHealth(int amount)
@@ -201,6 +206,11 @@ public class Health : MonoBehaviour
     private bool isDead = false;
     void Die()
     {
+        if (isBoss)
+        {
+            currentRoom.GetComponent<AddRoom>().SpawnExit();
+        }
+
         if (!isDead && gameObject.name != "Player")
         {
             isDead = true;
@@ -244,6 +254,10 @@ public class Health : MonoBehaviour
 
     void Update()
     {
+        if (isBoss)
+        {
+            sr.color = new Color(156,21,21,255);
+        }
         if (currentHealth <= 0)
         {
             Die();
