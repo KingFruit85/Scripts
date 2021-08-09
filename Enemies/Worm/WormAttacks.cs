@@ -108,7 +108,7 @@ public class WormAttacks : MonoBehaviour
                 {
                     if ( enemy != null )
                     {
-                        enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject);    
+                        enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject, "WormPoison", false);    
                         enemy.GetComponent<PlayerMovement>().DazeForSeconds(2);
                     } 
                 }

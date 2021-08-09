@@ -14,10 +14,16 @@ public class PlayAnimations : MonoBehaviour
     public Vector2 previousDirection;
     private Rigidbody2D rb;
     private Vector2 movement;
-    private AIMovement AIMovement;  
+    private AIMovement AIMovement;
+    private GameManager gameManager;  
     public Human human;
     public Ghost ghost;
+    public GhostBossAttacks ghostBoss;
     public Worm worm;
+        public Vector3 previousPosition;
+    public Vector3 currentMovementDirection;
+    public int signX;
+    public int signY;
 
 
     void Awake()
@@ -25,6 +31,7 @@ public class PlayAnimations : MonoBehaviour
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         human = GetComponent<Human>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
 
         if (TryGetComponent(out AIMovement aim))
@@ -32,73 +39,8 @@ public class PlayAnimations : MonoBehaviour
             AIMovement = GetComponent<AIMovement>();
         }
     }
+  
 
-
-    public void SetPlayerKnockedAnimation()
-    {
-
-        if (gameObject.tag == "Player" && TryGetComponent(out BowPickup bp))
-        {
-            idleLeft = "Human_KnockArrow_Left";
-            idleRight = "Human_KnockArrow_Right";
-            walkLeft = "Human_KnockArrow_Left";
-            walkRight = "Human_KnockArrow_Right"; 
-        }
-
-        if (gameObject.tag == "Player" && TryGetComponent(out GoldBowPickup gbp))
-        {
-            idleLeft = "Human_KnockArrowGOLD_Left";
-            idleRight = "Human_KnockArrowGOLD_Right";
-            walkLeft = "Human_KnockArrowGOLD_Left";
-            walkRight = "Human_KnockArrowGOLD_Right"; 
-        }
-    }
-
-    public void ResetHumanAnimations()
-    {
-        idleLeft = human.idleLeft;
-        idleRight = human.idleRight;
-        walkLeft = human.walkLeft;
-        walkRight = human.walkRight;  
-    }
-
-    public void ResetGhostAnimations()
-    {
-        idleLeft = ghost.idleLeft;
-        idleRight = ghost.idleRight;
-        walkLeft = ghost.walkLeft;
-        walkRight = ghost.walkRight;  
-    }
-
-    public void ResetWormAnimations()
-    {
-        idleLeft = worm.idleLeft;
-        idleRight = worm.idleRight;
-        walkLeft = worm.walkLeft;
-        walkRight = worm.walkRight;  
-    }
-
-    public void ResetPlayerAnimations()
-    {
-        switch (GetComponent<PlayerStats>().currentHost)
-        {
-            default:
-            case "Human": ResetHumanAnimations();break;
-            case "Ghost": ResetGhostAnimations();break;
-            case "Worm" : ResetWormAnimations();break;
-        }
-    }
-
-    public void resetBoolTriggers()
-    {
-        animator.SetBool("WalkLeft", false);
-        animator.SetBool("WalkRight", false);
-    }
-
-    public Vector3 previousPosition;
-    public Vector3 currentMovementDirection;
-    public int signX;
-    public int signY;
 
     public void Update()
     {

@@ -145,7 +145,26 @@ public class AIMovement : MonoBehaviour
 
     public void KnockBack(string direction)
     {
-        StartCoroutine(Knock(direction));
+        if (!GetComponent<Health>().isBoss)
+        {
+            StartCoroutine(Knock(direction));
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    public void KnockBack(PlayerMovement.Looking direction)
+    {
+        var knockDirection = "";
+
+        if (direction == PlayerMovement.Looking.Left) knockDirection = "Left";
+        if (direction == PlayerMovement.Looking.Right) knockDirection = "Right";
+        if (direction == PlayerMovement.Looking.Up) knockDirection = "Up";
+        if (direction == PlayerMovement.Looking.Down) knockDirection = "Down";
+
+        StartCoroutine(Knock(knockDirection));
     }
 
     public IEnumerator Knock(string direction)

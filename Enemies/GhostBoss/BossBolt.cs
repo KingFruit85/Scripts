@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
-public class GhostBolt : MonoBehaviour
+public class BossBolt : MonoBehaviour
 {
     public float speed;
-    public int damage = 10;
+    public int damage = 1;
     private Rigidbody2D rb;
     private GameObject player;
     private Vector3 aim;
     private Vector3 playerMouseClick;
 
     private float born;
-    private float lifeTime = 0.5f;
+    private float lifeTime = 4.5f;
 
     public string shooter;
     private Vector3 lastVelocity;
@@ -69,6 +69,7 @@ public class GhostBolt : MonoBehaviour
         if (deflected)
         {
             damage = 0;
+            Destroy(this.gameObject, 0.1f);
         }
     }
 
@@ -81,7 +82,37 @@ public class GhostBolt : MonoBehaviour
 
     private void ShootAtPlayer()
     {
-        aim = (player.transform.position - transform.position).normalized;
+
+        var r = Random.Range(0,5);
+        var target = player.transform.position;
+        var looking = player.GetComponent<PlayerMovement>().looking;
+        var moving = player.GetComponent<PlayerMovement>().isMoving;
+
+        if (moving)
+        {
+            switch (player.GetComponent<PlayerMovement>().looking)
+            {
+            case PlayerMovement.Looking.Left: 
+                target.x =- r; 
+                break;
+
+            case PlayerMovement.Looking.Right:
+                target.x += r;
+                break;
+
+            case PlayerMovement.Looking.Up:
+                target.y += r;
+                break;
+
+            case PlayerMovement.Looking.Down:
+                target.y -= r;
+                break;
+            }
+        }
+        
+        
+
+        aim = (target - transform.position).normalized;
         rb.AddForce(aim * speed);
     }
 
@@ -93,22 +124,23 @@ public class GhostBolt : MonoBehaviour
 
         if (other.name == "Sword")
         {
-            // Deflect the bolt away from the sword
-
-            string[] deflects = new string[]{"SwordGhostBoltDeflect1","SwordGhostBoltDeflect2","SwordGhostBoltDeflect3","SwordGhostBoltDeflect4",
-                                             "SwordGhostBoltDeflect5","SwordGhostBoltDeflect6","SwordGhostBoltDeflect7"};
-
-            int rand = Random.Range(0, deflects.Length);
-
-            audioManager.Play(deflects[rand]);
-            
-            float speed = lastVelocity.magnitude;
-            Vector3 direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);
-            rb.velocity = direction * speed * 2;
-            deflected =  true;
+            Destroy(this.gameObject);
         }
 
         if (other.tag == "Wall")
+        {
+            var r = Random.Range(0,100);
+
+            if (r == 99)
+            {
+                GameObject x = Instantiate(Resources.Load("Ghost"),transform.position,Quaternion.identity) as GameObject;
+                x.GetComponent<Health>().SetSpriteColor(Color.black);
+            }
+
+            Destroy(this.gameObject);
+        }
+
+        if (other.tag == "PlayerArrow")
         {
             //Add animation
             Destroy(this.gameObject);
@@ -123,7 +155,7 @@ public class GhostBolt : MonoBehaviour
         }
 
         // Ghost logic, should only do damage to player and if shot is deflected do no damage
-        if (shooter == "Ghost" && other.tag == "Player" && !deflected)
+        if (other.tag == "Player" && !deflected)
         {
             // If player is human and dashing dont apply damage
             if (player.GetComponent<Human>() && player.GetComponent<Human>().isPlayerDashing())

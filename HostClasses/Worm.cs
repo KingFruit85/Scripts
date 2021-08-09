@@ -23,11 +23,8 @@ public class Worm : MonoBehaviour
     private PlayAnimations pa;
     private SpriteRenderer sr;
     private Animator am;
-
-
-
     private float attackRange = 0.4f;
-    private int attackDamage = 5;
+    public int attackDamage = 5;
 
     private Vector2 attackPointLeft;
     private Vector2 attackPointRight;
@@ -39,10 +36,11 @@ public class Worm : MonoBehaviour
 
     void Awake()
     {
-        if (transform.tag == "Player")
+        if (gameObject.tag == "Player")
         {
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
             enemyLayers = LayerMask.GetMask("enemies");
+            GameObject.Find("GameManager").GetComponent<GameManager>().currentHost = "Worm";
         }
         else
         {
@@ -146,7 +144,7 @@ public class Worm : MonoBehaviour
                 {
                     if ( enemy != null )
                     {
-                        enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject);   
+                        enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject, "WormPoison", false);   
                         //Need to add slow for enemies 
                         if (enemy.tag == "Player")
                         {

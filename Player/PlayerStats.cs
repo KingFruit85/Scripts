@@ -1,135 +1,104 @@
-﻿using UnityEngine;
+﻿// using UnityEngine;
 
-public class PlayerStats : MonoBehaviour
-{
-    public int XP;
-    [SerializeField]
-    private int arrowCount;
-    private int coinCount;
-    private GameObject player;
-    public string currentHost;
-    public bool isPhasing = false;
+// public class PlayerStats : MonoBehaviour
+// {
 
-    void Awake()
-    {
-        // Player always starts as human
-        gameObject.AddComponent<Human>();
-        currentHost = "Human";
-    }
 
-    //For testing use
-    void ChangeHostBody(string newHost)
-    {
+//     private string currentHost;
 
-        if (newHost != currentHost)
-        {
-            // Remove the current host script
-            switch (currentHost)
-            {
-                default: throw new System.Exception("Unable to remove currentHost");
+//     void Awake()
+//     {
+//         // Player always starts as human
+//         gameObject.AddComponent<Human>();
 
-                case "Human" : Destroy(gameObject.GetComponent<Human>());break; 
-                case "Ghost" : Destroy(gameObject.GetComponent<Ghost>());break;
-                case "Worm"  : Destroy(gameObject.GetComponent<Worm>());break;
-            }
+//         currentHost = GameObject.Find("GameManager").GetComponent<GameManager>().currentHost;
 
-            // Add new host script
-            switch (newHost)
-            {
-                default: throw new System.Exception("newHost not recognised");
+//         // PlayerPrefs.SetString("currentHost", currentHost);
 
-                case "Human" : 
-                    gameObject.AddComponent<Human>();
-                    gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Human>().idleDown);
-                    gameObject.GetComponent<PlayAnimations>().human = GetComponent<Human>();
-                    currentHost = "Human";
-                    break; 
+//         // GetComponent<Health>().currentHost = currentHost;
+//     }
 
-                case "Ghost" : 
-                    gameObject.AddComponent<Ghost>();
-                    gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Ghost>().idleDown);
-                    gameObject.GetComponent<PlayAnimations>().ghost = GetComponent<Ghost>();
-                    currentHost = "Ghost";
-                    break;
+//     //For testing use
+//     void ChangeHostBody(string newHost)
+//     {
 
-                case "Worm"  : 
-                    gameObject.AddComponent<Worm>();
-                    gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Worm>().idleDown);
-                    gameObject.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
-                    currentHost = "Worm";
-                    break;
-            }
+//         if (newHost != currentHost)
+//         {
+//             // Remove the current host script
+//             switch (currentHost)
+//             {
+//                 default: throw new System.Exception("Unable to remove currentHost");
 
-            gameObject.GetComponent<Health>().currentHost = newHost;
+//                 case "Human" : Destroy(gameObject.GetComponent<Human>());break; 
+//                 case "Ghost" : Destroy(gameObject.GetComponent<Ghost>());break;
+//                 case "Worm"  : Destroy(gameObject.GetComponent<Worm>());break;
+//             }
 
-        }    
-    }
+//             // Add new host script
+//             switch (newHost)
+//             {
+//                 default: throw new System.Exception("newHost not recognised");
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            ChangeHostBody("Worm");
-            if (GameObject.Find("SwordAim") != null)
-            {
-                GameObject.Find("SwordAim").SetActive(false);
-            }
-        }
+//                 case "Human" : 
+//                     gameObject.AddComponent<Human>();
+//                     gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Human>().idleDown);
+//                     gameObject.GetComponent<PlayAnimations>().human = GetComponent<Human>();
+//                     currentHost = "Human";
+//                     break; 
 
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            ChangeHostBody("Ghost");
-            if (GameObject.Find("SwordAim") != null)
-            {
-                GameObject.Find("SwordAim").SetActive(false);
-            }
-        }
+//                 case "Ghost" : 
+//                     gameObject.AddComponent<Ghost>();
+//                     gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Ghost>().idleDown);
+//                     gameObject.GetComponent<PlayAnimations>().ghost = GetComponent<Ghost>();
+//                     currentHost = "Ghost";
+//                     break;
 
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            ChangeHostBody("Human");
-            if (GameObject.Find("SwordAim") != null)
-            {
-                GameObject.Find("SwordAim").SetActive(true);
-            }
-        }
-    }
+//                 case "Worm"  : 
+//                     gameObject.AddComponent<Worm>();
+//                     gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Worm>().idleDown);
+//                     gameObject.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
+//                     currentHost = "Worm";
+//                     break;
+//             }
+//             PlayerPrefs.SetString("currentHost", newHost);
 
-    public void AddXP(int xp)
-    {
-        XP += xp;
-    }
+//             gameObject.GetComponent<Health>().currentHost = newHost;
 
-    public void AddArrows(int arrows)
-    {
-        arrowCount += arrows;
-    }
+//         }    
+//     }
 
-    public void RemoveArrows(int arrows)
-    {
-        arrowCount -= arrows;
-    }
+//     void Update()
+//     {
 
-    public int getArrowCount()
-    {
-        return arrowCount;
-    }
 
-    public void AddCoins(int coins)
-    {
-        coinCount += coins;
-    }
 
-    public void RemoveCoins(int coins)
-    {
-        coinCount -= coins;
-    }
+//         if (Input.GetKeyDown(KeyCode.C))
+//         {
+//             ChangeHostBody("Worm");
+//             if (GameObject.Find("SwordAim") != null)
+//             {
+//                 GameObject.Find("SwordAim").SetActive(false);
+//             }
+//         }
 
-    public int getCoinCount()
-    {
-        return coinCount;
-    }
+//         if (Input.GetKeyDown(KeyCode.G))
+//         {
+//             ChangeHostBody("Ghost");
+//             if (GameObject.Find("SwordAim") != null)
+//             {
+//                 GameObject.Find("SwordAim").SetActive(false);
+//             }
+//         }
+
+//         if (Input.GetKeyDown(KeyCode.H))
+//         {
+//             ChangeHostBody("Human");
+//             if (GameObject.Find("SwordAim") != null)
+//             {
+//                 GameObject.Find("SwordAim").SetActive(true);
+//             }
+//         }
+//     }
 
     
-    
-}
+// }

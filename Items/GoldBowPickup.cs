@@ -77,7 +77,7 @@ public class GoldBowPickup : MonoBehaviour
         if (playerIsLooking == PlayerMovement.Looking.Down) a.transform.Rotate(new Vector3(0,0,-90));  
 
         //Remove 1 arrow from the player inventory
-        player.GetComponent<PlayerStats>().RemoveArrows(1);
+        GameObject.Find("GameManager").GetComponent<GameManager>().RemoveArrows(1);
         
     }
 
@@ -91,7 +91,7 @@ public class GoldBowPickup : MonoBehaviour
                 Destroy(player.GetComponent<BowPickup>());
             }
             
-            player.GetComponent<PlayerStats>().AddArrows(5);
+            GameObject.Find("GameManager").GetComponent<GameManager>().AddArrows(5);
             player.AddComponent<GoldBowPickup>();
             player.GetComponent<GoldBowPickup>().arrow = Resources.Load("goldarrow") as GameObject;
             player.GetComponent<PlayerCombat>().SetRangedWeaponEquipped(true);

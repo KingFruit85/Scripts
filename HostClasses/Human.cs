@@ -6,40 +6,77 @@ public class Human : MonoBehaviour
 {
     public string idleLeft = "Human_Idle_Left";
     public string idleRight = "Human_Idle_Right";
+
     public string walkLeft = "Human_Walk_Left";
     public string walkRight = "Human_Walk_Right";
     public string walkUp = "Human_Move_Up";
     public string walkDown = "Human_Move_Down";
+
+    public string walkDownBloodied = "Human_Move_Down_Bloodied";
+    public string walkUpBloodied = "Human_Move_Up_Bloodied";
+    public string walkLeftBloodied = "Human_Move_Left_Bloodied";
+    public string walkRightBloodied = "Human_Move_Right_Bloodied";
+
     public string idleUp = "Human_Idle_Up";
     public string idleDown = "Human_Idle_Down";
-    public string death;
+    public string death = "Human_Death";
     public string attackLeft = "Sword_Stab_Left";
     public string attackRight = "Sword_Stab_Right";
     public string attackUp = "Human_Attack_Up";
     public string attackDown = "Human_Attack_Down";
-    public int swordDamage = 30;
-    public float swordRange = 0.5f;
+    
 
     private Rigidbody2D rb;
     private Animator playerAnim;
     private PlayAnimations pa;
     public Animator swordAnim;
     private Shaker shaker;
-    public float moveSpeed = 5;
     public GameObject swordAim;
     public GameObject bowAim;
     public GameObject sword;
     public GameObject bow;
     public GameObject player;
+    private AudioManager audioManager;
+    private GameManager gameManager;
+
     public bool SwordEquipped = true;
     public bool BowEquipped = false;
+    public float moveSpeed = 5;
+    public int swordDamage = 30;
+    public float swordRange = 0.5f;
+
+    public int arrowDamage = 10;
+    public int arrowSpeed = 10;
+
+
+    public int critModifier = 2;
 
     void Awake()
     {
+            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+            if (gameManager.rangedWeaponEquipped)
+            {
+                var BowPickup = Resources.Load("BowPickup") as GameObject;
+                GameObject x = Instantiate(BowPickup,transform.position,Quaternion.identity);
+
+                x.GetComponent<BowPickup>().AddBowToPlayer();
+                Destroy(x);
+            }
+
+            
+    }
+
+    void Start()
+    {
+        gameManager.currentHost = "Human";
+
         rb = GetComponent<Rigidbody2D>();
         playerAnim = GetComponent<Animator>();
         shaker = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>();
-        player = GameObject.Find("Player");
+        player = GameObject.FindGameObjectWithTag("Player");
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+
 
         //This is the current set up i'm using for the weapons, needs improvement
         GameObject swordLoad = 
@@ -50,6 +87,7 @@ public class Human : MonoBehaviour
                             as GameObject;
                             swordLoad.transform.parent = transform;;
                             swordLoad.name = "SwordAim";
+
         swordAim = gameObject.transform.Find("SwordAim").gameObject;
 
         sword = swordAim.transform.GetChild(0).gameObject;                           
@@ -148,23 +186,23 @@ public class Human : MonoBehaviour
         {
             default: throw new System.Exception("PlayerMovement.Looking state not valid");
             case PlayerMovement.Looking.Left:
-                swordAnim.Play(attackLeft);
-                shaker.CombatShaker("Left");
+                // swordAnim.Play(attackLeft);
+                // shaker.CombatShaker("Left");
                 break;
                 
             case PlayerMovement.Looking.Right:
-                swordAnim.Play(attackRight);
-                shaker.CombatShaker("Right");
+                // swordAnim.Play(attackRight);
+                // shaker.CombatShaker("Right");
                 break;
 
             case PlayerMovement.Looking.Up:
-                swordAnim.Play(attackUp);
-                shaker.CombatShaker("Up");
+                // swordAnim.Play(attackUp);
+                // shaker.CombatShaker("Up");
                 break;
 
             case PlayerMovement.Looking.Down:
-                swordAnim.Play(attackDown);
-                shaker.CombatShaker("Down");
+                // swordAnim.Play(attackDown);
+                // shaker.CombatShaker("Down");
                 break;
         }   
         // Detect enemies in range of attack
@@ -173,25 +211,48 @@ public class Human : MonoBehaviour
         // Damage them
         foreach (Collider2D enemy in hitEnemies)
         {
+            bool isCrit = false;
+
             if (enemy.GetComponent<Health>())
-            enemy.GetComponent<Health>().TakeDamage(swordDamage, transform.gameObject);   
+            {
+                int dammageToApply = swordDamage + gameManager.meleeAttackBonus;
+                var random = Random.Range(0,11);
+
+                // Check if critical hit
+                if (random == 10)
+                {
+                    dammageToApply *= critModifier;
+                    isCrit = true;
+                }
+                   
+
+                enemy.GetComponent<Health>().TakeDamage(dammageToApply, transform.gameObject,"PlayerSword", isCrit);  
+                
+                string[] swordHits = new string[]{"SwordHit","SwordHit1","SwordHit2","SwordHit3","SwordHit4","SwordHit5","SwordHit6"};
+                int rand = Random.Range(0, swordHits.Length);
+
+                audioManager.Play(swordHits[rand]);
+
+            }
+            else
+            {
+                
+                audioManager.Play("SwordMiss");
+
+            }
         }
     }
 
-    public void BowAttack(string bow)
+    public void BowAttack(Vector3 mouseClickPosition)
     {
-        switch (bow)
-        {
-            default: throw new System.Exception("Supplied bow name not recognised");
-            
-            case "Short Bow":
-                // GetComponent<BowPickup>().ShootBow();
-                break;
+        player.transform.GetComponentInChildren<ShortBow>().ShootBow(mouseClickPosition);
+    }
 
-            case "Gold Bow":
-                GetComponent<GoldBowPickup>().ShootBow();
-                break;
-        }
+    public void disableAllWeapons()
+    {
+        SwordEquipped = false;
+        BowEquipped = false;
+        
     }
 
     void Update()
@@ -273,6 +334,7 @@ public class Human : MonoBehaviour
                 bowAim.SetActive(false);
                 bow.SetActive(false);
                 BowEquipped = false;
+                gameManager.rangedWeaponEquipped = false;
             }  
         }
 
@@ -285,6 +347,7 @@ public class Human : MonoBehaviour
             if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
             {
                 BowEquipped = true;
+                gameManager.rangedWeaponEquipped = true;
                 bowAim.SetActive(true);
                 bow.SetActive(true);
                 player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Bow");

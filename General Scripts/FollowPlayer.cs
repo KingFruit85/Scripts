@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FollowPlayer : MonoBehaviour
 {
@@ -8,11 +9,30 @@ public class FollowPlayer : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     [SerializeField]
     private Vector3 offset = new Vector3(0,0,-1);
+    Scene scene;
 
     void Awake()
     {
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        // the PCG scene uses the roomtemplates script to set the player transform 
+        // in the camera as the player spawn is slightly delayed, this is just
+        // a work around for the shop level where we don't want the roomtemplates
+        // script active
+        scene = SceneManager.GetActiveScene();
+        
+        if(scene.name == "shop")
+        {
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
     }
+
+    void Update()
+    {
+        if (target == null)
+        {
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+    }
+
     void LateUpdate()
     {
         Vector3 desiredPosition = target.position + offset;

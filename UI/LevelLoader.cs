@@ -5,29 +5,44 @@ using UnityEngine.SceneManagement;
 
 public class LevelLoader : MonoBehaviour
 {
+    public static LevelLoader instance;
     public Animator transition;
     public float transitionTime = 1f;
-    public bool LoadNextLevelFlag = false;
 
-    void Update()
+    void Awake()
     {
-        if(LoadNextLevelFlag)
+        if (instance == null)
         {
-            LoadNextLevel();
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
         }
     }
 
+
     public void LoadNextLevel()
     {   
-        LoadNextLevelFlag = false;
-        StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+        // Get next level by incrementing the current level's index
+        // StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
 
         //Can also request a specific scene as a string
-        // SceneManager.LoadScene("Level 1");
+        SceneManager.LoadScene("PCG");
 
         // Or as a scene index
         // SceneManager.LoadScene(1);
+    }
 
+    public void LoadPCG()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void LoadNextLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
     }
 
     IEnumerator LoadLevel(int LevelIndex)
@@ -38,4 +53,6 @@ public class LevelLoader : MonoBehaviour
 
         SceneManager.LoadScene(LevelIndex);
     }
+
+
 }

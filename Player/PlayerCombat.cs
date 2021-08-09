@@ -6,7 +6,6 @@ public class PlayerCombat : MonoBehaviour
     private SpriteRenderer SR;
     [SerializeField]
     private string currentSprite;
-    public float attackRange = 0.5f;
     public Animator an;
     public string rangedWeaponName;
     public string equippedWeaponName;
@@ -17,11 +16,10 @@ public class PlayerCombat : MonoBehaviour
     private int arrowDamage = 10;
     private float rangedAttackDelay = 0.5f;
     private Shaker shaker;
-    private bool arrowKnocked = false;
     private PlayerMovement.Looking playerIsLooking;
     private PlayAnimations pa;
+    private GameManager gameManager;
 
-    public PlayerStats PS { get; private set; }
 
     void Start()
     {
@@ -29,6 +27,7 @@ public class PlayerCombat : MonoBehaviour
         SR = GetComponent<SpriteRenderer>();
         an = GetComponent<Animator>();
         pa = GetComponent<PlayAnimations>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         shaker = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>();
         equippedWeaponName = "Short Sword";
     }
@@ -41,6 +40,7 @@ public class PlayerCombat : MonoBehaviour
     public void SetRangedWeaponEquipped(bool x)
     {
         rangedWeaponEquipped = x;
+        GameObject.Find("GameManager").GetComponent<GameManager>().rangedWeaponEquipped = true;
     }
 
     private void SetCurrentSprite()
@@ -57,71 +57,26 @@ public class PlayerCombat : MonoBehaviour
 
     void Attack()
     {
-        switch (GetComponent<Health>().currentHost)
+        switch (gameManager.currentHost)
         {
             default: throw new System.Exception("currentHost value not recognised");
-            case "Human":GetComponent<Human>().SwordAttack();break;
-            case "Ghost":GetComponent<Ghost>().GhostBolt();break;
-            case "Worm" :GetComponent<Worm>().PoisonBite();break;
-        }        
-    }
-
-    void KnockArrow()
-    {
-        arrowKnocked = true;
-
-        if (TryGetComponent(out BowPickup bp))
-        {
-            GetComponent<PlayAnimations>().SetPlayerKnockedAnimation();
-            if (playerIsLooking == PlayerMovement.Looking.Left)
-            {
-                an.Play("Human_KnockArrow_Left");
-            }
-
-            if (playerIsLooking == PlayerMovement.Looking.Right)
-            {
-                an.Play("Human_KnockArrow_Right");
-            }
-        }
-
-        if (TryGetComponent(out GoldBowPickup gbp))
-        {
-            GetComponent<PlayAnimations>().SetPlayerKnockedAnimation();
-            if (playerIsLooking == PlayerMovement.Looking.Left)
-            {
-                an.Play("Human_KnockArrowGOLD_Left");
-            }
-
-            if (playerIsLooking == PlayerMovement.Looking.Right)
-            {
-                an.Play("Human_KnockArrowGOLD_Right");
-            }
-        } 
-    }
-
-    void RangedAttack()
-    {
-        if (canShoot == true)
-        {
-            canShoot = false;
-            arrowKnocked = false;
-
-            switch (equippedWeaponName)
-            {
-                default: throw new System.Exception("ranged weapon not recognised");
-
-                case "Short Bow":
-                //Finds the bow gameobject on the player and triggers its shoot function
-                GameObject.Find("Player").transform.GetComponentInChildren<ShortBow>().ShootBow(mouseClickPosition);
+            case "Human":
+                if (gameManager.rangedWeaponEquipped)
+                {
+                    GetComponent<Human>().BowAttack(mouseClickPosition);
+                }
+                else
+                {
+                    GetComponent<Human>().SwordAttack();
+                }
                 break;
 
 
+            case "Ghost":GetComponent<Ghost>().GhostBolt();break;
 
-                case "Gold Bow" :GetComponent<GoldBowPickup>().ShootBow();break; 
-            }
 
-            GetComponent<PlayAnimations>().ResetPlayerAnimations();
-        }
+            case "Worm" :GetComponent<Worm>().PoisonBite();break;
+        }        
     }
 
     public void setRangedAttack(float speed, int damage, float attackDelay)
@@ -135,12 +90,13 @@ public class PlayerCombat : MonoBehaviour
 
     public void Update()
     {
-        playerIsLooking = GameObject.Find("Player")
+        playerIsLooking = GameObject.FindGameObjectWithTag("Player")
                                     .GetComponent<PlayerMovement>()
                                     .playerIsLooking();
 
-        PS = GetComponent<PlayerStats>();
-        if (rangedWeaponEquipped == true && PS.getArrowCount() > 0)
+        var GS = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+        if (rangedWeaponEquipped == true && GS.getArrowCount() > 0)
         {
                 if (Time.time > rangedCooldown + rangedAttackDelay)
                 {
@@ -152,36 +108,12 @@ public class PlayerCombat : MonoBehaviour
         GetCurrentSprite();
 
         mouseClickPosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Attack();
+        }
     }
 
 
-    void LateUpdate()
-    {
-
-        if (GetComponent<Health>().currentHost == "Human" && Input.GetMouseButtonDown(0))
-        {
-            switch (equippedWeaponName)
-            {
-                default:throw new System.Exception("equipped weapon not regognised");
-                case "Short Sword":Attack();break;
-
-                case "Short Bow":
-                    GameObject.Find("Player").transform.GetComponentInChildren<ShortBow>().ShootBow(mouseClickPosition);
-                    break;
-            }
-        }
-
-        if (GetComponent<Health>().currentHost == "Ghost" && Input.GetMouseButtonDown(0))
-        {
-            
-            GetComponent<Ghost>().GhostBolt();
-        }
-
-        if (GetComponent<Health>().currentHost == "Worm" && Input.GetMouseButtonDown(0))
-        {
-            
-            GetComponent<Worm>().PoisonBite();
-        }
-
-    }
 }

@@ -6,6 +6,7 @@ public class RoomMonitor : MonoBehaviour
     public Collider2D[] enemies;
     public LayerMask enemyLayer;
     public GameObject myDoor;
+    public bool IsBossRoom;
 
     
     void Update()

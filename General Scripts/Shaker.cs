@@ -24,6 +24,15 @@ public class Shaker : MonoBehaviour
         }
     }
 
+    public void Shake(float duration, float intensity)
+    {
+        if (duration > 0)
+        {
+            Intensity = intensity;
+            pendingShakeDuration += duration;
+        }
+    }
+
     void Update()
     {
         initialPOS = target.position;

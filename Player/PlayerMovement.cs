@@ -8,12 +8,15 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 mousePOS;
     public Camera cam;
     public float moveSpeed;
+    [SerializeField]
+    private bool canMove = true;
     private Rigidbody2D rb;
     public SpriteRenderer sr;
     public bool isSlowed = false;
     public GameObject player;
     public Vector2 lookDir;
     public Looking looking;
+    public bool isMoving;
 
 
     public enum Looking
@@ -29,23 +32,23 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();       
         sr = GetComponent<SpriteRenderer>();
-        player = GameObject.Find("Player");
+        player = GameObject.FindGameObjectWithTag("Player");
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "Exit")
-        {
-            FindObjectOfType<GameManager>().LoadNextLevel();
-        }
     }
 
     void Update()
     {
-
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
+
+        if (movement.x == 0 && movement.y == 0)
+        {
+            isMoving = false;
+        }
+        else
+        {
+            isMoving = true;
+        }
 
         mousePOS = cam.ScreenToWorldPoint(Input.mousePosition);
 
@@ -85,6 +88,16 @@ public class PlayerMovement : MonoBehaviour
         lookDir = mousePOS - player.transform.position;
     }
 
+    public void StopPlayerMovement()
+    {
+         canMove = false;
+    }
+
+    public void StartPlayerMovement()
+    {
+         canMove = true;
+    }
+
     public Looking playerIsLooking()
     {
         return looking;
@@ -104,19 +117,24 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        float moveX = movement.x * moveSpeed;
-        float moveY = movement.y * moveSpeed;
+        if (canMove)
+        {
+            float moveX = movement.x * moveSpeed;
+            float moveY = movement.y * moveSpeed;
 
-        // If in mid dash dont change directon
-        if (GetComponent<Human>() && GetComponent<Human>().isPlayerDashing())
-        {
-            return;
-        }
-        else
-        {
-            rb.velocity = new Vector2(moveX, moveY);
+            // If in mid dash dont change directon
+            if (GetComponent<Human>() && GetComponent<Human>().isPlayerDashing())
+            {
+                return;
+            }
+            else
+            {
+                rb.velocity = new Vector2(moveX, moveY);
+            }
         }
     }
+
+
 
     public void DazeForSeconds(int seconds)
     {

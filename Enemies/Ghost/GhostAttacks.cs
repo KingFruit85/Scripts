@@ -10,16 +10,27 @@ public class GhostAttacks : MonoBehaviour
     private GameObject player;
     private float attackDelay = 1.5f;
     private float lastAttacked = -9999;
+    private AudioManager audioManager;
+
 
 
     public void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         sr = GetComponent<SpriteRenderer>();
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+
     }
 
     public void fireGhostBolt()
     {
+
+            string[] ghostBolts  = new string[]{"GhostBolt1","GhostBolt2","GhostBolt3","GhostBolt4",
+                                             "GhostBolt5","GhostBolt6","GhostBolt7"};
+
+            int rand = Random.Range(0, ghostBolts.Length);
+
+            audioManager.Play(ghostBolts[rand]);
             
             // Visual warning for the player that attack is incomming
             StartCoroutine(FlashColor(Color.red));

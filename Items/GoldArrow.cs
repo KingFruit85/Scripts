@@ -39,7 +39,7 @@ public class GoldArrow : MonoBehaviour
     {
         if (other.TryGetComponent(out Health health) && other.tag != "Player")
         {
-            other.GetComponent<Health>().TakeDamage(GetComponentInParent<GoldBowPickup>().damage, transform.parent.gameObject);
+            other.GetComponent<Health>().TakeDamage(GetComponentInParent<GoldBowPickup>().damage, transform.parent.gameObject,"GoldArrow", false);
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Items"))
         {

@@ -3,9 +3,13 @@ using UnityEngine;
 
 public class DamagePopup : MonoBehaviour
 {   
+    private TextMeshPro textMesh;
+    private float disappearTimer;
+    private Color textColor;
+
 
     //Create a Damage Popup
-    public static DamagePopup Create(Vector3 position, int damageAmount)
+    public static DamagePopup Create(Vector3 position, int damageAmount, bool isCrit)
     {
         Vector3 newPOS = new Vector3(position.x + .4f, position.y + .5f);
 
@@ -14,24 +18,31 @@ public class DamagePopup : MonoBehaviour
                                                      Quaternion.identity);
 
         DamagePopup damagePopup = damagePopupTransform.GetComponent<DamagePopup>();
-        damagePopup.Setup(damageAmount);
-
+        damagePopup.Setup(damageAmount, isCrit);
         return damagePopup;
     }
-
-
-    private TextMeshPro textMesh;
-    private float disappearTimer;
-    private Color textColor;
 
     void Awake()
     {
         textMesh = transform.GetComponent<TextMeshPro>();
     }
-    public void Setup(int damageAmount)
+
+    public void Setup(int damageAmount, bool isCrit)
     {
-        textMesh.SetText(damageAmount.ToString());
-        textColor = textMesh.color;
+        if (isCrit)
+        {
+            textMesh.color = Color.red; 
+        textMesh.SetText(damageAmount.ToString() + " (critical!)");
+
+            isCrit = false;
+        }
+        else
+        {
+            textColor = textMesh.color;
+            textMesh.SetText(damageAmount.ToString());
+
+        }
+
         disappearTimer = 1f;
     }
 

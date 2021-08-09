@@ -3,32 +3,96 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public int maxHealth;
-    public int currentHealth;
+    public float maxHealth;
+    public float currentHealth;
     public string currentHost;
 
-    public HealthBar healthBar;
+    // public HealthBar healthBar;
     public SpriteRenderer sr;
     public GameObject lastHitBy;
     public GameObject currentRoom;
+    public GameObject player;
 
-    public bool isBoss;
+    public bool isBoss = false;
+    public bool isImmuneToMeleeDamage = false;
+    public bool isImmuneToProjectileDamage = false;
+    public bool isImmuneToAllDamage = false;
 
+    private AudioManager audioManager;
+    private Shaker cameraShaker;
+    private GameManager gameManager;
+    private int currentGameLevel;
+    private float XP;
+    private bool isDead = false;
+    private bool isUsingNonDefaultColor = false;
+    private Color nonDefaultColor;
 
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        // Get the current level, used to modify npc stats
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        currentGameLevel = gameManager.currentGameLevel;
+        player = GameObject.FindGameObjectWithTag("Player");
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+        cameraShaker = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>();
 
-        currentHealth = maxHealth;
-        healthBar = GetComponentInChildren<HealthBar>();
-        healthBar.SetMaxHealth(maxHealth);
-
-        if (gameObject.tag == "Player")
+        if(gameObject.tag == "Player")
         {
-            currentHost = GetComponent<PlayerStats>().currentHost;
+            ChangeMaxHealth(gameManager.healthBonus);
         }
 
-        isBoss = false;
+        // Sets some immunities based on the type of monster
+        if (gameObject.tag == "GhostBoss") isImmuneToMeleeDamage = true;
+        if (gameObject.tag == "GhostBoss") isImmuneToProjectileDamage = true;
+    }
+
+    void Start()
+    {
+        if (gameObject.tag != "Player")
+        {
+            SetHealth();
+            SetXP();
+            // healthBar = GetComponentInChildren<HealthBar>();
+        }
+        else
+        {
+            currentHost = GameObject.Find("GameManager").GetComponent<GameManager>().currentHost;
+            gameManager.LoadHostScript(currentHost);
+            currentHealth = maxHealth;
+        }
+    }
+
+    private void SetHealth()
+    {
+        // Just a placeholder, will need to refine after testing
+        if (currentGameLevel > 1)
+        {
+            maxHealth = maxHealth * (currentGameLevel / 1.5f);
+            currentHealth = maxHealth;
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+    }
+
+    public void ChangeMaxHealth(int increaseAmount)
+    {
+        maxHealth += increaseAmount;
+        AddHealth(increaseAmount);
+    }
+
+    private void SetXP()
+    {
+        if (currentGameLevel > 1)
+        {
+            XP = XP * (currentGameLevel / 1.5f);
+        }
+        else
+        {
+            XP = 100;
+        }
     }
 
     public void AddHealth(int amount)
@@ -42,21 +106,23 @@ public class Health : MonoBehaviour
             currentHealth = maxHealth;
         }
 
-        healthBar.SetHealth(currentHealth);
+        // healthBar.SetHealth(currentHealth);
     }
 
     public void RemoveHealth(int amount)
     {
+    
         currentHealth -= amount;
+
         if (currentHealth <= 0)
         {
-            if (gameObject.tag == "Player")
+            if (gameObject.tag == player.tag)
             {
                 switch (lastHitBy.tag)
                 {
-                    default:FindObjectOfType<GameManager>().EndGame();break;
-                    case "Ghost":SwapHost(lastHitBy, transform.gameObject);break;
-                    case "Worm":SwapHost(lastHitBy, transform.gameObject);break;
+                    default:Die();break;
+                    case "Ghost":SwapHost(lastHitBy);break;
+                    case "Worm":SwapHost(lastHitBy);break;
                 }   
             }
             else
@@ -66,13 +132,15 @@ public class Health : MonoBehaviour
         }
     }
 
-    public void SwapHost(GameObject newHost, GameObject oldHost)
+    public void SwapHost(GameObject newHost)
     {
+
+        gameManager.currentHost = newHost.tag;
         
         //Remove the old host script
         switch (currentHost)
         {
-            default:throw new System.Exception("failed to remove hurrent host script, unknown host");
+            default:throw new System.Exception("failed to remove current host script, unknown host");
             case "Human" : 
                 Destroy(gameObject.GetComponent<Human>());
                 Destroy(GameObject.Find("SwordAim"));
@@ -108,8 +176,8 @@ public class Health : MonoBehaviour
         // Transfer health stats
         maxHealth = newHost.GetComponent<Health>().maxHealth;
         currentHealth = newHost.GetComponent<Health>().currentHealth;
-        gameObject.GetComponentInChildren<HealthBar>().SetMaxHealth(maxHealth);
-        gameObject.GetComponentInChildren<HealthBar>().SetHealth(currentHealth);
+        // gameObject.GetComponentInChildren<HealthBar>().SetMaxHealth(maxHealth);
+        // gameObject.GetComponentInChildren<HealthBar>().SetHealth(currentHealth);
         
 
         //Update the current host variable
@@ -121,79 +189,112 @@ public class Health : MonoBehaviour
 
     }
 
-    // Takes in a damage value to apply and the game object that caused the damage
-    public void TakeDamage( int damage, GameObject attacker )
-    {   
-        var isPhasing = false;
-
-        if (gameObject.tag == "Player")
+    public void setProjectileImmunity(bool isImmune)
+    {
+        if (isImmune == false)
         {
-            isPhasing = GetComponent<PlayerStats>().isPhasing;
+            StartCoroutine( DisableProjectileImmunity(2f));
         }
+        else
+        {
+            isImmuneToProjectileDamage = true;
+        }
+    }
 
-        // Check to see if it is an enemy 
+    public void setMeleeImmunity(bool isImmune)
+    {
+        if (isImmune == false)
+        {
+            StartCoroutine( DisableMeleeImmunity(2f));
+        }
+        else
+        {
+            isImmuneToMeleeDamage = true;
+        }
+    }
+
+    private IEnumerator DisableProjectileImmunity(float duration)
+    {
+        sr.color = Color.red;
+        isImmuneToProjectileDamage = false;
+        yield return new WaitForSeconds( duration );
+        isImmuneToProjectileDamage = true;
+        sr.color = Color.white;
+    }
+
+    private IEnumerator DisableMeleeImmunity(float duration)
+    {
+        sr.color = Color.red;
+        isImmuneToMeleeDamage = false;
+        yield return new WaitForSeconds( duration );
+        isImmuneToMeleeDamage = true;
+        sr.color = Color.white;
+    }
+
+
+    public void TakeDamage(int damage)
+    {
+        RemoveHealth(damage);
+    }
+
+    // Takes in a damage value to apply and the game object that caused the damage
+    public void TakeDamage( int damage, GameObject attacker, string damageType, bool isCrit )
+    {   
+        
+        if (TryGetComponent(out Ghost ghost)) isImmuneToProjectileDamage = ghost.Phasing();
+        if (TryGetComponent(out Human human)) isImmuneToAllDamage = human.isPlayerDashing();
+
+
+        // If the host is phasing and the damage is a projectile, return
+        // If the host is immune to melee, return
+        if (isImmuneToMeleeDamage || damageType == "melee") return;
+        // If the host is immune to all damage, return
+        if(isImmuneToAllDamage) return;
+
+
+        ////////////////
+        //Hit connects//
+        ////////////////
+
+        // Log attacker
+        lastHitBy = attacker;
+        // Shake screen if receiver is player
+        if (gameObject.tag == player.tag) cameraShaker.Shake(.3f,3.0f);
+        // Display the damage as a popup
+        DamagePopup.Create( transform.position, damage, isCrit );
+        // Flash Red to confirm hit
+        StartCoroutine(FlashColor( Color.gray, 0.3f ));
+        // Remove the health
+        RemoveHealth(damage);
+        // If enemy, apply knockback and reset attack delay value
         if (gameObject.layer == 8)
         {
-            switch (gameObject.tag)
+            TriggerKnockBack();
+            TriggerAttackDelayReset();
+        }
+    
+    }
+
+    private void TriggerKnockBack()
+    {
+        // Bosses can't be knocked back
+        if (!isBoss)
+        {
+            var playerIsLooking = player.GetComponent<PlayerMovement>().playerIsLooking();
+            var movement = TryGetComponent(out AIMovement move);
+            move.KnockBack(playerIsLooking);
+        }
+    }
+
+    private void TriggerAttackDelayReset()
+    {
+        switch (gameObject.tag)
             {
                 default:throw new System.Exception("unknown recipient of damage");
                 case "Ghost": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
                 case "Worm": gameObject.GetComponent<WormAttacks>().ResetAttackDelay();break;
+                case "GhostBoss" : gameObject.GetComponent<GhostBossAttacks>().ResetAttackDelay();break;
             }
-        }
-
-        //Probably willneed to make this flag more generic at some point, as I'm sure other hosts/enemies may have similar abilities
-        if(!isPhasing)
-        {
-            lastHitBy = attacker;
-
-        //Shake screen
-        if (gameObject.tag == "Player")
-        {
-            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>().Shake(.1f);
-        }
-
-        //Apply the damage as long as the player isn't in a dash state
-        if (gameObject.tag == "Player" && GetComponent<Human>() && GetComponent<Human>().isPlayerDashing())
-        {
-            return;
-        }
-        else
-        {
-            //Display the damage as a popup
-            DamagePopup.Create( transform.position, damage );
-            
-            // Flash Red to confirm hit
-            StartCoroutine(FlashColor( Color.gray, 0.3f ));
-
-            RemoveHealth(damage);
-            
-            gameObject.GetComponentInChildren<HealthBar>().SetHealth(currentHealth);
-
-            var playerIsLooking = GameObject.Find( "Player" )
-                                   .GetComponent<PlayerMovement>()
-                                   .playerIsLooking();
-
-
-            //Get knocked back in the opposite direction of the attack
-            if (TryGetComponent(out AIMovement move))
-            {
-                switch (playerIsLooking)
-                {
-                    default: throw new System.Exception("PlayerMovement.Looking state unknown");
-                    case PlayerMovement.Looking.Left: move.KnockBack("Left");break;
-                    case PlayerMovement.Looking.Right: move.KnockBack("Right");break;
-                    case PlayerMovement.Looking.Up: move.KnockBack("Up");break;
-                    case PlayerMovement.Looking.Down: move.KnockBack("Down");break;
-                }   
-            }
-        }
-        }
-        else
-        {   
-            //Is immune to damage
-            return;
-        } 
     }
 
     private IEnumerator FlashColor(Color color, float duration)
@@ -203,15 +304,40 @@ public class Health : MonoBehaviour
         sr.color = Color.white;
     }
 
-    private bool isDead = false;
     void Die()
     {
-        if (isBoss)
+        // PLayer death
+        if (gameObject.tag == "Player")
         {
-            currentRoom.GetComponent<AddRoom>().SpawnExit();
+            // Stops player from being able to move on death and plays death animation 
+            GetComponent<PlayerMovement>().StopPlayerMovement();
+            StartCoroutine(GetComponent<PlayAnimations>().Kill());
+
+            // Removes any weapons the host may have
+            foreach (Transform child in gameObject.transform)
+            {
+                Destroy(child);
+            }
+
+            // Triggers game restart
+            gameManager.EndGame();
+            
         }
 
-        if (!isDead && gameObject.name != "Player")
+        if (gameObject.tag == "GhostBoss")
+        {
+            // Take player to game over screen for the time being
+            currentRoom.GetComponent<AddRoom>().SpawnWinGameExit(); 
+            // gameManager.TemporaryGameComplete();
+
+        }
+
+        if (isBoss && gameObject.tag != "GhostBoss")
+        {
+            currentRoom.GetComponent<AddRoom>().SpawnExit(); 
+        }
+
+        if (!isDead && gameObject.name != player.tag)
         {
             isDead = true;
 
@@ -225,31 +351,46 @@ public class Health : MonoBehaviour
                 ga.enabled = false;
             }
 
+
             if (TryGetComponent(out CapsuleCollider2D cc))
             {
-                cc.enabled = false;
+                Physics2D.IgnoreCollision(cc,player.GetComponent<CapsuleCollider2D>());
             }
 
             if (TryGetComponent(out BoxCollider2D bc))
             {
-                bc.enabled = false;
+                Physics2D.IgnoreCollision(bc,player.GetComponent<CapsuleCollider2D>());
             }
             
             //Add player XP
-            GameObject.Find( "Player" ).GetComponent<PlayerStats>()
-                                 .AddXP( 100 );
+            if (isBoss)
+            {
+                GameObject.Find("GameManager").GetComponent<GameManager>().AddXP(XP + 500);
+            }
+            else
+            {
+                GameObject.Find("GameManager").GetComponent<GameManager>().AddXP(XP);
+            }
+            
 
             //Play death animation                         
             StartCoroutine(GetComponent<PlayAnimations>().Kill());
 
             //Drop loot
-            GetComponent<DropLoot>().SpawnLoot();
+            if (!isBoss)
+            {
+                // Need to add boss drops
+                GetComponent<DropLoot>().SpawnLoot();
+            }
         }
 
-        else
-        {
-            // insert code that handles the asset swap to the killers sprites
-        }
+    }
+
+
+    public void SetSpriteColor(Color color)
+    {
+        isUsingNonDefaultColor = true;
+        nonDefaultColor = color;
     }
 
     void Update()
@@ -258,9 +399,11 @@ public class Health : MonoBehaviour
         {
             sr.color = new Color(156,21,21,255);
         }
-        if (currentHealth <= 0)
+
+        if (isUsingNonDefaultColor)
         {
-            Die();
+            GetComponent<SpriteRenderer>().color = nonDefaultColor;
         }
+
     }
 }

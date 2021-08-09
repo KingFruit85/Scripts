@@ -18,10 +18,15 @@ public class TrapArrow : MonoBehaviour
 
     private GameObject player;
 
+    private AudioManager audioManager;
+
+
     void Start()
     {
         RB = GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player");
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+
 
         // Check what object is firing me and fire in the appropriate direction
         if (gameObject.transform.parent.tag == "ArrowTrap")
@@ -58,24 +63,25 @@ public class TrapArrow : MonoBehaviour
         // Removes any deflected arrows that are laying about doing nothing
         if (deflected && RB.velocity.x > -5f && RB.velocity.y > - 5f) Destroy(gameObject, .5f);
 
-        if (player.GetComponent<PlayerStats>().isPhasing)
+        if (player.TryGetComponent(out Ghost ghost))
         {
-            Physics2D.IgnoreCollision(player.GetComponent<CapsuleCollider2D>(),gameObject.GetComponent<BoxCollider2D>());
+            if (ghost.Phasing() == true)
+            {
+                Physics2D.IgnoreCollision(player.GetComponent<CapsuleCollider2D>(),gameObject.GetComponent<BoxCollider2D>());
+            }
         }
     }   
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        
+
         if (coll.collider.gameObject.tag == "Player")
         {
-    
             if (!deflected)
             {
-                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject);
+                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject, coll.collider.gameObject.tag, false);
                 Destroy(gameObject);
             }
-            
         }
 
         else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Items"))
@@ -90,8 +96,16 @@ public class TrapArrow : MonoBehaviour
             return;
         }
 
-        else if (coll.collider.gameObject.name == "Sword")
+        else if (coll.collider.gameObject.tag == "PlayerSword")
         {
+
+            string[] deflects = new string[]{"SwordArrowDeflect1","SwordArrowDeflect2","SwordArrowDeflect3","SwordArrowDeflect4",
+                                             "SwordArrowDeflect5","SwordArrowDeflect6","SwordArrowDeflect7","SwordArrowDeflect8"};
+
+            int rand = Random.Range(0, deflects.Length);
+
+            audioManager.Play(deflects[rand]);
+
             // Deflect the arrow away from the sword
             float speed = lastVelocity.magnitude;
             Vector3 direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);

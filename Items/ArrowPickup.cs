@@ -9,8 +9,7 @@ public class ArrowPickup : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            var player = GameObject.Find("Player").GetComponent<PlayerStats>();
-            player.AddArrows(arrowCount);
+            GameObject.Find("GameManager").GetComponent<GameManager>().AddArrows(arrowCount);
             Destroy(gameObject);
             }
         }

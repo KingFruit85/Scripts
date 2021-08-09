@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Barrier : MonoBehaviour
 {
-    public List<string> unlockCode = new List<string>(){"Red","Green","Blue","Teal"};
+    private List<string> unlockCode = new List<string>(){"Red","Green","Blue","Teal"};
     public List<string> submittedCode = new List<string>();
     private bool isBarrierDown = false;
     public GameObject redRune;
@@ -13,7 +13,17 @@ public class Barrier : MonoBehaviour
     public GameObject tealRune;
     public GameObject door;
     public GameObject[] doors;
+    public List<string> randomisedUnlockCode;
 
+    private AudioManager audioManager;
+
+
+    void Awake()
+    {
+        var rnd = new System.Random();
+        randomisedUnlockCode = unlockCode.OrderBy(item => rnd.Next()).ToList();
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+    }
 
 
     public void SubmitCode(string code)
@@ -21,13 +31,23 @@ public class Barrier : MonoBehaviour
         // gate to stop same rune being submitted twice
         if (!submittedCode.Contains(code))
         {
-            submittedCode.Add(code);  
+            submittedCode.Add(code); 
+
+            if (randomisedUnlockCode[submittedCode.Count -1] == code)
+            {
+                audioManager.Play("RuneSuccess");
+            }
+            else
+            {
+                audioManager.Play("RuneFailure");
+            }
         }
+        
     }
 
     void Update()
     {
-        if (submittedCode.Count == unlockCode.Count && unlockCode.SequenceEqual(submittedCode) && !isBarrierDown)
+        if (submittedCode.Count == randomisedUnlockCode.Count() && randomisedUnlockCode.SequenceEqual(submittedCode) && !isBarrierDown)
         {
             //Play a success sound?
             gameObject.SetActive(false);
@@ -48,10 +68,10 @@ public class Barrier : MonoBehaviour
 
         }
 
-        if(submittedCode.Count == unlockCode.Count && !unlockCode.SequenceEqual(submittedCode))
+        if(submittedCode.Count == randomisedUnlockCode.Count() && !randomisedUnlockCode.SequenceEqual(submittedCode))
         {
-            //Play a sound indicating failure maybe?
-            Debug.Log(submittedCode.Count);
+
+            // Play a sound indicating failure maybe?
             // If there is a trap linked up to the rune fire it
             switch (submittedCode[submittedCode.Count-1])
             {
@@ -99,6 +119,8 @@ public class Barrier : MonoBehaviour
 
             // Resets list
             submittedCode = new List<string>();
+
+            
 
         }
     }

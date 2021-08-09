@@ -2,14 +2,21 @@
 
 public class Arrow : MonoBehaviour
 {
-    private int damage = 10;
-    private int arrowSpeed = 10;
+    private int damage;
+    private int arrowSpeed;
+
+    public Sprite flameArrow;
+    public bool isAlight =  false;
 
     public Vector3 clickPoint;
     public Vector3 aim;
     private Vector2 lastVelocity;
 
     private Rigidbody2D rb;
+    private AudioManager audioManager;
+    private SpriteRenderer spriteRenderer;
+
+    private Human player;
 
     void Start()
     {
@@ -17,8 +24,14 @@ public class Arrow : MonoBehaviour
         //Points the arrow the direction we're shooting
         float angle = Mathf.Atan2(aim.y,aim.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Human>();
+        damage = player.arrowDamage;
+        arrowSpeed = player.arrowSpeed;
+
 
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     public void SetArrowDamage(int dmg)
@@ -42,9 +55,23 @@ public class Arrow : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "FlameBowl")
+        {
+            SetAlight();
+        }
+    }
+
+    void SetAlight()
+    {
+        spriteRenderer.sprite = flameArrow;
+        isAlight = true;
+        damage += 10;
+    }
+
     void OnCollisionEnter2D(Collision2D coll)
     {
-
         if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Items"))
         {
             return;
@@ -52,7 +79,15 @@ public class Arrow : MonoBehaviour
 
         else if (coll.collider.gameObject.layer == LayerMask.NameToLayer("enemies"))
         {
-            coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject);
+            if (isAlight)
+            {
+                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject,"FlamingPlayerArrow", false);
+            }
+            else
+            {
+                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject,gameObject.tag, false);
+            }
+            
             Destroy(gameObject);
         }
         
@@ -65,7 +100,8 @@ public class Arrow : MonoBehaviour
         
         else if (coll.gameObject.tag == "Wall")
         {
-            //maybe have the arrow get imbedded in the wal?
+            //maybe have the arrow get imbedded in the wall?
+            audioManager.Play("ArrowHitWall");
             Destroy(gameObject);
         }
 

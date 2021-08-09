@@ -10,23 +10,29 @@ public class Ghost : MonoBehaviour
     public string walkRight = "Ghost_Walk_Right";
     public string walkUp = "Ghost_Walk_Up";
     public string walkDown = "Ghost_Walk_Down";
-    public string idleUp = "Ghost_Walk_Up"; // Replace this when posible
+    public string idleUp = "Ghost_Walk_Up"; // Replace this when posable
     public string idleDown = "Ghost_Idle_Front";
     public string death = "Ghost_Death";
     public float moveSpeed = 3;
     private PlayAnimations pa;
     private SpriteRenderer sr;
-    public bool isPhasing;
+    private bool isPhasing;
     private bool isPlayer = false;
+
+    // this needs to be passed to the instanciated ghostbolt
+    public int ghostBoltDamage = 10;
 
     void Awake()
     {
-        if (transform.tag == "Player")
+        if (gameObject.tag == "Player")
         {
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
             //Due to the sprite scaling when you change from a human to a ghost the capsule collider is too large to move horizontally though 1 unit tall corridors
             GetComponent<CapsuleCollider2D>().size = new Vector2(0.1f,0.2f);
             isPlayer = true;
+
+            GameObject.Find("GameManager").GetComponent<GameManager>().currentHost = "Ghost";
+
         }
 
         isPhasing = false;
@@ -45,6 +51,11 @@ public class Ghost : MonoBehaviour
         pa.walkDown = walkDown;
         pa.death = death;
 
+    }
+
+    public bool Phasing()
+    {
+        return isPhasing;
     }
 
 
@@ -74,22 +85,17 @@ public class Ghost : MonoBehaviour
         {
             sr.material.color = new Color(1f, 1f, 1f, 0.5f);
             isPhasing = true;
-            GetComponent<PlayerStats>().isPhasing = true;
             //Can pass through enemies
             Physics2D.IgnoreLayerCollision(12,8,true);
             //Does not pick up items
             Physics2D.IgnoreLayerCollision(12,10,true);
-
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isPhasing == true && isPlayer)
         {
             sr.material.color = new Color(1f, 1f, 1f, 1f);
             isPhasing = false;
-            GetComponent<PlayerStats>().isPhasing = false;
             Physics2D.IgnoreLayerCollision(12,8,false);
             Physics2D.IgnoreLayerCollision(12,10,false);
-
-
         }
     }
 }
