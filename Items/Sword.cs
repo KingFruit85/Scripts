@@ -7,10 +7,11 @@ public class Sword : MonoBehaviour
 void Start()
 {
     //Stops the sword colliding with wall tiles
-    Physics2D.IgnoreLayerCollision(13,17);
-    Physics2D.IgnoreLayerCollision(13,18);
-    Physics2D.IgnoreLayerCollision(13,8);
-    Physics2D.IgnoreLayerCollision(13,20);
+    Physics2D.IgnoreLayerCollision(13,17); // Walls
+    Physics2D.IgnoreLayerCollision(13,18); // Bars
+    Physics2D.IgnoreLayerCollision(13,8);  // Enemies
+    Physics2D.IgnoreLayerCollision(13,20); // Table
+    Physics2D.IgnoreLayerCollision(13,24); // Doors
 }
 
 

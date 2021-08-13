@@ -42,7 +42,6 @@ public class AddRoom : MonoBehaviour
 
     public Transform[] objectSpawners;
 
-
     Scene scene;
 
     void Awake()            
@@ -71,7 +70,6 @@ public class AddRoom : MonoBehaviour
 
         objectSpawners = GetComponentsInChildren<Transform>().Where(t => t.tag == "ObjectSpawner").ToArray();
 
-
     }
     void Start()
     {  
@@ -87,22 +85,6 @@ public class AddRoom : MonoBehaviour
         isExitRoom = false;
         exitSpawned = false;
     }
-
-    public string[] GetRoomExits()
-    {
-        return roomExits;
-    }
-
-    public Transform[] GetObjectSpawners()
-    {
-        return objectSpawners;
-    }
-
-    public Vector3 GetObjectSpawnerPosition(string spawner)
-    {
-        return objectSpawners.Where(o => o.name == spawner).ToList()[0].position;
-    }
-
 
     public void SpawnExit()
     {
@@ -124,6 +106,26 @@ public class AddRoom : MonoBehaviour
         var exitSquare = Instantiate(Resources.Load("WinSquare") as GameObject, new Vector3(exitPoint.transform.position.x,exitPoint.transform.position.y,0), Quaternion.identity);
         exitSpawned = true;
 
+    }
+
+    public void RemoveUnusedSpawners()
+    {
+        if (LeftToggleDoor.activeSelf)
+        {
+            Destroy(leftSpawner);
+        }
+        if (RightToggleDoor.activeSelf)
+        {
+            Destroy(rightSpawner);
+        }
+        if (UpToggleDoor.activeSelf)
+        {
+            Destroy(upSpawner);
+        }
+        if (DownToggleDoor.activeSelf)
+        {
+            Destroy(downSpawner);
+        }
     }
 
     public void RemoveToggleDoor(string door)
@@ -182,13 +184,6 @@ public class AddRoom : MonoBehaviour
                 }
                 break;
     }
-
-    // track room spawners
-    //if they spawn mark as such
-    //if they don't spawn anything, is this because they were destroyed or because we hit the room limit
-    // if we hit the room limit then we need to spawn blank rooms to block off the open exits for the last set of rooms spawned with open exits
-
-
 
 }
 }

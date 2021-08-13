@@ -45,7 +45,7 @@ public class Shaker : MonoBehaviour
 
     public void CombatShaker(string direction)
     {
-        StartCoroutine(MeleeShake(direction));
+        // StartCoroutine(MeleeShake(direction));
     }
 
 

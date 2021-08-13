@@ -6,6 +6,7 @@ public class Health : MonoBehaviour
     public float maxHealth;
     public float currentHealth;
     public string currentHost;
+    public bool isBloodied;
 
     // public HealthBar healthBar;
     public SpriteRenderer sr;
@@ -395,6 +396,14 @@ public class Health : MonoBehaviour
 
     void Update()
     {
+        if (currentHealth <= maxHealth / 2)
+        {
+            isBloodied = true;
+        }
+        else
+        {
+            isBloodied = false;
+        }
         if (isBoss)
         {
             sr.color = new Color(156,21,21,255);

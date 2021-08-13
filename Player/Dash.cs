@@ -56,14 +56,14 @@ public class Dash : MonoBehaviour
                 case Looking.Up:
                                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + dashSpeed); 
                                 anim.Play("Human_Dash_Up");
-                                shaker.CombatShaker("Up");
+                                // shaker.CombatShaker("Up");
                                 dashCoolDown = Time.time;
                                 break;
 
                 case Looking.Down:
                                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y -dashSpeed); 
                                 anim.Play("Human_Dash_Down");
-                                shaker.CombatShaker("Down");
+                                // shaker.CombatShaker("Down");
                                 dashCoolDown = Time.time;
                                 break;
 
@@ -76,7 +76,7 @@ public class Dash : MonoBehaviour
                 case Looking.Right:
                                 rb.velocity = new Vector2(rb.velocity.x + dashSpeed, rb.velocity.y);
                                 anim.Play("Human_Dash_Right");
-                                shaker.CombatShaker("Right");
+                                // shaker.CombatShaker("Right");
                                 dashCoolDown = Time.time;
                                 break;
             }

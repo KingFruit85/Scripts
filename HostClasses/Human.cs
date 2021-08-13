@@ -12,6 +12,12 @@ public class Human : MonoBehaviour
     public string walkUp = "Human_Move_Up";
     public string walkDown = "Human_Move_Down";
 
+
+    public string walkLeftNonBloodied = "Human_Walk_Left";
+    public string walkRightNonBloodied = "Human_Walk_Right";
+    public string walkUpNonBloodied = "Human_Move_Up";
+    public string walkDownNonBloodied = "Human_Move_Down";
+
     public string walkDownBloodied = "Human_Move_Down_Bloodied";
     public string walkUpBloodied = "Human_Move_Up_Bloodied";
     public string walkLeftBloodied = "Human_Move_Left_Bloodied";
@@ -63,8 +69,6 @@ public class Human : MonoBehaviour
                 x.GetComponent<BowPickup>().AddBowToPlayer();
                 Destroy(x);
             }
-
-            
     }
 
     void Start()
@@ -255,8 +259,38 @@ public class Human : MonoBehaviour
         
     }
 
+    public void SetBloodiedSprites(bool x)
+    {
+        if (x)
+        {
+            walkLeft = walkLeftBloodied;
+            walkRight = walkRightBloodied;
+            walkUp = walkUpBloodied;
+            walkDown = walkDownBloodied;
+        }
+        else
+        {
+            walkLeft = walkLeftNonBloodied;
+            walkRight = walkRightNonBloodied;
+            walkUp = walkUpNonBloodied;
+            walkDown =  walkDownNonBloodied;
+        }
+    }
+
+    // This update function if really chonky, probably needs a look over
     void Update()
     {
+        if (GetComponent<Health>().isBloodied)
+        {
+            SetBloodiedSprites(true);
+        }
+
+        if (!GetComponent<Health>().isBloodied)
+        {
+            SetBloodiedSprites(false);
+        }
+
+        
 
         playerIsLooking = GetComponent<PlayerMovement>().playerIsLooking();
         if (BowEquipped)
