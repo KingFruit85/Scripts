@@ -128,7 +128,72 @@ public class AddRoom : MonoBehaviour
         }
     }
 
-    public void RemoveToggleDoor(string door)
+    public void DisableSpawner(string door)
+    {
+        switch (door)
+        {
+            default:
+            case "up": 
+                upSpawner.SetActive(false);
+                Destroy(upSpawner);
+                break;
+            case "down": 
+                downSpawner.SetActive(false);
+                Destroy(downSpawner);
+                break;
+            case "left": 
+                leftSpawner.SetActive(false);
+                Destroy(leftSpawner);
+                break;
+            case "right": 
+                rightSpawner.SetActive(false);
+                Destroy(rightSpawner);
+                break;
+        }
+    }
+
+    public void CloseToggleDoor(string door)
+    {
+        switch (door)
+        {
+            default: throw new System.Exception("cannot find toggle door to remove");
+            case "up":
+                // Remove toggle tile and wall tiles
+                if (UpToggleDoor != null)
+                {
+                    UpToggleDoor.SetActive(true);
+                    // Enable door collider box collider
+                    UpDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                }
+                break;
+
+            case "down":
+                if (DownToggleDoor != null)
+                {
+                    DownToggleDoor.SetActive(true);
+                    DownDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                }
+                break;
+
+            case "left":
+                if (LeftToggleDoor != null)
+                {
+                    LeftToggleDoor.SetActive(true);
+                    LeftDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                }
+                break;
+
+            case "right":
+                if (RightToggleDoor != null)
+                {
+                    RightToggleDoor.SetActive(true);
+                    RightDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                }
+                break;
+    }
+    }
+
+    public void OpenToggleDoor(string door)
     {
         switch (door)
         {
