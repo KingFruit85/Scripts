@@ -162,8 +162,13 @@ public class AddRoom : MonoBehaviour
                 if (UpToggleDoor != null)
                 {
                     UpToggleDoor.SetActive(true);
-                    // Enable door collider box collider
+                    // Disable door collider box collider
                     UpDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                    //Switch the wall sprites on either side of the door to it's alternative sprite
+                    foreach (var wall in upToggleWalls)
+                    {
+                        wall.GetComponent<Wall>().setAltDefaultSprite();
+                    }
                 }
                 break;
 
@@ -173,6 +178,10 @@ public class AddRoom : MonoBehaviour
                     DownToggleDoor.SetActive(true);
                     DownDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
                 }
+                foreach (var wall in downToggleWalls)
+                    {
+                        wall.GetComponent<Wall>().setAltDefaultSprite();
+                    }
                 break;
 
             case "left":
@@ -180,6 +189,10 @@ public class AddRoom : MonoBehaviour
                 {
                     LeftToggleDoor.SetActive(true);
                     LeftDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                    foreach (var wall in leftToggleWalls)
+                    {
+                        wall.GetComponent<Wall>().setAltDefaultSprite();
+                    }
                 }
                 break;
 
@@ -189,6 +202,10 @@ public class AddRoom : MonoBehaviour
                     RightToggleDoor.SetActive(true);
                     RightDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
                 }
+                foreach (var wall in rightToggleWalls)
+                    {
+                        wall.GetComponent<Wall>().setAltDefaultSprite();
+                    }
                 break;
     }
     }
