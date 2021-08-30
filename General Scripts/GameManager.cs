@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
@@ -12,10 +13,11 @@ public class GameManager : MonoBehaviour
     public int arrowCount;
     public int coinCount;
     public bool rangedWeaponEquipped = false;
-
+    public bool miniBossKilled = false;
     public int meleeAttackBonus;
     public int healthBonus;
     public int rangedAttackBonus;
+    public bool playerHit = false;
 
     public bool spawnFog = false;
 
@@ -139,6 +141,7 @@ public class GameManager : MonoBehaviour
         {
             Restart();
         }
+        
     }
 
     public void Restart()
@@ -147,6 +150,19 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Lab");
 
         // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private IEnumerator Hit(float duration)
+    {
+        playerHit = true;
+        yield return new WaitForSeconds( duration );
+        playerHit = false;
+
+    }
+
+    public void SetPlayerHit()
+    {
+        StartCoroutine(Hit(0.1f));
     }
 
     public void TemporaryGameComplete()

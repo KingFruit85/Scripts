@@ -232,12 +232,6 @@ public class Health : MonoBehaviour
         sr.color = Color.white;
     }
 
-
-    public void TakeDamage(int damage)
-    {
-        RemoveHealth(damage);
-    }
-
     // Takes in a damage value to apply and the game object that caused the damage
     public void TakeDamage( int damage, GameObject attacker, string damageType, bool isCrit )
     {   
@@ -256,7 +250,10 @@ public class Health : MonoBehaviour
         ////////////////
         //Hit connects//
         ////////////////
-
+        if (gameObject.tag == "Player")
+        {
+            gameManager.SetPlayerHit();
+        }
         // Log attacker
         lastHitBy = attacker;
         // Shake screen if receiver is player
@@ -336,6 +333,8 @@ public class Health : MonoBehaviour
         if (isBoss && gameObject.tag != "GhostBoss")
         {
             currentRoom.GetComponent<AddRoom>().SpawnExit(); 
+            gameManager.miniBossKilled = true;
+            
         }
 
         if (!isDead && gameObject.name != player.tag)
