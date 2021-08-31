@@ -4,6 +4,8 @@ using static PlayerMovement;
 
 public class Human : MonoBehaviour
 {
+
+    public ParticleSystem dust;
     public string idleLeft = "Human_Idle_Left";
     public string idleRight = "Human_Idle_Right";
 
@@ -60,6 +62,7 @@ public class Human : MonoBehaviour
     void Awake()
     {
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            dust = GameObject.Find("dustPS").GetComponent<ParticleSystem>();
 
             if (gameManager.rangedWeaponEquipped)
             {
@@ -118,6 +121,11 @@ public class Human : MonoBehaviour
         pa.attackDown = attackDown;
     }
 
+    void CreateDust()
+    {
+        dust.Play();
+    }
+
 
     public float dashSpeed = 20f;
     private float dashCoolDown = -9999;
@@ -166,6 +174,8 @@ public class Human : MonoBehaviour
                                 dashCoolDown = Time.time;
                                 break;
             }
+
+            CreateDust();
         }
     }
 
