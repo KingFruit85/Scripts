@@ -214,7 +214,7 @@ public class AddRoom : MonoBehaviour
     {
         switch (door)
         {
-            default: throw new System.Exception("cannot find toggle door to remove");
+            default: throw new System.Exception(door + ": cannot find this toggle door to remove");
             case "up":
                 // Remove toggle tile and wall tiles
                 if (UpToggleDoor != null)

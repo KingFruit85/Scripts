@@ -5,10 +5,8 @@ public class Door : MonoBehaviour
     public bool open;
     public Sprite closedDoor;
     public Sprite openDoor;
-
+    public bool isLocked;
     public bool startOpen, startClosed;
-
-
 
     void Awake()
     {
@@ -22,6 +20,11 @@ public class Door : MonoBehaviour
             CloseDoor();
             open = false;
         }
+    }
+
+    public void UnlockDoor()
+    {
+        isLocked = false;
     }
 
     public void OpenDoor()

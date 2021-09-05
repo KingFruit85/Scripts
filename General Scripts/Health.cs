@@ -46,6 +46,7 @@ public class Health : MonoBehaviour
         // Sets some immunities based on the type of monster
         if (gameObject.tag == "GhostBoss") isImmuneToMeleeDamage = true;
         if (gameObject.tag == "GhostBoss") isImmuneToProjectileDamage = true;
+
     }
 
     void Start()
@@ -395,6 +396,7 @@ public class Health : MonoBehaviour
 
     void Update()
     {
+
         if (currentHealth <= maxHealth / 2)
         {
             isBloodied = true;
@@ -406,6 +408,7 @@ public class Health : MonoBehaviour
         if (isBoss)
         {
             sr.color = new Color(156,21,21,255);
+            currentRoom = transform.parent.gameObject;
         }
 
         if (isUsingNonDefaultColor)
