@@ -7,6 +7,7 @@ public class Door : MonoBehaviour
     public Sprite openDoor;
     public bool isLocked;
     public bool startOpen, startClosed;
+    public GameObject myKeyCardReader;
 
     void Awake()
     {
@@ -25,6 +26,10 @@ public class Door : MonoBehaviour
     public void UnlockDoor()
     {
         isLocked = false;
+        if (myKeyCardReader)
+        {
+            myKeyCardReader.GetComponent<KeyCardReader>().SetOpen();
+        }
     }
 
     public void OpenDoor()
@@ -40,10 +45,5 @@ public class Door : MonoBehaviour
             GetComponent<BoxCollider2D>().enabled = true;
             open = false;
     }
-
-  
-
-
-
 
 }

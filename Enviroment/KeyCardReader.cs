@@ -20,12 +20,14 @@ public class KeyCardReader : MonoBehaviour
     {
         if (myDoor.GetComponent<Door>().isLocked)
         {
+            // PLay error sound
+            // flash keycard reader
             StartCoroutine(Locked());
         }
         else
         {
             // Open door
-            GetComponent<SpriteRenderer>().sprite = open;
+            SetOpen();
             myDoor.GetComponent<BoxCollider2D>().enabled = false;
             myDoor.GetComponent<SpriteRenderer>().enabled = false;
         }
@@ -37,6 +39,18 @@ public class KeyCardReader : MonoBehaviour
         yield return new WaitForSeconds( .5f );
         GetComponent<SpriteRenderer>().sprite = closed;
     }
+
+    public void SetOpen()
+    {
+        GetComponent<SpriteRenderer>().sprite = open;
+    }
+
+    public void SetClosed()
+    {
+        GetComponent<SpriteRenderer>().sprite = closed;
+    }
+
+
 
     void Update()
     {

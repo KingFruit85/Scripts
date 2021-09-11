@@ -36,6 +36,22 @@ public class Wall : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         cam = GameObject.Find("Main Camera").GetComponent<Camera>();
 
+        UpdateTile();
+
+        // if (miscWall)
+        // {
+        //     var r = Random.Range(0, roomSprites.miscWalls.Length-1);
+        //     sr.sprite = roomSprites.corners[r];
+        // }
+
+        
+
+        SetWallTileColor();
+
+    }
+
+    public void UpdateTile()
+    {
         if (topWall)
         {
 			var r = Random.Range(0, (roomSprites.topWalls.Length-1));
@@ -108,16 +124,7 @@ public class Wall : MonoBehaviour
             critSprite = roomSprites.critBottomRightCorners[r];
         }
 
-        // if (miscWall)
-        // {
-        //     var r = Random.Range(0, roomSprites.miscWalls.Length-1);
-        //     sr.sprite = roomSprites.corners[r];
-        // }
-
         defaultSprite = sr.sprite;
-
-        SetWallTileColor();
-
     }
 
     private IEnumerator CritFlash(float duration)

@@ -30,7 +30,7 @@ public class FloorTile : MonoBehaviour
         
         r = Random.Range(0, roomSprites.critFloor.Length -1);
 
-        critSprite = roomSprites.critFloor[r];
+        // critSprite = roomSprites.critFloor[r];
 
         SetFloorTileColor();
               
