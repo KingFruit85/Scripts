@@ -8,16 +8,28 @@ public class FloorTile : MonoBehaviour
     [SerializeField]
     private int currentGameLevel;
     private SpriteRenderer sr;
+    private BoxCollider2D col;
+
     private GameManager gameManager;
+
+    // public bool leftDetector = false;
+    // public bool rightDetector = false;
+    // public bool upDetector = false;
+    // public bool downDetector = false;
+
+    public bool isTouchingOtherCollider = false;
 
     public Sprite defaultSprite;
     public Color defaultColor;
 
     public Sprite critSprite;
 
+    public List<GameObject> objectsAroundMe = new List<GameObject>();
+
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
+        col = GetComponent<BoxCollider2D>();
 
         currentGameLevel = GameObject.Find("GameManager").GetComponent<GameManager>().currentGameLevel;
         roomSprites = GameObject.Find("Room Sprites").GetComponent<RoomSprites>();
@@ -62,5 +74,65 @@ public class FloorTile : MonoBehaviour
         {
             CriticalFlash();
         }
+
+        // Debug.DrawRay(new Vector2(transform.position.x,transform.position.y + .6f), new Vector2(0,.2f), Color.green,.2f);
+        // Debug.DrawRay(new Vector2(transform.position.x,transform.position.y - .6f), new Vector2(0, - .2f), Color.red,.2f);
+        // Debug.DrawRay(new Vector2(transform.position.x - .6f,transform.position.y), new Vector2(-.2f,0), Color.blue,.2f);
+        // Debug.DrawRay(new Vector2(transform.position.x  + .6f,transform.position.y), new Vector2(.2f,0), Color.yellow,.2f);
     }
+
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col)
+        {
+            isTouchingOtherCollider = true; 
+            Debug.Log(col.name);
+        }
+    }
+
+    // objectsAroundMe isn't working properly
+    // void FixedUpdate()
+    // {
+        
+    //     if (!upDetector)
+    //     {
+    //         RaycastHit2D upHit = Physics2D.Raycast(new Vector2(transform.position.x,transform.position.y + .6f), new Vector2(0,.2f));
+    //         if (upHit.collider != null)
+    //         {
+    //             upDetector = true;
+    //             objectsAroundMe.Add(upHit.collider.gameObject);
+    //         }
+
+    //     }
+    //     if (!downDetector)
+    //     {
+    //         RaycastHit2D downHit = Physics2D.Raycast(new Vector2(transform.position.x,transform.position.y - .6f), new Vector2(0, - .2f));
+    //         if (downHit.collider != null)
+    //         {
+    //             downDetector = true;
+    //             objectsAroundMe.Add(downHit.collider.gameObject);
+    //         }
+    //     }
+
+    //     if (!leftDetector)
+    //     {
+    //         RaycastHit2D leftHit = Physics2D.Raycast(new Vector2(transform.position.x - .6f,transform.position.y), new Vector2(-.2f,0));
+    //         if (leftHit.collider != null)
+    //         {
+    //             leftDetector = true;
+    //             objectsAroundMe.Add(leftHit.collider.gameObject);
+    //         }
+    //     }
+
+    //     if (!rightDetector)
+    //     {
+    //         RaycastHit2D rightHit = Physics2D.Raycast(new Vector2(transform.position.x  + .6f,transform.position.y), new Vector2(.2f,0));
+    //         if (rightHit.collider != null)
+    //         {
+    //             rightDetector = true;
+    //             objectsAroundMe.Add(rightHit.collider.gameObject);
+    //         }
+    //     }
+    // }
 }
