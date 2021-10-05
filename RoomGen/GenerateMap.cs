@@ -231,9 +231,7 @@ public class GenerateMap : MonoBehaviour
                 }
             }
             ///
-            CarveOut10by10Rooms(map);
-            CarveOut10by10Rooms(map);
-            CarveOut10by10Rooms(map);
+            CarveOut10by10Rooms(map,4);
             ///
         
         for (int i = 0; i <= map.GetUpperBound(0); i++)  
@@ -269,9 +267,9 @@ public class GenerateMap : MonoBehaviour
 
                 else if (map[i,j] == 'C')
                 {
-                    GameObject x = Instantiate(TemplateRoom, new Vector2(i + .5f,j+ .5f),Quaternion.identity) as GameObject;
+                    GameObject x = Instantiate(TemplateRoom, new Vector2(i - .5f,j- .5f),Quaternion.identity) as GameObject;
 
-                    x.GetComponent<AddRoom>().OpenToggleDoor("up");
+                    x.GetComponent<AddRoom>().OpenAllDoors(true);
                 }
 
                 
@@ -464,9 +462,12 @@ private void TryCreateValidPath(char[,] map, int direction, int X, int Y)
         return false;
     }
 
-    private void CarveOut10by10Rooms(char[,] map)
+    private void CarveOut10by10Rooms(char[,] map, int roomsToSpawn)
     {
-        Pick:
+
+        for (int i = 1; i <= roomsToSpawn; i++)
+        {
+           Pick:
         //pick an X/Y coord
         X = UnityEngine.Random.Range(1,DLength);
         Y = UnityEngine.Random.Range(1,DHeight);
@@ -485,7 +486,9 @@ private void TryCreateValidPath(char[,] map, int direction, int X, int Y)
         {
             goto Pick;
         }
-        map[(X +5),(Y+5)] = 'C';
+        map[(X +5),(Y+5)] = 'C'; 
+        }
+        
 
 
     }

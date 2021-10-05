@@ -152,6 +152,37 @@ public class AddRoom : MonoBehaviour
         }
     }
 
+    public void OpenAllDoors(bool open)
+    {
+        if (open)
+        {
+            if (UpToggleDoor)
+            {
+                UpToggleDoor.SetActive(false);
+                DownToggleDoor.SetActive(false);
+                LeftToggleDoor.SetActive(false);
+                RightToggleDoor.SetActive(false);
+
+                UpDoorwayCollider.GetComponent<BoxCollider2D>().enabled = true;
+                DownDoorwayCollider.GetComponent<BoxCollider2D>().enabled = true;
+                LeftDoorwayCollider.GetComponent<BoxCollider2D>().enabled = true;
+                RightDoorwayCollider.GetComponent<BoxCollider2D>().enabled = true;
+            }
+            else
+            {
+                UpToggleDoor.SetActive(true);
+                DownToggleDoor.SetActive(true);
+                LeftToggleDoor.SetActive(true);
+                RightToggleDoor.SetActive(true);
+
+                UpDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                DownDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                LeftDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false;
+                RightDoorwayCollider.GetComponent<BoxCollider2D>().enabled = false; 
+            }
+        }
+    }
+
     public void CloseToggleDoor(string door)
     {
         switch (door)
