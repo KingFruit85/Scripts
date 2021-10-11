@@ -9,7 +9,7 @@ public class GenerateMap : MonoBehaviour
 {
 
     public int DHeight = 50;
-    public int DLength = 150;
+    public int DLength = 50;
     public int X = 0;
     public int Y = 0;
     public char[,] map;
@@ -22,145 +22,145 @@ public class GenerateMap : MonoBehaviour
         ResetMap('X', map);
         X = DLength / 2;
         Y = DHeight / 2;
-        map[X,Y] = '0';
+        // map[X,Y] = '0'; // Used for random walk algo
         bool spawnPlayer = true;
 
-        for (int walk = 1; walk <= 5000; walk++)
-        {
-            // Deciding if we'r moving on the x or y axis
-            var moveDirection = (UnityEngine.Random.Range(0,2) == 0) ? "x":"y";
+        // for (int walk = 1; walk <= 5000; walk++)
+        // {
+        //     // Deciding if we'r moving on the x or y axis
+        //     var moveDirection = (UnityEngine.Random.Range(0,2) == 0) ? "x":"y";
 
-            // Decide if we're moving forwards or backwards
-            // 0 = Backwards
-            // 1 = Forwards
-            var forwardOrBackward = (UnityEngine.Random.Range(0,2) == 0) ? 0 : 1;
+        //     // Decide if we're moving forwards or backwards
+        //     // 0 = Backwards
+        //     // 1 = Forwards
+        //     var forwardOrBackward = (UnityEngine.Random.Range(0,2) == 0) ? 0 : 1;
 
-            // Check if this direction is valid and moves if it is
-            bool canMoveUp = true;
-            bool canMoveDown = true;
-            bool canMoveLeft = true;
-            bool canMoveRight = true;
+        //     // Check if this direction is valid and moves if it is
+        //     bool canMoveUp = true;
+        //     bool canMoveDown = true;
+        //     bool canMoveLeft = true;
+        //     bool canMoveRight = true;
 
-            if (moveDirection == "x" && forwardOrBackward == 0)
-            {
-                if (CheckValid(X - 1,Y,map))
-                {
-                    X--;
-                    map[X,Y] = '0';
-                    continue;
-                }
-                else
-                {
-                    canMoveLeft = false;
-                    goto CheckOtherDirections;
-                }
-            }
-            if (moveDirection == "x" && forwardOrBackward == 1)
-            {
-                if (CheckValid(X + 1, Y, map))
-                {
-                    X++;
-                    map[X,Y] = '0';
-                    continue;
-                }    
-                else
-                {
-                    canMoveRight = false;
-                    goto CheckOtherDirections;
-                }                
-            }
-            if (moveDirection == "y" && forwardOrBackward == 0)
-            {
-                if (CheckValid(X, Y - 1, map))
-                {
-                    Y--;
-                    map[X,Y] = '0';
-                    continue;
-                }
-                else
-                {
-                    canMoveDown = false;
-                    goto CheckOtherDirections;
-                }
-            }
-            if (moveDirection == "y" && forwardOrBackward == 1)
-            {
-                if (CheckValid(X, Y + 1, map))
-                {
-                    Y++;
-                    map[X,Y] = '0';
-                    continue;
-                }
-                else
-                {
-                    canMoveUp = false;
-                    goto CheckOtherDirections;
-                }
-            }
+        //     if (moveDirection == "x" && forwardOrBackward == 0)
+        //     {
+        //         if (CheckValid(X - 1,Y,map))
+        //         {
+        //             X--;
+        //             map[X,Y] = '0';
+        //             continue;
+        //         }
+        //         else
+        //         {
+        //             canMoveLeft = false;
+        //             goto CheckOtherDirections;
+        //         }
+        //     }
+        //     if (moveDirection == "x" && forwardOrBackward == 1)
+        //     {
+        //         if (CheckValid(X + 1, Y, map))
+        //         {
+        //             X++;
+        //             map[X,Y] = '0';
+        //             continue;
+        //         }    
+        //         else
+        //         {
+        //             canMoveRight = false;
+        //             goto CheckOtherDirections;
+        //         }                
+        //     }
+        //     if (moveDirection == "y" && forwardOrBackward == 0)
+        //     {
+        //         if (CheckValid(X, Y - 1, map))
+        //         {
+        //             Y--;
+        //             map[X,Y] = '0';
+        //             continue;
+        //         }
+        //         else
+        //         {
+        //             canMoveDown = false;
+        //             goto CheckOtherDirections;
+        //         }
+        //     }
+        //     if (moveDirection == "y" && forwardOrBackward == 1)
+        //     {
+        //         if (CheckValid(X, Y + 1, map))
+        //         {
+        //             Y++;
+        //             map[X,Y] = '0';
+        //             continue;
+        //         }
+        //         else
+        //         {
+        //             canMoveUp = false;
+        //             goto CheckOtherDirections;
+        //         }
+        //     }
 
-            CheckOtherDirections:
-            // If it's not then the other 3 options
-            if (canMoveUp && CheckValid(X,Y+1,map))
-            {
-                Y++;
-                map[X,Y] = '0';
-                continue;
-            }
-            else
-            {
-                    canMoveUp = false;
-            }
+        //     CheckOtherDirections:
+        //     // If it's not then the other 3 options
+        //     if (canMoveUp && CheckValid(X,Y+1,map))
+        //     {
+        //         Y++;
+        //         map[X,Y] = '0';
+        //         continue;
+        //     }
+        //     else
+        //     {
+        //             canMoveUp = false;
+        //     }
 
-            if (canMoveDown && CheckValid(X,Y-1,map))
-            {
-                Y--;
-                map[X,Y] = '0';
-                continue;
-            }
-            else
-            {
-                canMoveDown = false;
-            }
+        //     if (canMoveDown && CheckValid(X,Y-1,map))
+        //     {
+        //         Y--;
+        //         map[X,Y] = '0';
+        //         continue;
+        //     }
+        //     else
+        //     {
+        //         canMoveDown = false;
+        //     }
 
-            if (canMoveLeft && CheckValid(X-1,Y,map))
-            {
-                X--;
-                map[X,Y] = '0';
-                continue;
-            }
-            else
-            {
-                canMoveLeft = false;
-            }
+        //     if (canMoveLeft && CheckValid(X-1,Y,map))
+        //     {
+        //         X--;
+        //         map[X,Y] = '0';
+        //         continue;
+        //     }
+        //     else
+        //     {
+        //         canMoveLeft = false;
+        //     }
 
-            if (canMoveRight && CheckValid(X+1,Y,map))
-            {
-                X++;
-                map[X,Y] = '0';
-                continue;
-            }
-            else
-            {
-                canMoveRight = false;
-            }
+        //     if (canMoveRight && CheckValid(X+1,Y,map))
+        //     {
+        //         X++;
+        //         map[X,Y] = '0';
+        //         continue;
+        //     }
+        //     else
+        //     {
+        //         canMoveRight = false;
+        //     }
 
-            if (!canMoveUp && !canMoveDown && !canMoveLeft && !canMoveRight)
-            {
-                map[X,Y] = 'E';
+        //     if (!canMoveUp && !canMoveDown && !canMoveLeft && !canMoveRight)
+        //     {
+        //         map[X,Y] = 'E';
 
-                X = UnityEngine.Random.Range(1,DLength -1);
-                Y = UnityEngine.Random.Range(1,DHeight -1);
+        //         X = UnityEngine.Random.Range(1,DLength -1);
+        //         Y = UnityEngine.Random.Range(1,DHeight -1);
 
-                if(CheckValid(X,Y,map))
-                {
-                    continue;
-                }
-                else
-                {
-                    goto End;
-                }
-            }
-        }
+        //         if(CheckValid(X,Y,map))
+        //         {
+        //             continue;
+        //         }
+        //         else
+        //         {
+        //             goto End;
+        //         }
+        //     }
+        // }
 
         End:
 
@@ -232,6 +232,7 @@ public class GenerateMap : MonoBehaviour
             }
             ///
             CarveOut10by10Rooms(map,4);
+
             ///
         
         for (int i = 0; i <= map.GetUpperBound(0); i++)  
@@ -464,32 +465,108 @@ private void TryCreateValidPath(char[,] map, int direction, int X, int Y)
 
     private void CarveOut10by10Rooms(char[,] map, int roomsToSpawn)
     {
-
         for (int i = 1; i <= roomsToSpawn; i++)
         {
-           Pick:
-        //pick an X/Y coord
-        X = UnityEngine.Random.Range(1,DLength);
-        Y = UnityEngine.Random.Range(1,DHeight);
+            Pick:
+            //pick an X/Y coord
+            X = UnityEngine.Random.Range(1,DLength);
+            Y = UnityEngine.Random.Range(1,DHeight);
 
-        if (CheckValid((X + 10),Y,map) && CheckValid(X,(Y + 10),map))
-        {
-            for (int y = 0; y <= 9; y++)
+            if (CheckValid((X + 10),Y,map) && CheckValid(X,(Y + 10),map))
             {
-                for (int x = 0; x <= 9; x++)
+                for (int y = 0; y <= 9; y++)
                 {
-                    map[(X + x),(Y + y)] = '0';
+                    for (int x = 0; x <= 9; x++)
+                    {
+                        map[(X + x),(Y + y)] = '0';
+                    }
                 }
             }
-        }
-        else
-        {
-            goto Pick;
-        }
-        map[(X +5),(Y+5)] = 'C'; 
-        }
-        
+            else
+            {
+                goto Pick;
+            }
+            map[(X +5),(Y+5)] = 'C'; 
 
+            // map[(X-1),(Y+5)] = '0';
+            // map[(X-1),(Y+4)] = '0';
+
+            // map[(X+10),(Y+5)] = '0';
+            // map[(X+10),(Y+4)] = '0';
+
+            // map[(X+4),(Y+10)] = '0';
+            // map[(X+5),(Y+10)] = '0';
+
+            // map[(X+4),(Y-1)] = '0';
+            // map[(X+5),(Y-1)] = '0';
+
+            Tunnel(X, Y, "Left", 20, map);
+            Tunnel(X, Y, "Right", 20, map);
+            Tunnel(X, Y, "Up", 20, map);
+            Tunnel(X, Y, "Down", 20, map);
+
+
+
+
+        }
+    }
+
+    private void Tunnel(int x, int y, string direction, int howFarToTunnel, char [,] map)
+    {
+        switch (direction)
+        {
+            case "Left":
+                var LX = 1;
+
+                for (int i = 0; i <= howFarToTunnel; i++)
+                {
+                    if (CheckValid((x-LX),(y+4),map))
+                    {
+                        map[(x-LX),(y+4)] = '0';
+                        map[(x-LX),(y+5)] = '0';
+                        LX ++;
+                    }
+                }break;
+
+            case "Right":
+                var RX = 10;
+
+                for (int i = 0; i <= (RX + howFarToTunnel); i++)
+                {
+                    if (CheckValid((x+RX),(y+4),map))
+                    {
+                        map[(x+RX),(y+4)] = '0';
+                        map[(x+RX),(y+5)] = '0';
+                        RX ++;
+                    }
+                }break;
+
+            case "Up":
+                var UX = 10;
+
+                for (int i = 0; i <= (UX + howFarToTunnel); i++)
+                {
+                    if (CheckValid((x+4),(y+UX),map))
+                    {
+                        map[(x+4),(y+UX)] = '0';
+                        map[(x+5),(y+UX)] = '0';
+                        UX ++;
+                    }
+                }break;
+
+            case "Down":
+                var DX = 1;
+
+                for (int i = 0; i <= (DX + howFarToTunnel); i++)
+                {
+                    if (CheckValid((x+4),(y-DX),map))
+                    {
+                        map[(x+4),(y-DX)] = '0';
+                        map[(x+5),(y-DX)] = '0';
+                        DX ++;
+                    }
+                }break;
+        }
 
     }
 
