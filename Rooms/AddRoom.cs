@@ -35,6 +35,15 @@ public class AddRoom : MonoBehaviour
     public GameObject[] leftToggleWalls;
     public GameObject[] rightToggleWalls;
 
+    public GameObject[] HorizontalTunnelTiles;
+    public GameObject[] VerticalTunnelTiles;
+    public GameObject[] LeftUpTunnelTiles;
+    public GameObject[] LeftDownTunnelTiles;
+    public GameObject[] RightUpTunnelTiles;
+    public GameObject[] RightDownTunnelTiles;
+    public GameObject[] AllTunnelTiles;
+
+
     public GameObject upSpawner;
     public GameObject downSpawner;
     public GameObject leftSpawner;
@@ -152,6 +161,47 @@ public class AddRoom : MonoBehaviour
         }
     }
 
+    public void OpenTunnel(string direction)
+    {
+        switch (direction)
+        {
+            case "horizontal":
+                foreach (var tile in HorizontalTunnelTiles){
+                    tile.SetActive(false);
+                }break;
+
+            case "vertical":
+                foreach (var tile in VerticalTunnelTiles){
+                    tile.SetActive(false);
+                }break;
+
+            case "leftUp":
+                foreach (var tile in LeftUpTunnelTiles){
+                    tile.SetActive(false);
+                }break;
+
+            case "leftDown":
+                foreach (var tile in LeftDownTunnelTiles){
+                    tile.SetActive(false);
+                }break;
+
+            case "rightUp":
+                foreach (var tile in RightUpTunnelTiles){
+                    tile.SetActive(false);
+                }break;
+
+            case "rightDown":
+                foreach (var tile in RightDownTunnelTiles){
+                    tile.SetActive(false);
+                }break;
+
+            case "all":
+                foreach (var tile in AllTunnelTiles){
+                    tile.SetActive(false);
+                }break;
+        }
+    }
+
     public void OpenAllDoors(bool open)
     {
         if (open)
@@ -185,6 +235,7 @@ public class AddRoom : MonoBehaviour
 
     public void CloseToggleDoor(string door)
     {
+        Debug.Log("CloseToggleDoor trying to close:" + door);
         switch (door)
         {
             default: throw new System.Exception("cannot find toggle door to remove");

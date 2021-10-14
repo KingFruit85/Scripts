@@ -13,6 +13,7 @@ public class RoomTemplates : MonoBehaviour
 
     public GameObject closedRooms;
     public GameObject templateRoom;
+    public GameObject tunnelRoom;
 
     public List<GameObject> rooms;
     public bool spawnMiniBossRoom = false;

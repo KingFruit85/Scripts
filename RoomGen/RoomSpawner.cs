@@ -6,19 +6,16 @@ using static System.Math;
 
 public class RoomSpawner : MonoBehaviour
 {
-    public string openingDirection;
     public RoomChecker[] myRoomCheckers;
-    public List<GameObject> requiredRooms;
-
     public Dictionary<GameObject,string> requiredRoomAndExitTriggerToBeDisabled = new Dictionary<GameObject, string>();
     public RoomTemplates templates;
     public List<string> validSpawnRoomExits = new List<string>();
     public List<string> invalidExits = new List<string>();
     public List<string> requiredDoors = new List<string>();
     public int myIndex;
-    public int randomNumberOfValidDoorsToOpen;
-    public List<string> shuffledValidSpawnRoomExits;
     private GameObject templateRoom;
+    private GameObject tunnelRoom;
+    private bool isTunnel = false;
     public GameManager GameManager { get; private set; }
     public GameObject otherSpawner;
     public GameObject myRoomsDestroyer;
@@ -26,12 +23,15 @@ public class RoomSpawner : MonoBehaviour
     void Awake()
     {
         myRoomCheckers = GetComponentsInChildren<RoomChecker>();
+
     }
 
     void Start()
     {
         templates = GameObject.FindGameObjectWithTag("Rooms").GetComponent<RoomTemplates>();
         templateRoom = templates.templateRoom;
+        tunnelRoom = templates.tunnelRoom;
+
         GameManager  = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         myIndex = templates.GetRoomSpawnerIndex();
@@ -41,6 +41,9 @@ public class RoomSpawner : MonoBehaviour
         {
             validSpawnRoomExits.Add(checker.GetName());
         }
+
+        
+
     }
 
     public void RemoveValidExit(string exit)
@@ -153,10 +156,8 @@ public class RoomSpawner : MonoBehaviour
             GB.GetComponent<Ghost>().moveSpeed += 3;
             GB.transform.parent = _newRoom.transform;
         }
-
-        
-
         }
+        // NON-MINIBOSS ROOM
         else
         {
 
@@ -188,10 +189,27 @@ public class RoomSpawner : MonoBehaviour
             otherSpawner.SetActive(false);
         }
 
-        // Spawn the room
-        GameObject _newRoom = Instantiate(templateRoom,transform.position,Quaternion.identity) as GameObject;
-        _newRoom.name =  "TemplateRoom" + gameObject.GetInstanceID();
+        
 
+        // Spawn the room
+        // Maybe add weights to the room types so tunnels are less common
+        GameObject _newRoom;
+        switch (Random.Range(0,2))
+        {
+            default:
+                _newRoom = Instantiate(templateRoom,transform.position,Quaternion.identity) as GameObject;
+                _newRoom.name =  "TemplateRoom" + gameObject.GetInstanceID();
+                break;
+            case 0: 
+                _newRoom = Instantiate(templateRoom,transform.position,Quaternion.identity) as GameObject;
+                _newRoom.name =  "TemplateRoom" + gameObject.GetInstanceID();
+                break;
+            case 1:
+                _newRoom = Instantiate(tunnelRoom,transform.position,Quaternion.identity) as GameObject;
+                _newRoom.name =  "TunnelRoom" + gameObject.GetInstanceID();
+                isTunnel = true;
+                break;
+        }
 
         // Decorate tiles
         var allChildren = _newRoom.GetComponentsInChildren<Transform>();
@@ -207,15 +225,6 @@ public class RoomSpawner : MonoBehaviour
 
         DecorateFloorTiles(floorTiles);
 
-        // Open the REQUIRED doors and disable their spawners, exit triggers
-
-        foreach (var door in requiredDoors)
-        {
-            _newRoom.GetComponent<AddRoom>().OpenToggleDoor(door);
-            _newRoom.GetComponent<AddRoom>().DisableSpawner(door);
-            DisableExitRoomTrigger(_newRoom,door);
-        }
-
         // Here is where I need to disable the opposing rooms exit trigger also
 
         // for each required door we have we also need to disable the opposite (ie up -> down ) exit trigger in the other room
@@ -224,6 +233,7 @@ public class RoomSpawner : MonoBehaviour
         {
             foreach (var e in requiredRoomAndExitTriggerToBeDisabled)
             {
+                Debug.Log(e.Key + " " + e.Value);
                 DisableExitRoomTrigger(e.Key,e.Value);
             }
         }
@@ -247,7 +257,22 @@ public class RoomSpawner : MonoBehaviour
                 break;
 
             case "left":
+                if (!isTunnel)
+                {
                 _newRoom.GetComponent<AddRoom>().OpenToggleDoor("right");
+                }
+                else
+                {
+                    switch ("horizontal")
+                    {
+                        case "horizontal":_newRoom.GetComponent<AddRoom>().OpenTunnel("horizontal");break;                 
+                        case "leftUp":break;                        
+                        case "leftDown":break;                        
+                        case "all":break;                        
+                    }
+                    
+                }
+
                 _newRoom.GetComponent<AddRoom>().DisableSpawner("right");
                 DisableExitRoomTrigger(_newRoom,"right");
                 break;
