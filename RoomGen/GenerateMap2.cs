@@ -7,10 +7,10 @@ using UnityEngine;
 public class GenerateMap2 : MonoBehaviour
 {
   
-    private int MapHeight = 51;
-    private int MapLength = 51;
-    private const int MaxRoomHeight = 10;
-    private const int MaxRoomLength = 10;
+    private int MapHeight = 55;
+    private int MapLength = 55;
+    private const int MaxRoomHeight = 15;
+    private const int MaxRoomLength = 15;
 
     public struct Room
     {
@@ -30,8 +30,6 @@ public class GenerateMap2 : MonoBehaviour
 
     [SerializeField]
     public int[] currentSpawnPoint = new int[2] {1,1};
-    private int[] nextSpawnPoint = new int[2]{1,1};
-
 
     // 0 = floor
     // 1 = wall
@@ -44,15 +42,11 @@ public class GenerateMap2 : MonoBehaviour
         // Fill out the 2D array with 1's
         InitializeMap();
         CreateRooms();
-
+        CreateCorridors();
         PlaceTiles();
-        var c = 1;
-        foreach (var room in Rooms)
-        {
-            Debug.Log($"Start Point {c} X{room.StartPoint[0]},Y{room.StartPoint[1]} Length:{room.Length} Height:{room.Height}");
-            c++;
-        }
     }
+
+    
 
     void PlaceTiles()
     {
@@ -73,34 +67,51 @@ public class GenerateMap2 : MonoBehaviour
                     x.transform.parent = GameObject.Find("WallTiles").transform;
                     x.gameObject.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = $"{i} , {j}";
                 }
+
+                if (map[i,j] == 6)
+                {
+                    GameObject x = Instantiate(Resources.Load("BlueTile"), new Vector2(i,j),Quaternion.identity) as GameObject;
+                }
             }
         }
     }
 
     void CreateRooms()
     {
-        for (int i = 0; i <= 25; i++)
+        for (int i = 0; i <= 24; i++)
         {
             // Get new room dimentions
             var length = UnityEngine.Random.Range(5,MaxRoomLength);
             var height = UnityEngine.Random.Range(5,MaxRoomHeight);
-            Debug.Log($"Create Rooms currentSpawnPoint = X:{currentSpawnPoint[0]} Y:{currentSpawnPoint[1]}::: nextSpawnPoint = X:{nextSpawnPoint[0]} Y:{nextSpawnPoint[1]}");
+            Debug.Log($" loop:{i} currentSpawnPoint = X{currentSpawnPoint[0]}, Y:{currentSpawnPoint[1]}");
 
             // Using default start point
             if (i == 0)
             {   
-                Debug.Log($"Hit first loop {i}");
                 CreateRoom(currentSpawnPoint,length,height);
+                GameObject x = Instantiate(Resources.Load("Player Variant 1"), new Vector2(currentSpawnPoint[0],currentSpawnPoint[1]),Quaternion.identity) as GameObject;
             }
             else
             {
-                Debug.Log($"Hit {i} Loop");
-                currentSpawnPoint = nextSpawnPoint;
-                Debug.Log($"Create Rooms currentSpawnPoint = X:{currentSpawnPoint[0]} Y:{currentSpawnPoint[1]}::: nextSpawnPoint = X:{nextSpawnPoint[0]} Y:{nextSpawnPoint[1]}");
                 SetNextSpawnPoint(currentSpawnPoint,length,height);
-                CreateRoom(nextSpawnPoint,length,height);
             }
         }
+    }
+
+    private void CreateCorridors()
+    {
+        // get the list of rooms
+        var rooms = Rooms;
+        // for each room get a wall that has an adjacent room
+
+        foreach (var room in rooms)
+        {
+            room.StartPoint[0] += MaxRoomLength;
+            room.StartPoint[1] += MaxRoomHeight/2;
+            map[room.StartPoint[0],room.StartPoint[1]] = 6;
+        }
+        // try to tunnel a path to it
+
     }
     
     
@@ -124,12 +135,17 @@ public class GenerateMap2 : MonoBehaviour
             return false;
         }
 
-        // If the position a wall tile return true 
+        // If the position is a wall tile return true 
         try
         {
              if (map[X,Y] == 1)
              {
                  return true;
+             }
+             else if (map[X,Y] == 0)
+             {
+                Debug.Log("Error, trying to spawn on an existing floor tile");
+                return false;
              }
         }
         catch (System.IndexOutOfRangeException)
@@ -146,19 +162,21 @@ public class GenerateMap2 : MonoBehaviour
             {
                 for (int j = newSpawnPoint[1]; j <= newSpawnPoint[1] + (newRoomHeight -1); j++)
                 {
-                    if (CheckIfSpawnPointIsValid(i,j) && map[i,j] != 0)
+                    if (CheckIfSpawnPointIsValid(i,j))
                     {
+                        Debug.Log("New room is valid");
                         return true;
                     }
                 }
             }
+            Debug.Log("New Room is not valid");
             return false;
     }
     
-    void SetNextSpawnPoint(int[] currentSpawnPoint, int newRoomLength, int newRoomHeight)
+    void SetNextSpawnPoint(int[] spawnPoint, int newRoomLength, int newRoomHeight)
     {
-        int X = currentSpawnPoint[0];
-        int Y = currentSpawnPoint[1];
+        int X = spawnPoint[0];
+        int Y = spawnPoint[1];
 
         int RightSpawn = X + MaxRoomLength + 1;
         int UpSpawn = Y + MaxRoomHeight + 1;
@@ -171,38 +189,47 @@ public class GenerateMap2 : MonoBehaviour
         {
             if (CheckIfNewRoomIsValid(new int[2]{RightSpawn,Y},newRoomLength,newRoomHeight))
             {
-                nextSpawnPoint = new int[2]{RightSpawn,Y};
-                goto End;
+                currentSpawnPoint = new int[2]{RightSpawn,Y};
+                CreateRoom(currentSpawnPoint,newRoomLength,newRoomHeight);
+                return;
             }            
         }
-        // Check Up
-        if (CheckIfSpawnPointIsValid(X, UpSpawn))
-        {
-            if (CheckIfNewRoomIsValid(new int[2]{X,UpSpawn},newRoomLength,newRoomHeight))
-            {
-                nextSpawnPoint = new int[2]{X,UpSpawn};
-                goto End;
-            }            
-        }
+        
         // Check Left
-        if (CheckIfSpawnPointIsValid(LeftSpawn, Y))
+        else if (CheckIfSpawnPointIsValid(LeftSpawn, Y))
         {
             if (CheckIfNewRoomIsValid(new int[2]{LeftSpawn,Y},newRoomLength,newRoomHeight))
             {
-                nextSpawnPoint = new int[2]{LeftSpawn,Y};
-                goto End;
+                currentSpawnPoint = new int[2]{LeftSpawn,Y};
+                CreateRoom(currentSpawnPoint,newRoomLength,newRoomHeight);
+                return;
             }            
         }
+        
+        // Check Up
+        else if (CheckIfSpawnPointIsValid(X, UpSpawn))
+        {
+            if (CheckIfNewRoomIsValid(new int[2]{X,UpSpawn},newRoomLength,newRoomHeight))
+            {
+                currentSpawnPoint = new int[2]{X,UpSpawn};
+                CreateRoom(currentSpawnPoint,newRoomLength,newRoomHeight);
+                return;
+            }            
+        }
+        
+        else
+        {
+            Debug.Log("Cannot find a suitable spawn point");
+            return;
+        }
 
-        End:
-        // currentSpawnPoint = nextSpawnPoint;
-        Debug.Log($"HitEnd! currentSpawnPOint = X:{currentSpawnPoint[0]} Y:{currentSpawnPoint[1]}...nextSpawnPoint = X:{nextSpawnPoint[0]} Y:{nextSpawnPoint[1]}");
     }
     
     void CreateRoom(int[] startPoint, int length, int height)
     {
         var X = startPoint[0];
         var Y = startPoint[1];
+
         // SetNextSpawnPoint() has done all the validity checking needed by this point
         for (int i = X; i <= X + (length - 1); i++)
             {
@@ -214,7 +241,6 @@ public class GenerateMap2 : MonoBehaviour
 
         // Save the room 
         Rooms.Add(new Room(startPoint,length,height));
-        Debug.Log("Room added to rooms list");
     }
     
     void InitializeMap()
