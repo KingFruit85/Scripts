@@ -23,7 +23,6 @@ public class RoomSpawner : MonoBehaviour
     void Awake()
     {
         myRoomCheckers = GetComponentsInChildren<RoomChecker>();
-
     }
 
     void Start()
@@ -194,7 +193,7 @@ public class RoomSpawner : MonoBehaviour
         // Spawn the room
         // Maybe add weights to the room types so tunnels are less common
         GameObject _newRoom;
-        switch (Random.Range(0,2))
+        switch (Random.Range(0,1))
         {
             default:
                 _newRoom = Instantiate(templateRoom,transform.position,Quaternion.identity) as GameObject;
@@ -204,11 +203,11 @@ public class RoomSpawner : MonoBehaviour
                 _newRoom = Instantiate(templateRoom,transform.position,Quaternion.identity) as GameObject;
                 _newRoom.name =  "TemplateRoom" + gameObject.GetInstanceID();
                 break;
-            case 1:
-                _newRoom = Instantiate(tunnelRoom,transform.position,Quaternion.identity) as GameObject;
-                _newRoom.name =  "TunnelRoom" + gameObject.GetInstanceID();
-                isTunnel = true;
-                break;
+            // case 1:
+            //     _newRoom = Instantiate(tunnelRoom,transform.position,Quaternion.identity) as GameObject;
+            //     _newRoom.name =  "TunnelRoom" + gameObject.GetInstanceID();
+            //     isTunnel = true;
+            //     break;
         }
 
         // Decorate tiles
@@ -257,22 +256,7 @@ public class RoomSpawner : MonoBehaviour
                 break;
 
             case "left":
-                if (!isTunnel)
-                {
                 _newRoom.GetComponent<AddRoom>().OpenToggleDoor("right");
-                }
-                else
-                {
-                    switch ("horizontal")
-                    {
-                        case "horizontal":_newRoom.GetComponent<AddRoom>().OpenTunnel("horizontal");break;                 
-                        case "leftUp":break;                        
-                        case "leftDown":break;                        
-                        case "all":break;                        
-                    }
-                    
-                }
-
                 _newRoom.GetComponent<AddRoom>().DisableSpawner("right");
                 DisableExitRoomTrigger(_newRoom,"right");
                 break;
@@ -296,6 +280,7 @@ public class RoomSpawner : MonoBehaviour
         // Make sure exits leading to walls are closed
         foreach (var door in invalidExits)
         {
+            Debug.Log(door);
             _newRoom.GetComponent<AddRoom>().CloseToggleDoor(door);
             _newRoom.GetComponent<AddRoom>().DisableSpawner(door);
             // CHANGE BACK FROM ALT WALL SPRITES

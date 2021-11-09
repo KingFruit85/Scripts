@@ -7,11 +7,7 @@ public class RoomTemplates : MonoBehaviour
 {
     public GameObject[] currentRoomCount;
     public GameObject startRoom;
-    public GameObject lab;
-    public GameObject[] rightRooms;
-    public GameObject[] roomWalls;
 
-    public GameObject closedRooms;
     public GameObject templateRoom;
     public GameObject tunnelRoom;
 
@@ -20,12 +16,8 @@ public class RoomTemplates : MonoBehaviour
 
     public int roomSpawnerCount = 0;
 
-    public float waitTime;
     [SerializeField]
-    private bool spawnedBoss;
-    public GameObject boss;
     private GameObject roomContainer;
-    private bool roomSpawnersAreActive = true;
     public bool startBuildingLevel;
 
     public GameObject[] activeSpawnPoints;
@@ -82,7 +74,7 @@ public class RoomTemplates : MonoBehaviour
     {
         currentRoomCount = GameObject.FindGameObjectsWithTag("Room");
 
-        if (currentRoomCount.Length >= 5) 
+        if (currentRoomCount.Length >=15) 
         {
             spawnMiniBossRoom = true;
         }

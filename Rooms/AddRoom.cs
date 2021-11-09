@@ -7,18 +7,11 @@ using UnityEngine.SceneManagement;
 public class AddRoom : MonoBehaviour
 {
     private RoomTemplates templates;
-    public bool up,down,left,right;
-    public bool x;
-
-    
-    public string[] roomExits;
     public bool isExitRoom;
     public bool exitSpawned;
     public GameObject exitPoint;
     public GameObject playerSpawnPoint;
     public GameObject room;
-    public string roomType;
-
 
     public GameObject LeftToggleDoor;
     public GameObject RightToggleDoor;
@@ -55,30 +48,7 @@ public class AddRoom : MonoBehaviour
 
     void Awake()            
     {
-
-        if (up)
-        {
-            string up = "up";
-            roomExits.Append(up);
-        }
-        if (down)
-        {
-            string down = "down";
-            roomExits.Append(down);
-        }
-        if (left)
-        {
-            string left = "left";
-            roomExits.Append(left);
-        }
-        if (right)
-        {
-            string right = "right";
-            roomExits.Append(right);
-        }
-
         objectSpawners = GetComponentsInChildren<Transform>().Where(t => t.tag == "ObjectSpawner").ToArray();
-
     }
     void Start()
     {  
@@ -161,47 +131,6 @@ public class AddRoom : MonoBehaviour
         }
     }
 
-    public void OpenTunnel(string direction)
-    {
-        switch (direction)
-        {
-            case "horizontal":
-                foreach (var tile in HorizontalTunnelTiles){
-                    tile.SetActive(false);
-                }break;
-
-            case "vertical":
-                foreach (var tile in VerticalTunnelTiles){
-                    tile.SetActive(false);
-                }break;
-
-            case "leftUp":
-                foreach (var tile in LeftUpTunnelTiles){
-                    tile.SetActive(false);
-                }break;
-
-            case "leftDown":
-                foreach (var tile in LeftDownTunnelTiles){
-                    tile.SetActive(false);
-                }break;
-
-            case "rightUp":
-                foreach (var tile in RightUpTunnelTiles){
-                    tile.SetActive(false);
-                }break;
-
-            case "rightDown":
-                foreach (var tile in RightDownTunnelTiles){
-                    tile.SetActive(false);
-                }break;
-
-            case "all":
-                foreach (var tile in AllTunnelTiles){
-                    tile.SetActive(false);
-                }break;
-        }
-    }
-
     public void OpenAllDoors(bool open)
     {
         if (open)
@@ -235,7 +164,6 @@ public class AddRoom : MonoBehaviour
 
     public void CloseToggleDoor(string door)
     {
-        Debug.Log("CloseToggleDoor trying to close:" + door);
         switch (door)
         {
             default: throw new System.Exception("cannot find toggle door to remove");
