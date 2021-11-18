@@ -38,7 +38,11 @@ public class Map : MonoBehaviour
     public SimpleRoomInfo[,] map;
     public int mapLength = 10;
     public int MapHeight = 10;
-    
+    public Vector3 CurrentMapPosition;
+    public Vector3 CurrentSpawnPosition = new Vector3(0,0,0);
+    private int lastMapX;
+    private int lastMapY;
+
     void Awake()
     {
         map = new SimpleRoomInfo[10,10];
@@ -46,9 +50,8 @@ public class Map : MonoBehaviour
         int y = MapHeight / 2; 
 
         //Set start room
-        map[x,y] = new SimpleRoomInfo();
-        OpenOneOrMoreDoors(map[x,y]);
-        SpawnRooms();
+        FillMapWithRooms();
+        SpawnRoomsInGameSpace();
     }
 
     /// <summary> Takes a room and opens 1-4 doors at random </summary>
@@ -65,10 +68,10 @@ public class Map : MonoBehaviour
         }
     }
 
-    public void SpawnRoom(int x, int y)
+    public void SpawnRoom(int x, int y, Vector3 worldPos)
     {
         GameObject TemplateRoom = Resources.Load("SimpleRoom") as GameObject;
-        GameObject _newRoom = Instantiate(TemplateRoom,new Vector3(x,y,0),Quaternion.identity);
+        GameObject _newRoom = Instantiate(TemplateRoom,worldPos,Quaternion.identity);
                    _newRoom.transform.parent = GameObject.Find("Rooms").transform;
                    if (map[x,y].UpDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("UP");
                    if (map[x,y].DownDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("DOWN");
@@ -76,15 +79,37 @@ public class Map : MonoBehaviour
                    if (map[x,y].RightDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("RIGHT");
     }
 
-    public void SpawnRooms()
+    public void FillMapWithRooms()
     {
         for (int x = 0; x < map.GetLength(0); x++)
         {
             for (int y = 0; y < map.GetLength(1); y++)
             {
+                CurrentMapPosition = new Vector3(x,y,0);
+                map[x,y] = new SimpleRoomInfo();
+                OpenOneOrMoreDoors(map[x,y]);
+            }
+        }
+    }
+
+    public Vector3 ConvertMapPositionToWorldPosition(int x, int y)
+    {
+        return new Vector3((x*10),(y*10),0);
+    }
+
+    public void SpawnRoomsInGameSpace()
+    {
+        
+        for (int y = 0; y < map.GetLength(0); y++)
+        {
+            for (int x = 0; x < map.GetLength(1); x++)
+            {
                 if (map[x, y] != null)
                 {
-                    SpawnRoom( x, y );
+                    var worldPos = ConvertMapPositionToWorldPosition(x,y);
+                    SpawnRoom( x, y, worldPos );
+                    lastMapX = x;
+                    lastMapY = y;
                 }
             }
         }
