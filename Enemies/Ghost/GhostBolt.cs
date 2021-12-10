@@ -76,7 +76,7 @@ public class GhostBolt : MonoBehaviour
     {   
         damage = gameManager.rangedAttackBonus + player.GetComponent<Ghost>().ghostBoltDamage;
         aim = (playerMouseClick - transform.position);
-        rb.AddForce(aim * speed);
+        rb.AddForce(aim * (speed * 5));
     }
 
     private void ShootAtPlayer()

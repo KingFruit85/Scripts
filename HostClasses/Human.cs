@@ -250,9 +250,7 @@ public class Human : MonoBehaviour
             }
             else
             {
-                
                 audioManager.Play("SwordMiss");
-
             }
         }
     }

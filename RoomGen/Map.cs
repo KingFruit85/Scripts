@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class SimpleRoomInfo
@@ -14,9 +12,11 @@ public class SimpleRoomInfo
         public int MapPositionY;
         public List<string> availbleDoors = new List<string>(){"UP", "DOWN","LEFT","RIGHT"};
         public bool isUsed;
+        public bool placed;
+        public bool AlreadyPassedThrough;
 
         // Default constructor
-        public SimpleRoomInfo(int x, int y)
+        public SimpleRoomInfo(int x, int y, string r)
         {
             this.UpDoor = false;
             this.DownDoor = false;
@@ -25,6 +25,7 @@ public class SimpleRoomInfo
             this.isStartRoom = false;
             this.MapPositionX = x;
             this.MapPositionY = y;
+            this.AlreadyPassedThrough = false;
         }
 
         public void OpenDoor(string door)
@@ -48,13 +49,16 @@ public class Map : MonoBehaviour
     public Vector3 CurrentMapPosition;
     private int lastMapX;
     private int lastMapY;
-    private bool buildingPath;
+    public GameObject cameraBox;
 
     void Awake()
     {
         map = new SimpleRoomInfo[mapLength,MapHeight];
         int x = mapLength / 2; 
         int y = MapHeight / 2; 
+        cameraBox = Resources.Load("CameraBox") as GameObject;
+        GameObject camBox = Instantiate(cameraBox,Vector3.zero,Quaternion.identity) as GameObject;
+        camBox.name = "CameraBox";
 
         //Set start room
         FillMapWithRooms();
@@ -62,38 +66,35 @@ public class Map : MonoBehaviour
         SpawnRoomsInGameSpace();
     }
 
-    /// <summary> Takes a room and opens 1 or more doors at random </summary>
-    public void OpenOneOrMoreDoors(SimpleRoomInfo room)
-    {
-        int numberOfDoorsToOpen = Random.Range(0,room.availbleDoors.Count);
-        for (int i = 0; i <= numberOfDoorsToOpen; i++)
-        {
-            string door = room.availbleDoors[Random.Range(0,room.availbleDoors.Count)];
-            room.OpenDoor(door);
-            room.availbleDoors.Remove(door);
-        }
-    }
-
     /// <summary> Spawns a room into gamespace and open any valid doors </summary>
-    public void SpawnRoom(int x, int y, Vector3 worldPos, int roomNumber)
+    public void SpawnRoom(int x, int y, Vector3 worldPos, int RoomNumber)
     {
         GameObject TemplateRoom = Resources.Load("SimpleRoom") as GameObject;
         GameObject _newRoom = Instantiate(TemplateRoom,worldPos,Quaternion.identity);
-                   _newRoom.name = $"X:{x} Y:{y} RoomNumber {roomNumber}";
-                   _newRoom.gameObject.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = roomNumber.ToString();
+                   _newRoom.name = $"X:{x} Y:{y} Room {RoomNumber}";
                    _newRoom.transform.parent = GameObject.Find("Rooms").transform;
+                   _newRoom.GetComponent<SimpleRoom>().EnemyCount = Random.Range(0,4);
+                   
                    if (map[x,y].UpDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("UP");
                    if (map[x,y].DownDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("DOWN");
                    if (map[x,y].LeftDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("LEFT");
                    if (map[x,y].RightDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("RIGHT");
+
         
-        // If start room spawn player
-        if (map[x,y].isStartRoom)
+        // If start room remove any enemies and spawn player
+        if (RoomNumber == 0)
         {
-            Instantiate(Resources.Load("Player Variant 1"),worldPos,Quaternion.identity);
+            _newRoom.name += " START ROOM";
+            _newRoom.GetComponent<SimpleRoom>().EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
+            Instantiate(Resources.Load("Player Variant 1"),_newRoom.transform.position,Quaternion.identity);
             var camera = GameObject.Find("Main Camera");
-            camera.transform.position = worldPos;
+            camera.transform.position = _newRoom.transform.position;
         } 
+
+        if (RoomNumber == GetTotalValidRooms()-1)
+        {
+            _newRoom.name += " END ROOM";
+        }
     }
 
     /// <summary> Bulk fills the 2D map array with SimpleRoomInfoObjects </summary>
@@ -103,24 +104,15 @@ public class Map : MonoBehaviour
         {
             for (int y = 0; y < map.GetLength(1); y++)
             {
+                if (map[x,y] == null || !map[x,y].placed)
+                {
+
+                    map[x,y] = new SimpleRoomInfo(x,y,"10X10Room");
+                    map[x,y].placed = true;
+                }
                 CurrentMapPosition = new Vector3(x,y,0);
-                map[x,y] = new SimpleRoomInfo(x,y);
             }
         }
-    }
-    /// <summary> Checks if the provided room is valid and in the array  </summary>
-    public bool CheckIfRoomIsValid(SimpleRoomInfo[,] mapPos)
-    {
-        // Check iof potential rooms are in the bounds of the array
-        try
-        {
-             var x = mapPos;
-        }
-        catch (System.IndexOutOfRangeException)
-        {
-            return false;
-        }
-        return true;
     }
 
     /// <summary> Removes room exits that would lead out of bounds of the array  </summary>
@@ -139,7 +131,40 @@ public class Map : MonoBehaviour
         RemoveInvalidExits(room);
 
         // Return a random valid door
+        start:
         string door = room.availbleDoors[Random.Range(0,room.availbleDoors.Count)];
+        switch (door)
+        {
+            default:Debug.Log("No rooms remaining"); break;
+            case "UP":
+                if (map[(room.MapPositionX),(room.MapPositionY+1)].AlreadyPassedThrough)
+                {
+                    room.availbleDoors.Remove("UP");
+                    goto start;
+                }break; 
+
+            case "DOWN":
+                if (map[(room.MapPositionX),(room.MapPositionY-1)].AlreadyPassedThrough)
+                {
+                    room.availbleDoors.Remove("DOWN");
+                    goto start;
+                }break; 
+
+            case "LEFT":   
+                if (map[(room.MapPositionX-1),(room.MapPositionY)].AlreadyPassedThrough)
+                {
+                    room.availbleDoors.Remove("LEFT");
+                    goto start;
+                }break;    
+
+            case "RIGHT":  
+                if (map[(room.MapPositionX+1),(room.MapPositionY)].AlreadyPassedThrough)
+                {
+                    room.availbleDoors.Remove("RIGHT");
+                    goto start;
+                }break;           
+        }
+        
         room.OpenDoor(door);
         // Open the adjacent rooms door
         SimpleRoomInfo connectingRoom = map[0,0];
@@ -173,23 +198,40 @@ public class Map : MonoBehaviour
     {
         // Pick a random start room
         var currentRoom = map[Random.Range(0,(map.GetLength(0)-1)),Random.Range(0,(map.GetLength(1)-1))];
-        Debug.Log($"X:{currentRoom.MapPositionX}, Y:{currentRoom.MapPositionY}");
         currentRoom.isStartRoom = true;
 
         // Need to track the current room and the next room
-
         for (int i = 0; i < (map.GetLength(0) * map.GetLength(1)); i++)
         {
             currentRoom.isUsed = true;
             currentRoom = OpenRandomValidDoor(currentRoom);
         }
-
     }
+    
     /// <summary> Converts the position in the 2D array to the game space </summary>
     public Vector3 ConvertMapPositionToWorldPosition(int x, int y)
     {
         return new Vector3((x*10),(y*10),0);
     }
+
+    public int GetTotalValidRooms()
+    {
+        int totalValidRooms = 0;
+
+        for (int y = 0; y < map.GetLength(0); y++)
+                {
+                    for (int x = 0; x < map.GetLength(1); x++)
+                    {
+                        if (map[x, y] != null && map[x, y].isUsed)
+                        {
+                            totalValidRooms++;
+                        }
+                    }
+                }
+        Debug.Log($"There are {totalValidRooms} total valid rooms");
+        return totalValidRooms;
+    }
+
 
     /// <summary> Iterates over the 2D map array and spawns any valid rooms into gamespace </summary>
     public void SpawnRoomsInGameSpace()
@@ -202,7 +244,7 @@ public class Map : MonoBehaviour
                 if (map[x, y] != null && map[x, y].isUsed)
                 {
                     var worldPos = ConvertMapPositionToWorldPosition(x,y);
-                    SpawnRoom( x, y, worldPos, roomNumber );
+                    SpawnRoom( x, y, worldPos, roomNumber);
                     lastMapX = x;
                     lastMapY = y;
                     roomNumber++;

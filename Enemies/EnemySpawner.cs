@@ -4,23 +4,28 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject[] enemies;
-    public float waitTime = 1.5f;
-    private int rand;
+    public List<GameObject> enemies;
+    public GameManager GameManager;
     public GameObject spawnRoom;
+    public bool canSpawn = true;
 
     void Start()
     {
-        // Clears self up
-        Destroy(gameObject, waitTime);
-		rand = Random.Range(0, enemies.Length);
+        GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
-        if (enemies.Length > 0)
+        if (GameManager.currentGameLevel == 1)
         {
-            var enemy = Instantiate(enemies[rand],new Vector3(transform.position.x,transform.position.y,0),Quaternion.identity);
-            enemy.transform.parent = spawnRoom.transform;
+            enemies.Add(Resources.Load("Worm") as GameObject);
+            enemies.Add(Resources.Load("Ghost") as GameObject);
         }
-        
 
+        if (canSpawn && enemies.Count > 0)
+        {
+            for (int i = 0; i < spawnRoom.GetComponent<SimpleRoom>().EnemyCount; i++)
+            {
+                var enemy = Instantiate(enemies[i],new Vector3(transform.position.x,transform.position.y,0),Quaternion.identity);
+                enemy.transform.parent = spawnRoom.transform;
+            }
+        }
     }
 }

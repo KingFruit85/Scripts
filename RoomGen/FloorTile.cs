@@ -42,7 +42,7 @@ public class FloorTile : MonoBehaviour
         
         r = Random.Range(0, roomSprites.critFloor.Length -1);
 
-        // critSprite = roomSprites.critFloor[r];
+        critSprite = roomSprites.critFloor[r];
 
         SetFloorTileColor();
               
@@ -59,7 +59,8 @@ public class FloorTile : MonoBehaviour
 
     public void SetFloorTileColor()
     {
-        sr.color = gameManager.LevelFloorBaseColor;
+        // sr.color = gameManager.LevelFloorBaseColor;
+        sr.color = Color.white;
         defaultColor = sr.color;
     }
 
@@ -87,7 +88,6 @@ public class FloorTile : MonoBehaviour
         if (col)
         {
             isTouchingOtherCollider = true; 
-            Debug.Log(col.name);
         }
     }
 

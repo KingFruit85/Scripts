@@ -29,6 +29,7 @@ public class DoorController : MonoBehaviour
     {
         topLeft = transform.Find("TopLeft").gameObject;
         bottomRight = transform.Find("BottomRight").gameObject;
+        GameObject.Find("CameraBox").transform.position = camAnchor.transform.position;
     }
 
     void Start()
@@ -57,6 +58,15 @@ public class DoorController : MonoBehaviour
             canSpawn = true;
         }
 
+    }
+
+    public void KillAllEnemiesInRoom()
+    {
+        foreach (var enemy in enemies)
+        {
+            Debug.Log($"Destroyed {enemy.name}");
+            Destroy(enemy);
+        }
     }
 
     public void SetExitTriggers(GameObject[] exits)
@@ -125,6 +135,7 @@ public class DoorController : MonoBehaviour
             // Detects player is in the room and moves the camera
             var cam = GameObject.FindGameObjectWithTag("MainCamera");
             cam.transform.position = camAnchor.transform.position;
+            GameObject.Find("CameraBox").transform.position = camAnchor.transform.position;
         }
 
         if (enemies.Length > 0)

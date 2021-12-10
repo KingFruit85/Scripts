@@ -155,7 +155,9 @@ public class Wall : MonoBehaviour
     }
     public void SetWallTileColor()
     {
-            sr.color = gameManager.LevelWallBaseColor;
+            // sr.color = gameManager.LevelWallBaseColor;
+            sr.color = Color.white;
+
             defaultColor = sr.color;
             cam.backgroundColor = gameManager.LevelWallBaseColor;
     }
