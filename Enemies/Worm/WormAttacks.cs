@@ -106,9 +106,15 @@ public class WormAttacks : MonoBehaviour
             {
                 foreach (Collider2D enemy in hitEnemies)
                 {
+                    bool isCrit = false;
+                    if (Random.Range(0,21) == 20)
+                    {
+                        isCrit = true;
+                        attackDamage += (attackDamage*2);
+                    }
                     if ( enemy != null )
                     {
-                        enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject, "WormPoison", false);    
+                        enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject, "WormPoison", isCrit);    
                         enemy.GetComponent<PlayerMovement>().DazeForSeconds(2);
                     } 
                 }

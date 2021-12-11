@@ -125,7 +125,7 @@ public class GhostBolt : MonoBehaviour
         // Ghost logic, should only do damage to player and if shot is deflected do no damage
         if (shooter == "Ghost" && other.tag == "Player" && !deflected)
         {
-            // If player is human and dashing dont apply damage
+            // If player is human and dashing don't apply damage
             if (player.GetComponent<Human>() && player.GetComponent<Human>().isPlayerDashing())
             {
                 return;
@@ -134,7 +134,13 @@ public class GhostBolt : MonoBehaviour
             // if player not dashing apply damage
             else
             {
-                player.GetComponent<Health>().TakeDamage( damage, transform.parent.gameObject, gameObject.tag, false );
+                bool isCrit = false;
+                if (Random.Range(0,11) == 10)
+                {
+                    isCrit = true;
+                    damage += (damage*2);
+                }
+                player.GetComponent<Health>().TakeDamage( damage, transform.parent.gameObject, gameObject.tag, isCrit );
                 //add animation
                 Destroy(this.gameObject);
             }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Wall : MonoBehaviour
@@ -127,6 +128,7 @@ public class Wall : MonoBehaviour
         defaultSprite = sr.sprite;
     }
 
+    //Perhaps just limit the sprite change to the current room?
     private IEnumerator CritFlash(float duration)
     {
         sr.sprite = critSprite;
@@ -135,6 +137,7 @@ public class Wall : MonoBehaviour
         sr.color = defaultColor;
         sr.sprite = defaultSprite;
     }
+
 
     void Update()
     {

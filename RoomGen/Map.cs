@@ -94,6 +94,11 @@ public class Map : MonoBehaviour
         if (RoomNumber == GetTotalValidRooms()-1)
         {
             _newRoom.name += " END ROOM";
+            GameObject GhostBoss = Instantiate(Resources.Load("Ghost"),_newRoom.transform.position,Quaternion.identity) as GameObject;
+            GhostBoss.transform.parent = _newRoom.transform;
+            GhostBoss.name = "GhostBoss";
+            GhostBoss.tag = "GhostBoss";
+            GhostBoss.GetComponent<Health>().isBoss = true;
         }
     }
 
@@ -228,7 +233,6 @@ public class Map : MonoBehaviour
                         }
                     }
                 }
-        Debug.Log($"There are {totalValidRooms} total valid rooms");
         return totalValidRooms;
     }
 

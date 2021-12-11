@@ -251,14 +251,14 @@ public class Health : MonoBehaviour
         ////////////////
         //Hit connects//
         ////////////////
-        if (gameObject.tag == "Player")
+        if (gameObject.tag == "Player" && isCrit)
         {
-            gameManager.SetPlayerHit();
+            cameraShaker.Shake(.3f,3.0f);
+            gameManager.SetPlayerHit(isCrit);
+            
         }
         // Log attacker
         lastHitBy = attacker;
-        // Shake screen if receiver is player
-        if (gameObject.tag == player.tag) cameraShaker.Shake(.3f,3.0f);
         // Display the damage as a popup
         DamagePopup.Create( transform.position, damage, isCrit );
         // Flash Red to confirm hit
@@ -271,7 +271,6 @@ public class Health : MonoBehaviour
             TriggerKnockBack();
             TriggerAttackDelayReset();
         }
-    
     }
 
     private void TriggerKnockBack()
@@ -326,7 +325,7 @@ public class Health : MonoBehaviour
         if (gameObject.tag == "GhostBoss")
         {
             // Take player to game over screen for the time being
-            currentRoom.GetComponent<AddRoom>().SpawnWinGameExit(); 
+            currentRoom.GetComponent<SimpleRoom>().SpawnExitTile(); 
             // gameManager.TemporaryGameComplete();
 
         }
