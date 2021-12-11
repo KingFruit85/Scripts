@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
@@ -18,8 +19,8 @@ public class GameManager : MonoBehaviour
     public int healthBonus;
     public int rangedAttackBonus;
     public bool playerHit = false;
-
     public bool spawnFog = false;
+    public GameObject CritMsg;
 
 
     void Awake()
@@ -152,17 +153,30 @@ public class GameManager : MonoBehaviour
         // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    private IEnumerator Hit(float duration)
+
+    string[] critMessages = new string[]{"FEEL NOTHING", "YOU WILL LOVE ME", "FOCUS", "KEEP DREAMING","NO","DON'T THINK","HUSH"};
+
+
+    private IEnumerator Hit(float duration, bool isCrit)
     {
         playerHit = true;
+        // If crit
+        if (isCrit)
+        {
+            CritMsg.GetComponent<TextMeshProUGUI>().text = critMessages[Random.Range(0,critMessages.Length)];
+        }
         yield return new WaitForSeconds( duration );
+        
+        CritMsg.GetComponent<TextMeshProUGUI>().text = "";
+
         playerHit = false;
+
 
     }
 
-    public void SetPlayerHit()
+    public void SetPlayerHit(bool isCrit)
     {
-        StartCoroutine(Hit(0.1f));
+        StartCoroutine(Hit(0.1f,isCrit));
     }
 
     public void TemporaryGameComplete()
