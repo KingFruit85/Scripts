@@ -290,6 +290,7 @@ public class Health : MonoBehaviour
             {
                 default:throw new System.Exception("unknown recipient of damage");
                 case "Ghost": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
+                case "MiniBoss": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
                 case "Worm": gameObject.GetComponent<WormAttacks>().ResetAttackDelay();break;
                 case "GhostBoss" : gameObject.GetComponent<GhostBossAttacks>().ResetAttackDelay();break;
             }
@@ -330,11 +331,10 @@ public class Health : MonoBehaviour
 
         }
 
-        if (isBoss && gameObject.tag != "GhostBoss")
+        if (isBoss && gameObject.tag == "MiniBoss")
         {
-            currentRoom.GetComponent<AddRoom>().SpawnExit(); 
+            currentRoom.GetComponent<SimpleRoom>().UnlockExitTile(); 
             gameManager.miniBossKilled = true;
-            
         }
 
         if (!isDead && gameObject.name != player.tag)
@@ -405,6 +405,11 @@ public class Health : MonoBehaviour
             isBloodied = false;
         }
         if (isBoss)
+        {
+            sr.color = new Color(156,21,21,255);
+            currentRoom = transform.parent.gameObject;
+        }
+        if (gameObject.tag == "MiniBoss")
         {
             sr.color = new Color(156,21,21,255);
             currentRoom = transform.parent.gameObject;

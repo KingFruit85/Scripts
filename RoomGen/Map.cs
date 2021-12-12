@@ -91,14 +91,15 @@ public class Map : MonoBehaviour
             camera.transform.position = _newRoom.transform.position;
         } 
 
+        // If end room remove any enemies and spawn mini boss and exit tile
+
         if (RoomNumber == GetTotalValidRooms()-1)
         {
             _newRoom.name += " END ROOM";
-            GameObject GhostBoss = Instantiate(Resources.Load("Ghost"),_newRoom.transform.position,Quaternion.identity) as GameObject;
-            GhostBoss.transform.parent = _newRoom.transform;
-            GhostBoss.name = "GhostBoss";
-            GhostBoss.tag = "GhostBoss";
-            GhostBoss.GetComponent<Health>().isBoss = true;
+            _newRoom.GetComponent<SimpleRoom>().EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
+            GameObject mb = Instantiate(Resources.Load("GhostMiniBoss"),_newRoom.transform.position,Quaternion.identity) as GameObject;
+            _newRoom.GetComponent<SimpleRoom>().SpawnExitTile();
+            mb.transform.parent = _newRoom.transform;
         }
     }
 

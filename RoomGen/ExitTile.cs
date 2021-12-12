@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class ExitTile : MonoBehaviour
 {
-    private LevelLoader levelLoader;
+    public LevelLoader levelLoader;
     public bool isShopLevel;
     void Awake()
     {
