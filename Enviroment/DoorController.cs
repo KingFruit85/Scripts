@@ -38,7 +38,7 @@ public class DoorController : MonoBehaviour
         var spawners = Physics2D.OverlapAreaAll(topLeft.transform.position, bottomRight.transform.position, itemSpawners);
         enemies = Physics2D.OverlapAreaAll(topLeft.transform.position, bottomRight.transform.position, enemyLayer);
 
-        // SOme rooms may not have enemies
+        // Some rooms may not have enemies
         // if (enemies.Length > 0)
         // {
         //     allEnemiesKilled = false;
@@ -136,6 +136,14 @@ public class DoorController : MonoBehaviour
             var cam = GameObject.FindGameObjectWithTag("MainCamera");
             cam.transform.position = camAnchor.transform.position;
             GameObject.Find("CameraBox").transform.position = camAnchor.transform.position;
+            
+            var spawner = transform.parent.Find("EnemySpawner").GetComponent<EnemySpawner>();
+            
+            if (spawner.canSpawn)
+            {
+                Debug.Log("Spawning enemies in room");
+                spawner.SpawnEnemies();
+            }
         }
 
         if (enemies.Length > 0)

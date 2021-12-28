@@ -35,7 +35,7 @@ public class ExitTile : MonoBehaviour
             }
             else if (isShopLevel)
             {
-                levelLoader.LoadNextLevel("PCG");
+                levelLoader.LoadNextLevel("MapTest");
                 gameManager.currentGameLevel ++;
             }
             else

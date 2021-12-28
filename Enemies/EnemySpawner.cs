@@ -5,13 +5,19 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public List<GameObject> enemies;
+    public SimpleRoom simpR;
     public GameManager GameManager;
     public GameObject spawnRoom;
+    public GameObject[] spawnableTiles;
     public bool canSpawn = true;
+
+    public List<Vector2> _availbleTiles;
+    public List<Vector2> availbleTiles;
 
     void Start()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        simpR = transform.parent.GetComponent<SimpleRoom>();
 
         if (GameManager.currentGameLevel == 1)
         {
@@ -19,13 +25,41 @@ public class EnemySpawner : MonoBehaviour
             enemies.Add(Resources.Load("Ghost") as GameObject);
         }
 
-        if (canSpawn && enemies.Count > 0)
+    }
+
+    public List<Vector2> GetValidSpawns()
+    {
+        _availbleTiles = simpR.GetAllTilesOfType('░');
+        availbleTiles = new List<Vector2>();
+
+
+        foreach (var tile in _availbleTiles)
         {
-            for (int i = 0; i < spawnRoom.GetComponent<SimpleRoom>().EnemyCount; i++)
+            availbleTiles.Add(simpR.ArrayToWorldPOS(tile));
+        } 
+
+        return availbleTiles;
+    }
+
+    public void SpawnEnemies()
+    {
+        if (canSpawn)
+        {
+            var spawnPoints = GetValidSpawns();
+            
+
+            for (int i = 0; i <= simpR.EnemyCount; i++)
             {
-                var enemy = Instantiate(enemies[i],new Vector3(transform.position.x,transform.position.y,0),Quaternion.identity);
-                enemy.transform.parent = spawnRoom.transform;
+                var posA = spawnPoints[Random.Range(0,(spawnPoints.Count -1))];
+                GameObject mob = Instantiate(enemies[Random.Range(0,(enemies.Count - 1))], posA, Quaternion.identity);
+                mob.transform.parent = transform.parent.Find("Tiles").transform;
+                
+                Debug.Log($"Spawning a {mob.name} at {posA}");
+                mob.transform.localPosition = posA;
+
             }
+            canSpawn = false;
         }
+        
     }
 }

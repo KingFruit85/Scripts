@@ -120,11 +120,23 @@ public class Health : MonoBehaviour
         {
             if (gameObject.tag == player.tag)
             {
+                int chance = Random.Range(0,11);
                 switch (lastHitBy.tag)
                 {
                     default:Die();break;
-                    case "Ghost":SwapHost(lastHitBy);break;
-                    case "Worm":SwapHost(lastHitBy);break;
+
+                    case "Ghost":
+                        if (chance == 10){
+                            SwapHost(lastHitBy);
+                            break;
+                        }else{Die();break;
+                        }
+                    case "Worm":
+                        if (chance == 10){
+                                SwapHost(lastHitBy);
+                                break;
+                            }else{Die();break;
+                            }
                 }   
             }
             else
@@ -305,7 +317,7 @@ public class Health : MonoBehaviour
 
     void Die()
     {
-        // PLayer death
+        // Player death
         if (gameObject.tag == "Player")
         {
             // Stops player from being able to move on death and plays death animation 

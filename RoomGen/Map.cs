@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class SimpleRoomInfo
@@ -14,6 +17,8 @@ public class SimpleRoomInfo
         public bool isUsed;
         public bool placed;
         public bool AlreadyPassedThrough;
+        public string RoomType;
+        public List<string> RoomTypes = new List<string>(){"Standard", "Puzzle", "Trap", "LoreRoom", "Prize"};
 
         // Default constructor
         public SimpleRoomInfo(int x, int y, string r)
@@ -26,6 +31,7 @@ public class SimpleRoomInfo
             this.MapPositionX = x;
             this.MapPositionY = y;
             this.AlreadyPassedThrough = false;
+            this.RoomType = RoomTypes[UnityEngine.Random.Range(0,RoomTypes.Count)];
         }
 
         public void OpenDoor(string door)
@@ -44,12 +50,13 @@ public class SimpleRoomInfo
 public class Map : MonoBehaviour
 {
     public SimpleRoomInfo[,] map;
-    public int mapLength = 10;
-    public int MapHeight = 10;
+    public int mapLength = 25;
+    public int MapHeight = 25;
     public Vector3 CurrentMapPosition;
     private int lastMapX;
     private int lastMapY;
     public GameObject cameraBox;
+
 
     void Awake()
     {
@@ -71,36 +78,104 @@ public class Map : MonoBehaviour
     {
         GameObject TemplateRoom = Resources.Load("SimpleRoom") as GameObject;
         GameObject _newRoom = Instantiate(TemplateRoom,worldPos,Quaternion.identity);
-                   _newRoom.name = $"X:{x} Y:{y} Room {RoomNumber}";
-                   _newRoom.transform.parent = GameObject.Find("Rooms").transform;
-                   _newRoom.GetComponent<SimpleRoom>().EnemyCount = Random.Range(0,4);
-                   
-                   if (map[x,y].UpDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("UP");
-                   if (map[x,y].DownDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("DOWN");
-                   if (map[x,y].LeftDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("LEFT");
-                   if (map[x,y].RightDoor) _newRoom.GetComponent<SimpleRoom>().OpenDoor("RIGHT");
+
+            // Set room name, room type and attach to parent
+            _newRoom.name = $"X:{x} Y:{y} Room {RoomNumber}";
+            var room = _newRoom.GetComponent<SimpleRoom>();
+            room.RoomType = map[x,y].RoomType;
+
+            switch (room.RoomType)
+            {
+                default: throw new Exception("RoomType Unknown");
+                case "Standard": room.EnemyCount = UnityEngine.Random.Range(0,3); break;
+                case "Puzzle": room.EnemyCount = UnityEngine.Random.Range(0,3); break;
+                case "Trap": room.EnemyCount = UnityEngine.Random.Range(0,3); break;
+                case "LoreRoom": room.EnemyCount = UnityEngine.Random.Range(0,3); break;
+                case "Prize": room.EnemyCount = UnityEngine.Random.Range(1,5); break;
+            }
+            _newRoom.transform.parent = GameObject.Find("Rooms").transform;
+            
+            // Open Doors
+            if (map[x,y].UpDoor) room.OpenDoor("UP");
+            if (map[x,y].DownDoor) room.OpenDoor("DOWN");
+            if (map[x,y].LeftDoor) room.OpenDoor("LEFT");
+            if (map[x,y].RightDoor) room.OpenDoor("RIGHT");
 
         
         // If start room remove any enemies and spawn player
         if (RoomNumber == 0)
         {
             _newRoom.name += " START ROOM";
-            _newRoom.GetComponent<SimpleRoom>().EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
-            Instantiate(Resources.Load("Player Variant 1"),_newRoom.transform.position,Quaternion.identity);
+            room.RoomType = "StartRoom";
+            room.EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
+            GameObject player = Instantiate(Resources.Load("Player Variant 1"),_newRoom.transform.position,Quaternion.identity) as GameObject;
+            player.name = "Player";
             var camera = GameObject.Find("Main Camera");
             camera.transform.position = _newRoom.transform.position;
+
+            // Debug: Spawn kill square
+            Instantiate(Resources.Load("KillSquare"),room.ExitTile.transform.position,Quaternion.identity);
+
         } 
 
         // If end room remove any enemies and spawn mini boss and exit tile
-
         if (RoomNumber == GetTotalValidRooms()-1)
         {
             _newRoom.name += " END ROOM";
-            _newRoom.GetComponent<SimpleRoom>().EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
+            room.RoomType = "EndRoom";
+            room.EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
             GameObject mb = Instantiate(Resources.Load("GhostMiniBoss"),_newRoom.transform.position,Quaternion.identity) as GameObject;
-            _newRoom.GetComponent<SimpleRoom>().SpawnExitTile();
+            room.SpawnExitTile();
             mb.transform.parent = _newRoom.transform;
         }
+
+        // Configure Standard room
+        if (room.RoomType == "Standard")
+        {
+            // Get the floor tiles we can spawn objects on
+            var floorTiles = room.SpawnableFloorTiles;
+            // And a random number of walls we're going to spawn
+            var wallTilesToSpawn = UnityEngine.Random.Range(0,floorTiles.Length);
+
+            // Spawn the wall tiles
+            for (int i = 0; i <= wallTilesToSpawn; i++)
+            {
+                GameObject wall = Instantiate(Resources.Load("Wall"),floorTiles[i].transform.position,Quaternion.identity) as GameObject;
+                wall.transform.parent = _newRoom.transform.Find("Tiles");
+                room.spawnedWallTiles.Add(wall);
+                //Add to room contents array
+                room.AddItemToRoomContents(wall.transform.localPosition,'#');
+            }
+        }
+
+        // Configure Prize Room
+        if (room.RoomType == "Prize")
+        {
+            // Get the random floor tile to spawn a chest on
+            var chestSpawnLocation = room.SpawnableFloorTiles[UnityEngine.Random.Range(0,room.SpawnableFloorTiles.Length)].transform;
+            // Spawn a chest on a random tile
+            
+            GameObject bars = Instantiate(Resources.Load("verticalBars"),chestSpawnLocation.position,Quaternion.identity) as GameObject;
+            bars.transform.parent = _newRoom.transform.Find("Tiles");
+            GameObject chest = Instantiate(Resources.Load("chest"),chestSpawnLocation.position,Quaternion.identity) as GameObject;
+            chest.transform.parent = _newRoom.transform.Find("Tiles");
+            //Add to room contents array
+            Debug.Log($"Adding chest to {chest.transform.localPosition}");
+            room.AddItemToRoomContents(chest.transform.localPosition,'C');
+        }
+        
+        foreach (var w in room.spawnedWallTiles)
+        {
+            // For some reason floor tiles were getting slightly changed when instanciated, for example something
+            // with a y of 0.05 in the prefab would instantiated with  0.500001, this was breaking the conversion in 
+            // SetTileSprite so this was the fix I came up with.
+            var convertedX = float.Parse(w.transform.localPosition.x.ToString("0.##"));
+            var convertedY = float.Parse(w.transform.localPosition.y.ToString("0.##"));
+            w.GetComponent<Wall>().SetTileSprite(new Vector3(convertedX,convertedY,0));
+        }
+
+        room.SaveRoomLayoutToFile(x, y);
+        
     }
 
     /// <summary> Bulk fills the 2D map array with SimpleRoomInfoObjects </summary>
@@ -138,7 +213,7 @@ public class Map : MonoBehaviour
 
         // Return a random valid door
         start:
-        string door = room.availbleDoors[Random.Range(0,room.availbleDoors.Count)];
+        string door = room.availbleDoors[UnityEngine.Random.Range(0,room.availbleDoors.Count)];
         switch (door)
         {
             default:Debug.Log("No rooms remaining"); break;
@@ -203,7 +278,7 @@ public class Map : MonoBehaviour
     public void CreatePathThroughRooms()
     {
         // Pick a random start room
-        var currentRoom = map[Random.Range(0,(map.GetLength(0)-1)),Random.Range(0,(map.GetLength(1)-1))];
+        var currentRoom = map[UnityEngine.Random.Range(0,(map.GetLength(0)-1)),UnityEngine.Random.Range(0,(map.GetLength(1)-1))];
         currentRoom.isStartRoom = true;
 
         // Need to track the current room and the next room

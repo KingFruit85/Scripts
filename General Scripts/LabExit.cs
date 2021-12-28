@@ -13,7 +13,6 @@ public class LabExit : MonoBehaviour
     
     void OnTriggerEnter2D(Collider2D other)
     {   
-        Debug.Log("The player has walked over me");
-        levelLoader.LoadPCG();
+        levelLoader.LoadNextLevel("MapTest");
     }
 }

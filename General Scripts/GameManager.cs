@@ -148,7 +148,7 @@ public class GameManager : MonoBehaviour
     public void Restart()
     {
         // Restart back to Lab
-        SceneManager.LoadScene("Lab");
+        SceneManager.LoadScene("MapTest");
 
         // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -170,8 +170,6 @@ public class GameManager : MonoBehaviour
         CritMsg.GetComponent<TextMeshProUGUI>().text = "";
 
         playerHit = false;
-
-
     }
 
     public void SetPlayerHit(bool isCrit)

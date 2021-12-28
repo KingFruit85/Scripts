@@ -85,6 +85,21 @@ public class WormAttacks : MonoBehaviour
         }
     }
 
+    public void ApplyDOT(Collider2D enemy, int damagePerSecond)
+    {
+        StartCoroutine(applyDOT(enemy,damagePerSecond));
+    }
+
+    private IEnumerator applyDOT(Collider2D enemy, int damage)
+    {
+        for (int i = 0; i <= 5; i++)
+        {
+            enemy.GetComponent<Health>().TakeDamage(1, transform.gameObject, "WormPoison", false);    
+            StartCoroutine(FlashColor(Color.red));
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
     public void Bite()
     {
             StartCoroutine(FlashColor(Color.red));
@@ -116,6 +131,7 @@ public class WormAttacks : MonoBehaviour
                     {
                         enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject, "WormPoison", isCrit);    
                         enemy.GetComponent<PlayerMovement>().DazeForSeconds(2);
+                        ApplyDOT(enemy,1);
                     } 
                 }
             }

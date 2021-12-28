@@ -13,21 +13,35 @@ public class Wall : MonoBehaviour
     public bool topRightCorner;
     public bool bottomLeftCorner;
     public bool bottomRightCorner;
-    public bool miscWall;
-    public bool hasToggleSprite;
-    public GameObject[] attachedTraps;
-
     private RoomSprites roomSprites;
     private SpriteRenderer sr;
     private int currentGameLevel;
     private GameManager gameManager;
     public Camera cam;
+    public TextMeshPro text;
+
+    public Sprite TopLeftWall;
+    public Sprite TopRightWall;
+    public Sprite BottomLeftWall;
+    public Sprite BottomRightWall;
+    public Sprite RightEndWall;
+    public Sprite LeftEndWall;
+    public Sprite TopEndWall;
+    public Sprite BottomEndWall;
+
+
 
     public Sprite alternativeSprite;
     public Sprite defaultSprite;
     public Color defaultColor;
     public Sprite critSprite;
 
+    public bool wallToLeft = false;
+    public bool wallToRight = false;
+    public bool wallToTop = false;
+    public bool wallToBottom = false;
+
+    public Vector2 Pos; 
 
     void Awake()
     {
@@ -37,18 +51,9 @@ public class Wall : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         cam = GameObject.Find("Main Camera").GetComponent<Camera>();
 
-        UpdateTile();
 
-        // if (miscWall)
-        // {
-        //     var r = Random.Range(0, roomSprites.miscWalls.Length-1);
-        //     sr.sprite = roomSprites.corners[r];
-        // }
-
-        
-
+        UpdateTile();     
         SetWallTileColor();
-
     }
 
     public void UpdateTile()
@@ -141,9 +146,12 @@ public class Wall : MonoBehaviour
 
     void Update()
     {
+        // text.GetComponent<TextMeshPro>().text = transform.parent.parent.GetComponent<SimpleRoom>().WorldToArrayPOS(transform.localPosition).ToString();
+
         if (gameManager.playerHit)
         {
             StartCoroutine(CritFlash(.1f));
+            
         }
     }
 
@@ -163,6 +171,50 @@ public class Wall : MonoBehaviour
 
             defaultColor = sr.color;
             cam.backgroundColor = gameManager.LevelWallBaseColor;
+    }
+
+    public void SetTileSprite(Vector3 tilePosition)
+    {
+        var room = transform.parent.parent.GetComponent<SimpleRoom>();
+
+        Pos = room.WorldToArrayPOS(tilePosition);
+
+        // Check if there is a wall above
+        if (room.GetTileContents(Pos.x,(Pos.y - 1)) == '#')
+        {
+            wallToTop = true;
+        }
+
+        // Check if there is a wall below
+        if (room.GetTileContents(Pos.x,(Pos.y + 1)) == '#')
+        {
+            wallToBottom = true;
+        }
+        
+        // Check if there is a wall left
+        if (room.GetTileContents((Pos.x - 1),Pos.y) == '#')
+        {
+            wallToLeft = true;
+        }
+
+        // Check if there is a wall right
+        if (room.GetTileContents((Pos.x + 1),Pos.y) == '#')
+        {
+            wallToRight = true;
+        }
+
+        if(wallToRight && wallToBottom) sr.sprite = TopLeftWall;
+        if(wallToLeft && wallToBottom) sr.sprite = TopRightWall;
+        if(wallToTop && wallToRight) sr.sprite = BottomLeftWall;
+        if(wallToTop && wallToLeft) sr.sprite = BottomRightWall;
+        if(wallToLeft && !wallToRight && !wallToBottom & !wallToTop) sr.sprite = RightEndWall;
+        if(wallToRight && !wallToLeft && !wallToBottom & !wallToTop) sr.sprite = LeftEndWall;
+        if(wallToTop && !wallToLeft && !wallToBottom & !wallToRight) sr.sprite = BottomEndWall;
+        if(wallToBottom && !wallToLeft && !wallToTop & !wallToRight ) sr.sprite = TopEndWall;
+
+
+
+
     }
 
 }

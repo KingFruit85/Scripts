@@ -14,8 +14,16 @@ public class Barrier : MonoBehaviour
     public GameObject door;
     public GameObject[] doors;
     public List<string> randomisedUnlockCode;
+    public Sprite OpenSprite;
+
+    public bool unlocksFromPuzzle = false;
+    public bool unlocksFromMobKills = false;
 
     private AudioManager audioManager;
+    public DoorController doorController;
+    public SpriteRenderer sr;
+    public bool dcFound = false;
+    public bool roomTypeSet = false;
 
 
     void Awake()
@@ -23,6 +31,18 @@ public class Barrier : MonoBehaviour
         var rnd = new System.Random();
         randomisedUnlockCode = unlockCode.OrderBy(item => rnd.Next()).ToList();
         audioManager = GameObject.FindObjectOfType<AudioManager>();
+        sr = GetComponent<SpriteRenderer>();
+        // Debug.Log($"this barriers parent's parent has {transform.parent.parent.transform.childCount} children");
+
+    }
+
+    public void SetBarrierUnlockMethod(int code)
+    {
+        switch (code)
+        {
+            case 1: unlocksFromPuzzle = true; break;
+            case 2: unlocksFromMobKills = true; break;
+        }
     }
 
 
@@ -47,6 +67,33 @@ public class Barrier : MonoBehaviour
 
     void Update()
     {
+
+        if (unlocksFromMobKills && doorController.allEnemiesKilled)
+        {
+            GetComponent<BoxCollider2D>().enabled = false;
+            sr.sprite = OpenSprite;
+        }
+
+
+        if ( !dcFound && transform.parent.parent.transform.Find("roomController").TryGetComponent(out DoorController dc))
+        {
+            dcFound = true;
+            doorController = dc;
+        };
+
+        if (!roomTypeSet &&  transform.parent.parent.TryGetComponent(out SimpleRoom simp))
+        {
+            if (!unlocksFromMobKills && simp.RoomType == "Prize")
+            {
+                unlocksFromMobKills = true;
+            }
+
+            if (!unlocksFromPuzzle && simp.RoomType == "Puzzle")
+            {
+                unlocksFromPuzzle = true;
+            }
+        }
+
         if (submittedCode.Count == randomisedUnlockCode.Count() && randomisedUnlockCode.SequenceEqual(submittedCode) && !isBarrierDown)
         {
             //Play a success sound?
@@ -65,6 +112,8 @@ public class Barrier : MonoBehaviour
                     door.GetComponent<Door>().OpenDoor();   
                 }
             }
+
+            
 
         }
 

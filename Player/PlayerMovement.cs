@@ -145,11 +145,11 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator SlowSpeed(int seconds)
     {   
         // Half player speed for provided seconds
-        moveSpeed = moveSpeed / 2;
+        moveSpeed = moveSpeed / 8;
         yield return new WaitForSeconds(seconds);
 
         //Restore to default speed
-        moveSpeed = moveSpeed * 2;
+        moveSpeed = moveSpeed * 8;
         isSlowed = false;
     }
 

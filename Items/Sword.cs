@@ -14,5 +14,4 @@ void Start()
     Physics2D.IgnoreLayerCollision(13,24); // Doors
 }
 
-
 }
