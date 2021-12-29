@@ -8,18 +8,35 @@ public class Door : MonoBehaviour
     public bool isLocked;
     public bool startOpen, startClosed;
     public GameObject myKeyCardReader;
+    public DoorController DC;
+
+    void Update()
+    {
+        if (DC.player && DC.enemies.Length > 0)
+        {
+            CloseDoor();
+        }
+
+        if (DC.player && DC.enemies.Length == 0)
+        {
+            OpenDoor();
+        }
+
+
+    }
 
     void Awake()
     {
+
+        DC = transform.parent.parent.Find("roomController").GetComponent<DoorController>();
+
         if (startOpen)
         {
             OpenDoor();
-            open = true;
         }
         else
         {
             CloseDoor();
-            open = false;
         }
     }
 
