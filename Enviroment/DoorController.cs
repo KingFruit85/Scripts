@@ -141,7 +141,6 @@ public class DoorController : MonoBehaviour
             
             if (spawner.canSpawn)
             {
-                Debug.Log("Spawning enemies in room");
                 spawner.SpawnEnemies();
             }
         }

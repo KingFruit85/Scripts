@@ -54,7 +54,6 @@ public class EnemySpawner : MonoBehaviour
                 GameObject mob = Instantiate(enemies[Random.Range(0,(enemies.Count - 1))], posA, Quaternion.identity);
                 mob.transform.parent = transform.parent.Find("Tiles").transform;
                 
-                Debug.Log($"Spawning a {mob.name} at {posA}");
                 mob.transform.localPosition = posA;
 
             }

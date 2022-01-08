@@ -35,7 +35,7 @@ public class Barrier : MonoBehaviour
         // Debug.Log($"this barriers parent's parent has {transform.parent.parent.transform.childCount} children");
 
     }
-
+    /// <summary> 1 - puzzle | 2 - mobkills </summary>
     public void SetBarrierUnlockMethod(int code)
     {
         switch (code)
