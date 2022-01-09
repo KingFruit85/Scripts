@@ -5,47 +5,47 @@ using TMPro;
 using UnityEngine;
 
 public class SimpleRoomInfo
+{
+    public bool UpDoor;
+    public bool DownDoor;
+    public bool LeftDoor;
+    public bool RightDoor;
+    public bool isStartRoom;
+    public int MapPositionX;
+    public int MapPositionY;
+    public List<string> availbleDoors = new List<string>(){"UP", "DOWN","LEFT","RIGHT"};
+    public bool isUsed;
+    public bool placed;
+    public bool AlreadyPassedThrough;
+    public string RoomType;
+    public List<string> RoomTypes = new List<string>(){"Standard", "Puzzle", "Trap", "LoreRoom", "Prize"};
+
+    // Default constructor
+    public SimpleRoomInfo(int x, int y, string r)
     {
-        public bool UpDoor;
-        public bool DownDoor;
-        public bool LeftDoor;
-        public bool RightDoor;
-        public bool isStartRoom;
-        public int MapPositionX;
-        public int MapPositionY;
-        public List<string> availbleDoors = new List<string>(){"UP", "DOWN","LEFT","RIGHT"};
-        public bool isUsed;
-        public bool placed;
-        public bool AlreadyPassedThrough;
-        public string RoomType;
-        public List<string> RoomTypes = new List<string>(){"Standard", "Puzzle", "Trap", "LoreRoom", "Prize"};
+        this.UpDoor = false;
+        this.DownDoor = false;
+        this.LeftDoor = false;
+        this.RightDoor = false;
+        this.isStartRoom = false;
+        this.MapPositionX = x;
+        this.MapPositionY = y;
+        this.AlreadyPassedThrough = false;
+        this.RoomType = RoomTypes[UnityEngine.Random.Range(0,RoomTypes.Count)];
+    }
 
-        // Default constructor
-        public SimpleRoomInfo(int x, int y, string r)
+    public void OpenDoor(string door)
+    {
+        switch (door)
         {
-            this.UpDoor = false;
-            this.DownDoor = false;
-            this.LeftDoor = false;
-            this.RightDoor = false;
-            this.isStartRoom = false;
-            this.MapPositionX = x;
-            this.MapPositionY = y;
-            this.AlreadyPassedThrough = false;
-            this.RoomType = RoomTypes[UnityEngine.Random.Range(0,RoomTypes.Count)];
-        }
-
-        public void OpenDoor(string door)
-        {
-            switch (door)
-            {
-                default:
-                case "UP": UpDoor = true;break;
-                case "DOWN": DownDoor = true;break;
-                case "LEFT": LeftDoor = true;break;
-                case "RIGHT": RightDoor = true;break;
-            }
+            default:
+            case "UP": UpDoor = true;break;
+            case "DOWN": DownDoor = true;break;
+            case "LEFT": LeftDoor = true;break;
+            case "RIGHT": RightDoor = true;break;
         }
     }
+}
 
 public class Map : MonoBehaviour
 {
@@ -83,6 +83,19 @@ public class Map : MonoBehaviour
             _newRoom.name = $"X:{x} Y:{y} Room {RoomNumber}";
             var room = _newRoom.GetComponent<SimpleRoom>();
             room.RoomType = map[x,y].RoomType;
+            // Set the event that will open the room doors, this changes based on the room type
+            var doorController = _newRoom.transform.Find("DoorController").GetComponent<DoorController>();
+            switch (room.RoomType)
+            {
+                case "Standard": doorController.OpenByMobDeath = true;break;
+                case "Puzzle" : 
+                    doorController.OpenByMobDeath = false;
+                    doorController.OpenByPuzzleComplete = true;
+                    break;
+                case "Trap" : doorController.OpenByMobDeath = true;break;
+                case "LoreRoom": doorController.OpenByMobDeath = true;break;
+                case "Prize": doorController.OpenByMobDeath = true;break;
+            }
 
             switch (room.RoomType)
             {
@@ -107,7 +120,6 @@ public class Map : MonoBehaviour
         {
             _newRoom.name += " START ROOM";
             room.RoomType = "StartRoom";
-            room.EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
             GameObject player = Instantiate(Resources.Load("Player Variant 1"),_newRoom.transform.position,Quaternion.identity) as GameObject;
             player.name = "Player";
             var camera = GameObject.Find("Main Camera");
@@ -123,7 +135,6 @@ public class Map : MonoBehaviour
         {
             _newRoom.name += " END ROOM";
             room.RoomType = "EndRoom";
-            room.EnemySpawner.GetComponent<EnemySpawner>().canSpawn = false;
             GameObject mb = Instantiate(Resources.Load("GhostMiniBoss"),_newRoom.transform.position,Quaternion.identity) as GameObject;
             room.SpawnExitTile();
             mb.transform.parent = _newRoom.transform;
@@ -360,6 +371,8 @@ public class Map : MonoBehaviour
             barrier.GetComponent<Barrier>().tealRune = _newRoom.transform.Find("Tiles").Find("TealTile(Clone)").gameObject;
 
             // Torches
+
+            Debug.Log("REMEMBER TO SET THE DOOR UNLOCK METHOD TO PUZZLE (YOU WILL NEED TO IMPLEMENT THIS DUMMY)");
 
 
         }

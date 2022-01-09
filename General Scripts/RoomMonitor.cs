@@ -11,12 +11,12 @@ public class RoomMonitor : MonoBehaviour
     
     void Update()
     {
-        enemies = Physics2D.OverlapAreaAll(topLeftCorner.transform.position, bottomRightCorner.transform.position, enemyLayer);
+        // enemies = Physics2D.OverlapAreaAll(topLeftCorner.transform.position, bottomRightCorner.transform.position, enemyLayer);
 
-        if (enemies.Length <= 0)
-        {
-            myDoor.GetComponent<Door>().OpenDoor();
-        }
+        // if (enemies.Length <= 0)
+        // {
+        //     myDoor.GetComponent<Door>().OpenDoor();
+        // }
 
     }
 }

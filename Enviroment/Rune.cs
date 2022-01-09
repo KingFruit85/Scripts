@@ -26,7 +26,7 @@ public class Rune : MonoBehaviour
                     .SubmitCode(MyCode);
         }
 
-        if (flameBowl)
+        if (flameBowl && other.tag == "Player")
         {
             flameBowl.Light();
         }

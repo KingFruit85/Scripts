@@ -4,74 +4,40 @@ using UnityEngine;
 
 public class DoorController : MonoBehaviour
 {
-    public GameObject[] doors;
+    public List<GameObject> doors = new List<GameObject>();
     public Collider2D[] enemies;
+    public EnemySpawner enemySpawner;
     public Collider2D player;
-    private Collider2D[] spawnedItems;
     public LayerMask enemyLayer;
     public LayerMask playerLayer;
-    public LayerMask items;
-    public LayerMask itemSpawners;
-    public GameObject[] flameBowls;
-    public GameObject[] exitTriggers;
     public GameObject topLeft;
     public GameObject bottomRight;
     public GameObject camAnchor;
-    public List<GameObject> itemSpawnPoints;
-    public bool canSpawn = false;
-    public GameObject itemToSpawn;
-    public float spawnDelay = 15.0f;
-    public float spawnElapsedTime = 0.0f;
-    public bool itemSpawned;
-    public bool allEnemiesKilled;
+    public bool OpenByMobDeath = false;
+    public bool OpenByPuzzleComplete = false;
+    public bool roomComplete = false;
 
     void Awake()
     {
         topLeft = transform.Find("TopLeft").gameObject;
         bottomRight = transform.Find("BottomRight").gameObject;
         GameObject.Find("CameraBox").transform.position = camAnchor.transform.position;
+        enemySpawner = transform.parent.Find("EnemySpawner").GetComponent<EnemySpawner>();
+
     }
 
     void Start()
     {
-
-        var spawners = Physics2D.OverlapAreaAll(topLeft.transform.position, bottomRight.transform.position, itemSpawners);
         enemies = Physics2D.OverlapAreaAll(topLeft.transform.position, bottomRight.transform.position, enemyLayer);
 
-        // Some rooms may not have enemies
-        // if (enemies.Length > 0)
-        // {
-        //     allEnemiesKilled = false;
-        // }
-        // else
-        // {
-        //     allEnemiesKilled = true;
-        // }
+        // for each door in "Doors", if it's active, add it to the doors list
+        var _doors = transform.parent.Find("Doors");
+        if (_doors.GetChild(0).gameObject.activeSelf) doors.Add(_doors.GetChild(0).gameObject);
+        if (_doors.GetChild(1).gameObject.activeSelf) doors.Add(_doors.GetChild(1).gameObject);
+        if (_doors.GetChild(2).gameObject.activeSelf) doors.Add(_doors.GetChild(2).gameObject);
+        if (_doors.GetChild(3).gameObject.activeSelf) doors.Add(_doors.GetChild(3).gameObject);
 
-        foreach (var spawn in spawners)
-        {
-            itemSpawnPoints.Add(spawn.gameObject);
-        }
-
-        if (itemSpawnPoints.Count > 0)
-        {
-            canSpawn = true;
-        }
-
-    }
-
-    public void KillAllEnemiesInRoom()
-    {
-        foreach (var enemy in enemies)
-        {
-            Debug.Log($"Destroyed {enemy.name}");
-            Destroy(enemy);
-        }
-    }
-
-    public void SetExitTriggers(GameObject[] exits)
-    {
-        exitTriggers = exits;
+        
     }
 
     public void closeThisRoomsDoors()
@@ -90,60 +56,70 @@ public class DoorController : MonoBehaviour
         }
     }
 
-
     void Update()
     {
+        if (!roomComplete && !player)
+        {
+            foreach (var enemy in enemies)
+            {
+                enemy.GetComponent<AIMovement>().enabled = false;
+            }
+        }
 
-        enemies = Physics2D.OverlapAreaAll(topLeft.transform.position, bottomRight.transform.position, enemyLayer);
-        spawnedItems = Physics2D.OverlapAreaAll(topLeft.transform.position, bottomRight.transform.position, items);
+        // Handles player entering a new room
         player = Physics2D.OverlapArea(topLeft.transform.position, bottomRight.transform.position, playerLayer);
 
-        if (spawnedItems.Length == 0)
-        {
-            itemSpawned = false;
-        }
+        enemies = Physics2D.OverlapAreaAll(topLeft.transform.position, bottomRight.transform.position, enemyLayer);
 
-        if (enemies.Length <= 0)
-        {
-            allEnemiesKilled = true;
-            Invoke("openThisRoomsDoors", 1f);
-            // Enable exit triggers
-            foreach (var exit in exitTriggers)
-            {
-                if (exit != null)
-                {
-                    exit.SetActive(true);
-                }
-            }
-
-        }
-
-        if (player && !allEnemiesKilled)
-        {
-            // Closes the door shortly after the player enters
-            foreach (var door in doors)
-            {
-                if (door.GetComponent<Door>().open)
-                {
-                    Invoke("closeThisRoomsDoors",0.4f);
-                }
-            }
-        }
-
+        // Player enters the room
         if (player)
         {
+            foreach (var enemy in enemies)
+            {
+                enemy.GetComponent<AIMovement>().enabled = true;
+            }
             // Detects player is in the room and moves the camera
             var cam = GameObject.FindGameObjectWithTag("MainCamera");
             cam.transform.position = camAnchor.transform.position;
             GameObject.Find("CameraBox").transform.position = camAnchor.transform.position;
             
-            var spawner = transform.parent.Find("EnemySpawner").GetComponent<EnemySpawner>();
-            
-            if (spawner.canSpawn)
+
+            if (!roomComplete)
             {
-                spawner.SpawnEnemies();
+
+                // Closes the door shortly after the player enters
+                foreach (var door in doors)
+                {
+                    if (door.GetComponent<Door>().open)
+                    {
+                        Invoke("closeThisRoomsDoors",0.4f);
+                    }
+                }
             }
         }
+       
+
+        // If doors open on puzzle solve
+        if (OpenByPuzzleComplete)
+        {
+            
+        }
+
+        // If doors are opened on all mobs killed
+        if (OpenByMobDeath)
+        {
+            if (enemies.Length <= 0)
+            {
+                roomComplete = true;
+            }
+        }
+
+        if (roomComplete)
+        {
+            Invoke("openThisRoomsDoors", 1f);
+        }
+
+        // Doors open on other trigger?
 
         if (enemies.Length > 0)
         {
@@ -153,27 +129,5 @@ public class DoorController : MonoBehaviour
             }
         }
 
-        if (canSpawn)
-        {
-            spawnElapsedTime += Time.deltaTime;
-        }
-
-        if(canSpawn && !itemSpawned && itemToSpawn != null)
-        {
-            if (spawnElapsedTime >= spawnDelay)
-            {
-                spawnElapsedTime = 0;
-                spawnItemAtRandomPoint();
-            }
-        }
-
-        
-    }
-
-    void spawnItemAtRandomPoint()
-    {
-        var r = Random.Range(0,itemSpawnPoints.Count -1);
-        Instantiate(itemToSpawn,itemSpawnPoints[r].transform.position,Quaternion.identity);
-        itemSpawned = true;
     }
 }

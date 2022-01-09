@@ -68,14 +68,14 @@ public class Barrier : MonoBehaviour
     void Update()
     {
 
-        if (unlocksFromMobKills && doorController.allEnemiesKilled)
+        if (unlocksFromMobKills && doorController.roomComplete)
         {
             GetComponent<BoxCollider2D>().enabled = false;
             sr.sprite = OpenSprite;
         }
 
 
-        if ( !dcFound && transform.parent.parent.transform.Find("roomController").TryGetComponent(out DoorController dc))
+        if ( !dcFound && transform.parent.parent.transform.Find("DoorController").TryGetComponent(out DoorController dc))
         {
             dcFound = true;
             doorController = dc;

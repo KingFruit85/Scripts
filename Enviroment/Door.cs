@@ -12,15 +12,15 @@ public class Door : MonoBehaviour
 
     void Update()
     {
-        if (DC.player && DC.enemies.Length > 0)
-        {
-            CloseDoor();
-        }
+        // if (DC.player && DC.enemies.Length > 0)
+        // {
+        //     CloseDoor();
+        // }
 
-        if (DC.player && DC.enemies.Length == 0)
-        {
-            OpenDoor();
-        }
+        // if (DC.player && DC.enemies.Length == 0)
+        // {
+        //     OpenDoor();
+        // }
 
 
     }
@@ -28,7 +28,7 @@ public class Door : MonoBehaviour
     void Awake()
     {
 
-        DC = transform.parent.parent.Find("roomController").GetComponent<DoorController>();
+        DC = transform.parent.parent.Find("DoorController").GetComponent<DoorController>();
 
         if (startOpen)
         {
