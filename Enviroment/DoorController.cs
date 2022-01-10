@@ -56,6 +56,14 @@ public class DoorController : MonoBehaviour
         }
     }
 
+    public void killAllMobsInRoom()
+    {
+        foreach (var mob in enemies)
+        {
+            Destroy(mob.gameObject);
+        }
+    }
+
     void Update()
     {
         if (!roomComplete && !player)

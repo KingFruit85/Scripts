@@ -118,12 +118,17 @@ public class Map : MonoBehaviour
         // If start room remove any enemies and spawn player
         if (RoomNumber == 0)
         {
+            Debug.Log($"Changing startroom type from {room.RoomType} to START ROOM");
             _newRoom.name += " START ROOM";
             room.RoomType = "StartRoom";
             GameObject player = Instantiate(Resources.Load("Player Variant 1"),_newRoom.transform.position,Quaternion.identity) as GameObject;
             player.name = "Player";
             var camera = GameObject.Find("Main Camera");
             camera.transform.position = _newRoom.transform.position;
+            doorController.roomComplete = true;
+            
+            // Disable the enemy spawner
+            _newRoom.transform.Find("EnemySpawner").GetComponent<EnemySpawner>().enabled = false;
 
             // Debug: Spawn kill square
             Instantiate(Resources.Load("KillSquare"),room.ExitTile.transform.position,Quaternion.identity);
@@ -138,6 +143,9 @@ public class Map : MonoBehaviour
             GameObject mb = Instantiate(Resources.Load("GhostMiniBoss"),_newRoom.transform.position,Quaternion.identity) as GameObject;
             room.SpawnExitTile();
             mb.transform.parent = _newRoom.transform;
+            // Disable the enemy spawner
+            _newRoom.transform.Find("EnemySpawner").GetComponent<EnemySpawner>().enabled = false;
+
         }
 
         // Configure Standard room
