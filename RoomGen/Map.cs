@@ -369,12 +369,6 @@ public class Map : MonoBehaviour
             barrier.GetComponent<Barrier>().blueRune = _newRoom.transform.Find("Tiles").Find("BlueTile(Clone)").gameObject;
             barrier.GetComponent<Barrier>().greenRune = _newRoom.transform.Find("Tiles").Find("GreenTile(Clone)").gameObject;
             barrier.GetComponent<Barrier>().tealRune = _newRoom.transform.Find("Tiles").Find("TealTile(Clone)").gameObject;
-
-            // Torches
-
-            Debug.Log("REMEMBER TO SET THE DOOR UNLOCK METHOD TO PUZZLE (YOU WILL NEED TO IMPLEMENT THIS DUMMY)");
-
-
         }
         
         foreach (var w in room.spawnedWallTiles)

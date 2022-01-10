@@ -11,8 +11,6 @@ public class Barrier : MonoBehaviour
     public GameObject blueRune;
     public GameObject greenRune;
     public GameObject tealRune;
-    public GameObject door;
-    public GameObject[] doors;
     public List<string> randomisedUnlockCode;
     public Sprite OpenSprite;
 
@@ -22,6 +20,7 @@ public class Barrier : MonoBehaviour
     private AudioManager audioManager;
     public DoorController doorController;
     public SpriteRenderer sr;
+    public SimpleRoom simpR;
     public bool dcFound = false;
     public bool roomTypeSet = false;
 
@@ -32,7 +31,7 @@ public class Barrier : MonoBehaviour
         randomisedUnlockCode = unlockCode.OrderBy(item => rnd.Next()).ToList();
         audioManager = GameObject.FindObjectOfType<AudioManager>();
         sr = GetComponent<SpriteRenderer>();
-        // Debug.Log($"this barriers parent's parent has {transform.parent.parent.transform.childCount} children");
+
 
     }
     /// <summary> 1 - puzzle | 2 - mobkills </summary>
@@ -98,22 +97,14 @@ public class Barrier : MonoBehaviour
         {
             //Play a success sound?
             gameObject.SetActive(false);
-            isBarrierDown = true;
+            isBarrierDown = true;  
+            var simpR = transform.parent.parent.GetComponent<SimpleRoom>();
 
-            if (door)
+
+            if (simpR.RoomType == "Puzzle")
             {
-                door.GetComponent<Door>().OpenDoor();
-            }
-
-            if (doors.Length > 0)
-            {
-                foreach (var door in doors)
-                {
-                    door.GetComponent<Door>().OpenDoor();   
-                }
-            }
-
-            
+                doorController.roomComplete = true;
+            }          
 
         }
 
