@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     public Color LevelFloorBaseColor;
     public string currentHost;
     public float XP;
+    public int HostStamina = 100;
+    public int CravenStamina = 100;
     public int arrowCount;
     public int coinCount;
     public bool rangedWeaponEquipped = false;
@@ -21,6 +23,7 @@ public class GameManager : MonoBehaviour
     public bool playerHit = false;
     public bool spawnFog = false;
     public GameObject CritMsg;
+    public int loreIndex = 0;
 
 
     void Awake()

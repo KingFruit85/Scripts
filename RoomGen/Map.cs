@@ -56,6 +56,8 @@ public class Map : MonoBehaviour
     private int lastMapX;
     private int lastMapY;
     public GameObject cameraBox;
+    private GameManager gameManager;
+
 
 
     void Awake()
@@ -66,6 +68,7 @@ public class Map : MonoBehaviour
         cameraBox = Resources.Load("CameraBox") as GameObject;
         GameObject camBox = Instantiate(cameraBox,Vector3.zero,Quaternion.identity) as GameObject;
         camBox.name = "CameraBox";
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         //Set start room
         FillMapWithRooms();
@@ -118,7 +121,6 @@ public class Map : MonoBehaviour
         // If start room remove any enemies and spawn player
         if (RoomNumber == 0)
         {
-            Debug.Log($"Changing startroom type from {room.RoomType} to START ROOM");
             _newRoom.name += " START ROOM";
             room.RoomType = "StartRoom";
             GameObject player = Instantiate(Resources.Load("Player Variant 1"),_newRoom.transform.position,Quaternion.identity) as GameObject;
@@ -132,6 +134,16 @@ public class Map : MonoBehaviour
 
             // Debug: Spawn kill square
             Instantiate(Resources.Load("KillSquare"),room.ExitTile.transform.position,Quaternion.identity);
+
+            // Place level specific terminal with new lore
+            if (gameManager.currentGameLevel == 1)
+            {
+
+                GameObject terminal = Instantiate(Resources.Load("InteractableRune1"),room.ReturnTerminalSpawnLocation(),Quaternion.identity) as GameObject;
+                terminal.transform.parent = _newRoom.transform.Find("Tiles");
+                terminal.transform.position = _newRoom.transform.Find("CameraAnchor").transform.position;
+
+            }
 
         } 
 
@@ -148,9 +160,12 @@ public class Map : MonoBehaviour
 
         }
 
+        
+
         // Configure Standard room
         if (room.RoomType == "Standard")
         {
+
             // Get the floor tiles we can spawn objects on
             var floorTiles = room.SpawnableFloorTiles;
             // And a random number of walls we're going to spawn
@@ -217,14 +232,8 @@ public class Map : MonoBehaviour
                         arrowTrap.GetComponent<ArrowTrap>().active = true;
                         arrowTrap.GetComponent<ArrowTrap>().shootUp = true;
                     }
-
-                    
                 }
-
             }
-
-            
-
         }
 
         // Configure Prize Room
@@ -240,6 +249,25 @@ public class Map : MonoBehaviour
             chest.transform.parent = _newRoom.transform.Find("Tiles");
             //Add to room contents array
             room.AddItemToRoomContents(chest.transform.localPosition,'C');
+        }
+
+        // Configure Trap Room
+        if (room.RoomType == "Trap")
+        {
+            var spawnLocations = _newRoom.GetComponent<SimpleRoom>().SpawnableFloorTiles;
+            var r = UnityEngine.Random.Range(0,spawnLocations.Length);
+            
+            // GameObject trap = Instantiate(Resources.Load("arrowTurret"),spawnLocations[r].transform.position,Quaternion.identity) as GameObject;
+            // trap.transform.parent = _newRoom.transform.Find("Tiles");
+        }
+
+        // Configure Lore Room
+        if (room.RoomType == "LoreRoom")
+        {
+            var spawnLocations = _newRoom.GetComponent<SimpleRoom>().SpawnableFloorTiles;
+            var r = UnityEngine.Random.Range(0,spawnLocations.Length);
+            
+            GameObject terminal = Instantiate(Resources.Load("InteractableRune1"),spawnLocations[r].transform.position,Quaternion.identity) as GameObject;
         }
 
         // Configure Puzzle Room

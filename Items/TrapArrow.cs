@@ -5,19 +5,16 @@ using UnityEngine;
 public class TrapArrow : MonoBehaviour
 {
     private Rigidbody2D RB;
-    private float speed = 0.05f;
-    private Vector2 left = new Vector2(-1,0);
-    private Vector2 right = new Vector2(1,0);
-    private Vector2 up = new Vector2(0,1);
-    private Vector2 down = new Vector2(0,-1);
-    private string direction;
+    public float speed = 1.05f;
+    private Vector3 left = new Vector3(-1,0,0);
+    private Vector3 right = new Vector3(1,0,0);
+    private Vector3 up = new Vector3(0,1,0);
+    private Vector3 down = new Vector3(0,-1,0);
+    public string direction;
     public int damage = 10;
-
     private Vector3 lastVelocity;
     public bool deflected = false;
-
     private GameObject player;
-
     private AudioManager audioManager;
 
 
@@ -36,27 +33,38 @@ public class TrapArrow : MonoBehaviour
             if (direction == "up") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
             if (direction == "down") transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
             if (direction == "left") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
-            if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));  
+            if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0)); 
         }
 
-        else if (gameObject.transform.parent.tag == "ArrowTurret")
-        {
-            direction = transform.name;
-        }
+        Fire();
 
-        // Fire the arrow
-        switch (direction)
+    }
+
+    public void Fire()
+    {
+        if (direction == "left")
         {
-            default:break;
-            case "left": RB.AddForce(left * speed ,ForceMode2D.Force); break;
-            case "right": RB.AddForce(right * speed ,ForceMode2D.Force); break;
-            case "up": RB.AddForce(up * speed ,ForceMode2D.Force); break;
-            case "down": RB.AddForce(down * speed ,ForceMode2D.Force); break;
+            RB.AddForce(left * speed ,ForceMode2D.Force);
+        }
+        if (direction == "right")
+        {
+            RB.AddForce(right * speed ,ForceMode2D.Force);
+        }
+        if (direction == "up")
+        {
+            RB.AddForce(up * speed ,ForceMode2D.Force);
+        }
+        if (direction == "down")
+        {
+            RB.AddForce(down * speed ,ForceMode2D.Force);
         }
     }
 
+
+
     void Update()
     {
+
         // Tracked to calculate speed for deflections
         lastVelocity = RB.velocity;
 
@@ -127,10 +135,5 @@ public class TrapArrow : MonoBehaviour
             Destroy(gameObject);
         }
 
-
     }
-
-
-
-    
 }

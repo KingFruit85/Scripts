@@ -35,7 +35,7 @@ public class ExitTile : MonoBehaviour
             }
             else if (isShopLevel)
             {
-                levelLoader.LoadNextLevel("MapTest");
+                levelLoader.LoadNextLevel("Main");
                 gameManager.currentGameLevel ++;
             }
             else
