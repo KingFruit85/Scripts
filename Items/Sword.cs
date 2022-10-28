@@ -12,6 +12,9 @@ void Start()
     Physics2D.IgnoreLayerCollision(13,8);  // Enemies
     Physics2D.IgnoreLayerCollision(13,20); // Table
     Physics2D.IgnoreLayerCollision(13,24); // Doors
+    Physics2D.IgnoreLayerCollision(13,0); // Default
+
+    
 }
 
 }

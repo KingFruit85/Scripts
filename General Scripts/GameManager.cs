@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -17,24 +18,29 @@ public class GameManager : MonoBehaviour
     public int coinCount;
     public bool rangedWeaponEquipped = false;
     public bool miniBossKilled = false;
-    public int meleeAttackBonus;
+    public int meleeAttackBonus = 0;
+    public int rangedAttackBonus = 0;
     public int healthBonus;
-    public int rangedAttackBonus;
     public bool playerHit = false;
     public bool spawnFog = false;
     public GameObject CritMsg;
     public int loreIndex = 0;
 
+    public bool deathTimeActive = false;
+    public string GameLevelType = string.Empty;
+    public float timeTillDeath = 1.0f;
+
 
     void Awake()
     {
+
         //If there is already a host value use that, otherwise assume new game and default to human
         currentHost = PlayerPrefs.GetString("currentHost", "Human");
         XP = PlayerPrefs.GetFloat("XP", 0);
         arrowCount = PlayerPrefs.GetInt("arrowCount", 0);
         coinCount = PlayerPrefs.GetInt("coinCount", 0);
         currentGameLevel = PlayerPrefs.GetInt("currentGameLevel", 1);
-
+        loreIndex = PlayerPrefs.GetInt("loreIndex", 0);
         meleeAttackBonus = PlayerPrefs.GetInt("meleeAttackBonus",0);
         healthBonus = PlayerPrefs.GetInt("healthBonus",0);
         rangedAttackBonus = PlayerPrefs.GetInt("rangedAttackBonus",0);
@@ -51,6 +57,13 @@ public class GameManager : MonoBehaviour
         {
             rangedWeaponEquipped = false;
         }
+
+        System.Timers.Timer deathTimer = new System.Timers.Timer(1000);
+
+        // deathTimer.Elapsed +=
+        // //This function decreases BoomDown every second
+        // (object sender, System.Timers.ElapsedEventArgs e) => timeTillDeath--;
+        
 
     }
 
@@ -91,9 +104,9 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("coinCount", coinCount);
         PlayerPrefs.SetInt("currentGameLevel", currentGameLevel);
         PlayerPrefs.SetString("currentHost", currentHost);
-
         PlayerPrefs.SetInt("meleeAttackBonus",meleeAttackBonus);
         PlayerPrefs.SetInt("healthBonus",healthBonus);
+        PlayerPrefs.SetInt("loreIndex",loreIndex);
 
         int rangedEquipped = 0;
         
@@ -117,6 +130,7 @@ public class GameManager : MonoBehaviour
         rangedAttackBonus = 0;
         healthBonus = 0;
         rangedWeaponEquipped = false;
+        loreIndex = 0;
     }
 
 
@@ -125,6 +139,8 @@ public class GameManager : MonoBehaviour
         ResetAllStats();
         PlayerPrefs.SetFloat("XP", 0);
         PlayerPrefs.SetInt("arrowCount", 0);
+        PlayerPrefs.SetInt("loreIndex", 0);
+
         PlayerPrefs.SetInt("coinCount", 0);
         PlayerPrefs.SetInt("currentGameLevel", 1);
         PlayerPrefs.SetString("currentHost", "Human");
@@ -145,19 +161,47 @@ public class GameManager : MonoBehaviour
         {
             Restart();
         }
+
+        if (GameLevelType == "shop")
+        {
+            deathTimeActive = false;
+        }
+        else
+        {
+            deathTimeActive = true;
+        }
         
+    }
+
+    void LateUpdate()
+    {
+
+        if (deathTimeActive)
+        {
+            if (timeTillDeath > 0 && GameLevelType == "Main")
+            {
+                timeTillDeath -= Time.deltaTime;
+            }
+
+            if (timeTillDeath <= 0 && GameLevelType == "Main")
+            {
+                GameObject.FindGameObjectWithTag("Player").GetComponent<Health>().Die();
+                Debug.Log("killing player");
+            }
+        }
+
     }
 
     public void Restart()
     {
         // Restart back to Lab
-        SceneManager.LoadScene("MapTest");
+        SceneManager.LoadScene("Main");
 
         // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
 
-    string[] critMessages = new string[]{"FEEL NOTHING", "YOU WILL LOVE ME", "FOCUS", "KEEP DREAMING","NO","DON'T THINK","HUSH"};
+    string[] critMessages = new string[]{"FEEL NOTHING", "YOU WILL LOVE ME", "FOCUS", "YOUR MEMORIES AREN'T REAL","KEEP DREAMING","NO","DON'T THINK","HUSH"};
 
 
     private IEnumerator Hit(float duration, bool isCrit)
@@ -166,7 +210,7 @@ public class GameManager : MonoBehaviour
         // If crit
         if (isCrit)
         {
-            CritMsg.GetComponent<TextMeshProUGUI>().text = critMessages[Random.Range(0,critMessages.Length)];
+            CritMsg.GetComponent<TextMeshProUGUI>().text = critMessages[UnityEngine.Random.Range(0,critMessages.Length)];
         }
         yield return new WaitForSeconds( duration );
         
@@ -185,6 +229,22 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("PlaceholderWinScreen");
     }
 
+    public void AddMeleeAttackBonus(int bonus)
+    {
+        meleeAttackBonus += bonus;
+        PlayerPrefs.SetInt("meleeAttackBonus",meleeAttackBonus);
+    }
+
+    public void AddRangedAttackBonus(int bonus)
+    {
+        rangedAttackBonus += bonus;
+        PlayerPrefs.SetInt("rangedAttackBonus",rangedAttackBonus);
+    }
+
+    public void AddHealthBonus(int bonus)
+    {
+        healthBonus += bonus;
+    }
 
     public void AddXP(float xp)
     {
@@ -237,7 +297,7 @@ public class GameManager : MonoBehaviour
                                                     };
     
 
-        var baseColor = Random.Range(0,baseColors.Count -1);
+        var baseColor = UnityEngine.Random.Range(0,baseColors.Count -1);
 
         return baseColors[baseColor];
 
@@ -259,7 +319,7 @@ public class GameManager : MonoBehaviour
     
         baseColors.Remove(colorToRemove);
 
-        var baseColor = Random.Range(0,baseColors.Count -1);
+        var baseColor = UnityEngine.Random.Range(0,baseColors.Count -1);
 
         return baseColors[baseColor];
 

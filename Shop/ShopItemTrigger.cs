@@ -62,24 +62,24 @@ public class ShopItemTrigger : MonoBehaviour
     {
         if (itemSelected && Input.GetKeyDown(KeyCode.E))
             {
-                // add highligted items bonus to player
+                // add highlighted items bonus to player
                 switch (highlightedObject.name)
                 {
                     default:return;
                     case "SwordAttackLevelUp":
-                        gameManager.meleeAttackBonus += swordDamageIncrease;
+                        gameManager.AddMeleeAttackBonus(swordDamageIncrease);
                         // Add a function to the human/sword class that manages the increase in damage
                         break;
 
 
                     case "HealthLevelUp":
-                        gameManager.healthBonus += healthIncrease;
+                        gameManager.AddHealthBonus(healthIncrease);
                         GameObject.FindGameObjectWithTag("Player").GetComponent<Health>().ChangeMaxHealth(10);
                         break;
 
 
                     case "BowAttackLevelUp":
-                        gameManager.rangedAttackBonus += bowDamageIncrease;
+                        gameManager.AddRangedAttackBonus(bowDamageIncrease);
                         break;
                 }
 

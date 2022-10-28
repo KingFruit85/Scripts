@@ -315,7 +315,7 @@ public class Health : MonoBehaviour
         sr.color = Color.white;
     }
 
-    void Die()
+    public void Die()
     {
         // Player death
         if (gameObject.tag == "Player")
@@ -324,10 +324,17 @@ public class Health : MonoBehaviour
             GetComponent<PlayerMovement>().StopPlayerMovement();
             StartCoroutine(GetComponent<PlayAnimations>().Kill());
 
+            if (TryGetComponent( out Human human))
+            {
+                human.enabled = false;
+            }
             // Removes any weapons the host may have
             foreach (Transform child in gameObject.transform)
             {
-                Destroy(child);
+                if(child.name == "SwordAim")
+                {
+                    Destroy(child.gameObject);
+                }
             }
 
             // Triggers game restart

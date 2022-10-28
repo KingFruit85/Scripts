@@ -55,10 +55,12 @@ public class Barrier : MonoBehaviour
             if (randomisedUnlockCode[submittedCode.Count -1] == code)
             {
                 audioManager.Play("RuneSuccess");
+                Debug.Log("correct");
             }
             else
             {
                 audioManager.Play("RuneFailure");
+                Debug.Log("false");
             }
         }
         

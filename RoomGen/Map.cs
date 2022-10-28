@@ -574,5 +574,7 @@ public class Map : MonoBehaviour
                 }
             }
         }
+        Console.WriteLine("created a level");
+        gameManager.timeTillDeath = roomNumber * 10;
     }
 }

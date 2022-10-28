@@ -25,7 +25,7 @@ public class ExitTile : MonoBehaviour
                 levelLoader.LoadNextLevel("PlaceholderWinScreen");
         }
 
-        // PLayer walks on next level tile
+        // Player walks on next level tile
         if (other.tag == "Player" && this.tag == "Exit")
         {
             if (isShopLevel && gameManager.currentGameLevel == 2)

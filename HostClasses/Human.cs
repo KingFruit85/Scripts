@@ -286,6 +286,39 @@ public class Human : MonoBehaviour
         }
     }
 
+    public void SetMeleeAsActiveWeapon()
+    {
+        SwordEquipped = true;
+        swordAim.SetActive(true);
+        sword.SetActive(true);
+        player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Sword");
+
+        //Deactivate bow if it currently is held by the player
+        if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
+        {
+            bowAim.SetActive(false);
+            bow.SetActive(false);
+            BowEquipped = false;
+            gameManager.rangedWeaponEquipped = false;
+        } 
+    }
+
+    public void SetRangedAsActiveWeapon()
+    {
+        SwordEquipped = false;
+        swordAim.SetActive(false);
+        sword.SetActive(false);
+
+        if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
+        {
+            BowEquipped = true;
+            gameManager.rangedWeaponEquipped = true;
+            bowAim.SetActive(true);
+            bow.SetActive(true);
+            player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Bow");
+        }   
+    }
+
     // This update function if really chonky, probably needs a look over
     void Update()
     {
@@ -311,8 +344,8 @@ public class Human : MonoBehaviour
         {
             default:return;
             case PlayerMovement.Looking.Left: 
-                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.054f,0.057f,180f);
-                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                if (SwordEquipped != null && SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.054f,0.057f,180f);
+                if (SwordEquipped != null && SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
                 if (BowEquipped == true ) 
                 {
                     bow.GetComponent<SpriteRenderer>().sortingOrder = 3;
@@ -320,8 +353,8 @@ public class Human : MonoBehaviour
                 break;
                 
             case PlayerMovement.Looking.Right:
-                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(-0.05f,0.043f,0);
-                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
+                if (SwordEquipped != null && SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(-0.05f,0.043f,0);
+                if (SwordEquipped != null && SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;
                 
                 if (BowEquipped == true ) 
                 {
@@ -331,8 +364,8 @@ public class Human : MonoBehaviour
                 break;
 
             case PlayerMovement.Looking.Up:
-                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.052f,0.055f,0);
-                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 1;  
+                if (SwordEquipped != null && SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(0.052f,0.055f,0);
+                if (SwordEquipped != null && SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 1;  
                 if (BowEquipped == true ) 
                 {
                     bow.GetComponent<SpriteRenderer>().sortingOrder = 1;
@@ -340,8 +373,8 @@ public class Human : MonoBehaviour
                 break;
 
             case PlayerMovement.Looking.Down:
-                if (SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(-0.0287f,0.0485f,0);
-                if (SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;  
+                if (SwordEquipped != null && SwordEquipped == true ) swordAim.transform.localPosition = new Vector3(-0.0287f,0.0485f,0);
+                if (SwordEquipped != null && SwordEquipped == true ) sword.GetComponent<SpriteRenderer>().sortingOrder = 3;  
 
                 if (BowEquipped == true ) 
                 {
@@ -364,37 +397,15 @@ public class Human : MonoBehaviour
         ///WEAPON SELECTION SHOULD PROBABLY BE MOVED TO PlayerCombat.CS
 
         // If the "1" button is presssed equip the sword
+
         if (Input.GetKeyDown(KeyCode.Alpha1) && SwordEquipped == false)
         {
-            SwordEquipped = true;
-            swordAim.SetActive(true);
-            sword.SetActive(true);
-            player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Sword");
-
-            //Deactivate bow if it currently is held by the player
-            if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
-            {
-                bowAim.SetActive(false);
-                bow.SetActive(false);
-                BowEquipped = false;
-                gameManager.rangedWeaponEquipped = false;
-            }  
+            SetMeleeAsActiveWeapon();
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2) && BowEquipped == false)
         {
-            SwordEquipped = false;
-            swordAim.SetActive(false);
-            sword.SetActive(false);
-
-            if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
-            {
-                BowEquipped = true;
-                gameManager.rangedWeaponEquipped = true;
-                bowAim.SetActive(true);
-                bow.SetActive(true);
-                player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Bow");
-            }   
+            SetRangedAsActiveWeapon();
         }
 
 
@@ -415,8 +426,4 @@ public class Human : MonoBehaviour
         }
 
     }
-
-    
-
-
 }
