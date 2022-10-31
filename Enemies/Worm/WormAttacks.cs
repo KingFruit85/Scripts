@@ -83,14 +83,14 @@ public class WormAttacks : MonoBehaviour
 
             default:throw new System.Exception("supplied sprite not recognised");
         }
-    }
+}
 
-    public void ApplyDOT(Collider2D enemy, int damagePerSecond)
+    public void PoisonBite(Collider2D enemy, int damagePerSecond)
     {
-        StartCoroutine(applyDOT(enemy,damagePerSecond));
+        StartCoroutine(poisonBite(enemy,damagePerSecond));
     }
 
-    private IEnumerator applyDOT(Collider2D enemy, int damage)
+    private IEnumerator poisonBite(Collider2D enemy, int damage)
     {
         for (int i = 0; i <= 5; i++)
         {
@@ -131,7 +131,7 @@ public class WormAttacks : MonoBehaviour
                     {
                         enemy.GetComponent<Health>().TakeDamage(attackDamage, transform.gameObject, "WormPoison", isCrit);    
                         enemy.GetComponent<PlayerMovement>().DazeForSeconds(2);
-                        ApplyDOT(enemy,1);
+                        PoisonBite(enemy,1);
                     } 
                 }
             }

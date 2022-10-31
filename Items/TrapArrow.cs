@@ -5,7 +5,7 @@ using UnityEngine;
 public class TrapArrow : MonoBehaviour
 {
     private Rigidbody2D RB;
-    public float speed = 1.05f;
+    public float speed = 0.05f;
     private Vector3 left = new Vector3(-1,0,0);
     private Vector3 right = new Vector3(1,0,0);
     private Vector3 up = new Vector3(0,1,0);
@@ -34,6 +34,20 @@ public class TrapArrow : MonoBehaviour
             if (direction == "down") transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
             if (direction == "left") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
             if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0)); 
+        }
+
+        if (gameObject.transform.parent.tag == "ArrowTurret")
+        {
+            if (direction == "up") 
+            {
+                transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
+                up = new Vector3(0,0,0);
+            }
+                
+                
+            // if (direction == "down") transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
+            // if (direction == "left") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
+            // if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0)); 
         }
 
         Fire();
@@ -112,7 +126,7 @@ public class TrapArrow : MonoBehaviour
 
             int rand = Random.Range(0, deflects.Length);
 
-            audioManager.Play(deflects[rand]);
+            audioManager.PlayAudioClip(deflects[rand]);
 
             // Deflect the arrow away from the sword
             float speed = lastVelocity.magnitude;

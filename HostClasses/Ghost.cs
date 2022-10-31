@@ -13,36 +13,33 @@ public class Ghost : MonoBehaviour
     public string idleUp = "Ghost_Walk_Up"; // Replace this when posable
     public string idleDown = "Ghost_Idle_Front";
     public string death = "Ghost_Death";
-    public float moveSpeed = 3;
+    public float moveSpeed = 5;
     private PlayAnimations pa;
     private SpriteRenderer sr;
     private bool isPhasing;
     private bool isPlayer = false;
 
-    // this needs to be passed to the instanciated ghostbolt
     public int ghostBoltDamage = 10;
 
     void Awake()
     {
+        sr = GetComponent<SpriteRenderer>();
+        pa = GetComponent<PlayAnimations>();
+
         if (gameObject.tag == "Player")
+        
         {
+            isPlayer = true;
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
             //Due to the sprite scaling when you change from a human to a ghost the capsule collider is too large to move horizontally though 1 unit tall corridors
             GetComponent<CapsuleCollider2D>().size = new Vector2(0.1f,0.2f);
-            isPlayer = true;
-
             GameObject.Find("GameManager").GetComponent<GameManager>().currentHost = "Ghost";
-
         }
 
         isPhasing = false;
-
-        sr = GetComponent<SpriteRenderer>();
-
         transform.localScale = new Vector3(3.5f,3.5f,0);
 
         //Set the player animations/sprites to the current host creature
-        pa = GetComponent<PlayAnimations>();
         pa.idleLeft = idleLeft;
         pa.idleRight = idleRight;
         pa.walkLeft = walkLeft;
@@ -58,14 +55,11 @@ public class Ghost : MonoBehaviour
         return isPhasing;
     }
 
-
-    public void GhostBolt()
+    public void FireGhostBolt()
     {
 
         if (!isPhasing)
         {
-            // should fire towards mouseclick
-
                 GameObject a = Instantiate
                                         (
                                             Resources.Load("Ghost_Bolt"),

@@ -30,7 +30,7 @@ public class ExitTile : MonoBehaviour
         {
             if (isShopLevel && gameManager.currentGameLevel == 2)
             {
-                levelLoader.LoadNextLevel("FirstBoss");
+                levelLoader.LoadNextLevel("PlaceholderWinScreen");
                 gameManager.currentGameLevel ++;
             }
             else if (isShopLevel)

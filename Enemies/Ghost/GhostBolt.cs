@@ -10,7 +10,7 @@ public class GhostBolt : MonoBehaviour
     private Vector3 playerMouseClick;
 
     private float born;
-    private float lifeTime = 0.5f;
+    private float lifeTime = 1.5f;
 
     public string shooter;
     private Vector3 lastVelocity;
@@ -100,7 +100,7 @@ public class GhostBolt : MonoBehaviour
 
             int rand = Random.Range(0, deflects.Length);
 
-            audioManager.Play(deflects[rand]);
+            audioManager.PlayAudioClip(deflects[rand]);
             
             float speed = lastVelocity.magnitude;
             Vector3 direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);

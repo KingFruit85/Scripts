@@ -101,7 +101,7 @@ public class Arrow : MonoBehaviour
         else if (coll.gameObject.tag == "Wall")
         {
             //maybe have the arrow get imbedded in the wall?
-            audioManager.Play("ArrowHitWall");
+            audioManager.PlayAudioClip("ArrowHitWall");
             Destroy(gameObject);
         }
 

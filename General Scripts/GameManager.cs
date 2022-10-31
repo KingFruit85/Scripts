@@ -224,11 +224,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine(Hit(0.1f,isCrit));
     }
 
-    public void TemporaryGameComplete()
-    {
-        SceneManager.LoadScene("PlaceholderWinScreen");
-    }
-
     public void AddMeleeAttackBonus(int bonus)
     {
         meleeAttackBonus += bonus;
@@ -261,7 +256,7 @@ public class GameManager : MonoBehaviour
         arrowCount -= arrows;
     }
 
-    public int getArrowCount()
+    public int GetArrowCount()
     {
         return arrowCount;
     }
@@ -270,17 +265,6 @@ public class GameManager : MonoBehaviour
     {
         coinCount += coins;
     }
-
-    public void RemoveCoins(int coins)
-    {
-        coinCount -= coins;
-    }
-
-    public int getCoinCount()
-    {
-        return coinCount;
-    }
-
 
     public Color GetColor()
     {   

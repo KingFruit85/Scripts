@@ -8,7 +8,7 @@ public class ArrowDisplay : MonoBehaviour
 
     void Update()
     {
-        remainingArrows = GameObject.Find("GameManager").GetComponent<GameManager>().getArrowCount();
+        remainingArrows = GameObject.Find("GameManager").GetComponent<GameManager>().GetArrowCount();
 
         arrowText.text = "x" + remainingArrows;
     }

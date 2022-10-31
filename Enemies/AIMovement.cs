@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+
 public class AIMovement : MonoBehaviour
 {
     private enum State
@@ -9,14 +10,6 @@ public class AIMovement : MonoBehaviour
         ChaseTarget,
         GoingBackToStart,
         Attacking,
-    }
-
-    private enum MoveDirection
-    {
-        Up,
-        Down,
-        Left,
-        Right
     }
 
     private State state;
@@ -140,18 +133,6 @@ public class AIMovement : MonoBehaviour
         if (distanceApart > 15f)
         {
             state = State.GoingBackToStart;
-        }
-    }
-
-    public void KnockBack(string direction)
-    {
-        if (!GetComponent<Health>().isBoss)
-        {
-            StartCoroutine(Knock(direction));
-        }
-        else
-        {
-            return;
         }
     }
 

@@ -32,7 +32,7 @@ public class PlayerCombat : MonoBehaviour
         equippedWeaponName = "Short Sword";
     }
 
-    public void setEquippedWeaponName(string name)
+    public void SetEquippedWeaponName(string name)
     {
         equippedWeaponName = name;
     }
@@ -72,14 +72,14 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
 
-            case "Ghost":GetComponent<Ghost>().GhostBolt();break;
+            case "Ghost":GetComponent<Ghost>().FireGhostBolt();break;
 
 
             case "Worm" :GetComponent<Worm>().PoisonBite();break;
         }        
     }
 
-    public void setRangedAttack(float speed, int damage, float attackDelay)
+    public void SetRangedAttack(float speed, int damage, float attackDelay)
     {
         arrowSpeed = speed;
         arrowDamage = damage;
@@ -92,11 +92,11 @@ public class PlayerCombat : MonoBehaviour
     {
         playerIsLooking = GameObject.FindGameObjectWithTag("Player")
                                     .GetComponent<PlayerMovement>()
-                                    .playerIsLooking();
+                                    .PlayerIsLooking();
 
         var GS = GameObject.Find("GameManager").GetComponent<GameManager>();
 
-        if (rangedWeaponEquipped == true && GS.getArrowCount() > 0)
+        if (rangedWeaponEquipped == true && GS.GetArrowCount() > 0)
         {
                 if (Time.time > rangedCooldown + rangedAttackDelay)
                 {

@@ -13,8 +13,8 @@ public class Terminal : MonoBehaviour
 
     private List<TextContent> TerminalMessages = new List<TextContent>();
 
-    private string myTitle = "";
-    private string myContent = "";
+    public string myTitle = "";
+    public string myContent = "";
 
     public void Awake()
     {
@@ -61,12 +61,12 @@ public class Terminal : MonoBehaviour
             int x = (Screen.width / 2);
             int y = (Screen.height / 2);
 
-            
-
+            // If we've run out of messages then just return the last message in the collection
+            var i = (gameManager.loreIndex >= (TerminalMessages.Count -1)) ? (TerminalMessages.Count -1) : gameManager.loreIndex;
             if (!used)
             {
-                myTitle = TerminalMessages[gameManager.loreIndex].Title;
-                myContent = TerminalMessages[gameManager.loreIndex].Description;
+                myTitle = TerminalMessages[i].Title;
+                myContent = TerminalMessages[i].Description;
                 GameObject tWindow = Instantiate(Resources.Load("TerminalScreen"),new Vector3(x,y,0),Quaternion.identity) as GameObject;
                     tWindow.name = "tWindow";
                     tWindow.transform.GetChild(0).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = myTitle;

@@ -8,7 +8,7 @@ public class GhostAttacks : MonoBehaviour
     [SerializeField]
     private SpriteRenderer sr;
     private GameObject player;
-    private float attackDelay = 1.5f;
+    private float attackDelay = 1.0f;
     private float lastAttacked = -9999;
     private AudioManager audioManager;
 
@@ -22,7 +22,7 @@ public class GhostAttacks : MonoBehaviour
 
     }
 
-    public void fireGhostBolt()
+    public void FireGhostBolt()
     {
 
             string[] ghostBolts  = new string[]{"GhostBolt1","GhostBolt2","GhostBolt3","GhostBolt4",
@@ -30,7 +30,7 @@ public class GhostAttacks : MonoBehaviour
 
             int rand = Random.Range(0, ghostBolts.Length);
 
-            audioManager.Play(ghostBolts[rand]);
+            audioManager.PlayAudioClip(ghostBolts[rand]);
             
             // Visual warning for the player that attack is incomming
             StartCoroutine(FlashColor(Color.red));
@@ -67,7 +67,7 @@ public class GhostAttacks : MonoBehaviour
         {
             if (Time.time > lastAttacked + attackDelay)
             {
-                fireGhostBolt();
+                FireGhostBolt();
                 lastAttacked = Time.time;
             }            
         }

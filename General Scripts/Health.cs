@@ -55,7 +55,6 @@ public class Health : MonoBehaviour
         {
             SetHealth();
             SetXP();
-            // healthBar = GetComponentInChildren<HealthBar>();
         }
         else
         {
@@ -290,7 +289,7 @@ public class Health : MonoBehaviour
         // Bosses can't be knocked back
         if (!isBoss)
         {
-            var playerIsLooking = player.GetComponent<PlayerMovement>().playerIsLooking();
+            var playerIsLooking = player.GetComponent<PlayerMovement>().PlayerIsLooking();
             var movement = TryGetComponent(out AIMovement move);
             move.KnockBack(playerIsLooking);
         }
@@ -304,7 +303,7 @@ public class Health : MonoBehaviour
                 case "Ghost": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
                 case "MiniBoss": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
                 case "Worm": gameObject.GetComponent<WormAttacks>().ResetAttackDelay();break;
-                case "GhostBoss" : gameObject.GetComponent<GhostBossAttacks>().ResetAttackDelay();break;
+                // case "GhostBoss" : gameObject.GetComponent<GhostBossAttacks>().ResetAttackDelay();break;
             }
     }
 

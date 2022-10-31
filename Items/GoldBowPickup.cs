@@ -22,12 +22,12 @@ public class GoldBowPickup : MonoBehaviour
 
         playerIsLooking = GameObject.Find("Player")
                                .GetComponent<PlayerMovement>()
-                               .playerIsLooking();
+                               .PlayerIsLooking();
     }
 
     void Update()
     {
-        playerIsLooking = player.GetComponent<PlayerMovement>().playerIsLooking();
+        playerIsLooking = player.GetComponent<PlayerMovement>().PlayerIsLooking();
     }
 
     public void ShootBow()
@@ -96,7 +96,7 @@ public class GoldBowPickup : MonoBehaviour
             player.GetComponent<GoldBowPickup>().arrow = Resources.Load("goldarrow") as GameObject;
             player.GetComponent<PlayerCombat>().SetRangedWeaponEquipped(true);
             player.GetComponent<PlayerCombat>().rangedWeaponName = "Gold Bow";
-            player.GetComponent<PlayerCombat>().setRangedAttack(speed,damage,attackDelay);
+            player.GetComponent<PlayerCombat>().SetRangedAttack(speed,damage,attackDelay);
 
             Destroy(this.gameObject);
         }

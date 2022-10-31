@@ -55,8 +55,6 @@ public class Human : MonoBehaviour
 
     public int arrowDamage = 10;
     public int arrowSpeed = 10;
-
-
     public int critModifier = 2;
 
     void Awake()
@@ -246,12 +244,12 @@ public class Human : MonoBehaviour
                 string[] swordHits = new string[]{"SwordHit","SwordHit1","SwordHit2","SwordHit3","SwordHit4","SwordHit5","SwordHit6"};
                 int rand = Random.Range(0, swordHits.Length);
 
-                audioManager.Play(swordHits[rand]);
+                audioManager.PlayAudioClip(swordHits[rand]);
 
             }
             else
             {
-                audioManager.Play("SwordMiss");
+                audioManager.PlayAudioClip("SwordMiss");
             }
         }
     }
@@ -259,13 +257,6 @@ public class Human : MonoBehaviour
     public void BowAttack(Vector3 mouseClickPosition)
     {
         player.transform.GetComponentInChildren<ShortBow>().ShootBow(mouseClickPosition);
-    }
-
-    public void disableAllWeapons()
-    {
-        SwordEquipped = false;
-        BowEquipped = false;
-        
     }
 
     public void SetBloodiedSprites(bool x)
@@ -291,7 +282,7 @@ public class Human : MonoBehaviour
         SwordEquipped = true;
         swordAim.SetActive(true);
         sword.SetActive(true);
-        player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Sword");
+        player.GetComponent<PlayerCombat>().SetEquippedWeaponName("Short Sword");
 
         //Deactivate bow if it currently is held by the player
         if (GetComponent<PlayerCombat>().rangedWeaponEquipped)
@@ -315,7 +306,7 @@ public class Human : MonoBehaviour
             gameManager.rangedWeaponEquipped = true;
             bowAim.SetActive(true);
             bow.SetActive(true);
-            player.GetComponent<PlayerCombat>().setEquippedWeaponName("Short Bow");
+            player.GetComponent<PlayerCombat>().SetEquippedWeaponName("Short Bow");
         }   
     }
 
@@ -332,9 +323,7 @@ public class Human : MonoBehaviour
             SetBloodiedSprites(false);
         }
 
-        
-
-        playerIsLooking = GetComponent<PlayerMovement>().playerIsLooking();
+        playerIsLooking = GetComponent<PlayerMovement>().PlayerIsLooking();
         if (BowEquipped)
         {
             bowAim.transform.localScale = new Vector2(-transform.localScale.x + 1.5f,transform.localScale.y - 1.5f);

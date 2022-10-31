@@ -15,7 +15,7 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        audioManager.Play("PlayGameMenu");
+        audioManager.PlayAudioClip("PlayGameMenu");
         SceneManager.LoadScene("Lab");
     }
 

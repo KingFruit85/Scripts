@@ -11,7 +11,7 @@ public class GoldArrow : MonoBehaviour
 
         var playerIsLooking = GameObject.Find("Player")
                                .GetComponent<PlayerMovement>()
-                               .playerIsLooking();
+                               .PlayerIsLooking();
         
         switch (playerIsLooking)
         {

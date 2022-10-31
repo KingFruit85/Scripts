@@ -34,7 +34,7 @@ public class GhostProjectileSensor : MonoBehaviour
 
                 GetComponentInParent<AIMovement>().DazeForSeconds(1);
 
-                audioManager.Play("ArrowHitGhost");
+                audioManager.PlayAudioClip("ArrowHitGhost");
             }
             
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class arrowTurret : MonoBehaviour
 {
-    public float shotDelay = 1f;
+    public float shotDelay = 2f;
     public float shotCooldown = -9999;
     public GameObject arrow;
     public GameObject rightSpawn;
@@ -13,8 +13,6 @@ public class arrowTurret : MonoBehaviour
     public GameObject bottomSpawn;
 
     public bool isActive = true;
-
-
 
     public void RotateTurret()
     {
@@ -25,13 +23,14 @@ public class arrowTurret : MonoBehaviour
     {
         if (Time.time > shotCooldown + shotDelay && isActive)
         { 
-            RotateTurret();
+            // RotateTurret();
 
             GameObject rightArrow = Instantiate(arrow,
                                        rightSpawn.transform.position,
                                        Quaternion.identity)
                                        as GameObject;
 
+            rightArrow.GetComponent<TrapArrow>().direction = "right";
             rightArrow.transform.parent = transform;
 
             GameObject leftArrow = Instantiate(arrow,
@@ -39,6 +38,7 @@ public class arrowTurret : MonoBehaviour
                                        Quaternion.identity)
                                        as GameObject;
 
+            rightArrow.GetComponent<TrapArrow>().direction = "left";
             leftArrow.transform.parent = transform;
 
             GameObject upArrow = Instantiate(arrow,
@@ -46,6 +46,7 @@ public class arrowTurret : MonoBehaviour
                                        Quaternion.identity)
                                        as GameObject;
 
+            rightArrow.GetComponent<TrapArrow>().direction = "up";
             upArrow.transform.parent = transform;
 
             GameObject downArrow = Instantiate(arrow,
@@ -53,6 +54,7 @@ public class arrowTurret : MonoBehaviour
                                        Quaternion.identity)
                                        as GameObject;
 
+            rightArrow.GetComponent<TrapArrow>().direction = "down";
             downArrow.transform.parent = transform;
 
             shotCooldown = Time.time;

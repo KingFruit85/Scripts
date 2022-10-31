@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-
     public Vector2 movement;
     public Vector3 mousePOS;
     public Camera cam;
@@ -98,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
          canMove = true;
     }
 
-    public Looking playerIsLooking()
+    public Looking PlayerIsLooking()
     {
         return looking;
     }

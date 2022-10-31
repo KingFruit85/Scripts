@@ -18,7 +18,7 @@ public class PlayAnimations : MonoBehaviour
     private GameManager gameManager;  
     public Human human;
     public Ghost ghost;
-    public GhostBossAttacks ghostBoss;
+    // public GhostBossAttacks ghostBoss;
     public Worm worm;
         public Vector3 previousPosition;
     public Vector3 currentMovementDirection;

@@ -9,7 +9,7 @@ public class CoinDisplay : MonoBehaviour
 
     void Update()
     {
-        remainingCoins = GameObject.Find("GameManager").GetComponent<GameManager>().getArrowCount();
+        remainingCoins = GameObject.Find("GameManager").GetComponent<GameManager>().GetArrowCount();
         coinText.text = "x" + remainingCoins;
     }
 }
