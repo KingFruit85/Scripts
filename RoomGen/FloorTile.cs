@@ -16,13 +16,20 @@ public class FloorTile : MonoBehaviour
     public Color defaultColor;
     public Sprite critSprite;
     public TextMeshPro text;
+    public bool isPulsing = false;
+    private Color OgMaterialColour;
+    private Material material;
+    private Color startColour;
+    private Color endColour;
+    private float lastColorChangeTime;
 
-
+    public float FadeDuration = 2f;
 
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
         col = GetComponent<BoxCollider2D>();
+        OgMaterialColour = GetComponent<Renderer>().material.color;
 
         currentGameLevel = GameObject.Find("GameManager").GetComponent<GameManager>().currentGameLevel;
         roomSprites = GameObject.Find("Room Sprites").GetComponent<RoomSprites>();
@@ -70,6 +77,41 @@ public class FloorTile : MonoBehaviour
         {
             CriticalFlash();
         }
+
+        if (isPulsing)
+        {
+            var ratio = (Time.time - lastColorChangeTime) / FadeDuration;
+            ratio = Mathf.Clamp01(ratio);
+
+            // material.color = Color.Lerp( startColour, endColour, ratio );
+            // material.color = Color.Lerp(startColour, endColour, Mathf.Sqrt(ratio)); // A cool effect
+            material.color = Color.Lerp(startColour, endColour, ratio * ratio); // Another cool effect
+
+            if (ratio == 1f)
+            {
+                lastColorChangeTime = Time.time;
+
+                // Switch colors
+                var temp = startColour;
+                startColour = endColour;
+                endColour = temp;
+            }
+        }
+    }
+
+    public void StartPulsingTiles()
+    {
+        isPulsing = true;
+        material = GetComponent<Renderer>().material;
+        startColour = defaultColor;
+        // endColour = defaultColor += new Color(125.00f, 0.00f, 6.00f,1);
+        endColour = defaultColor += new Color(124.00f, 2.00f, 2.00f,1);
+    }
+
+    public void StopPulsingTiles()
+    {
+        isPulsing = false;
+        GetComponent<Renderer>().material.color = OgMaterialColour;
     }
 
 
@@ -78,6 +120,10 @@ public class FloorTile : MonoBehaviour
         if (col)
         {
             isTouchingOtherCollider = true; 
+        }
+        if (col.tag == "Player" && isPulsing)
+        {
+            // col.gameObject.GetComponent<Health>().TakeDamage(1,gameObject,"floorTile", true);
         }
     }
 

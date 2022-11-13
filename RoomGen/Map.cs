@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SimpleRoomInfo
@@ -29,7 +31,7 @@ public class SimpleRoomInfo
     public bool isUsed;
     public bool placed;
     public string RoomType;
-    public List<string> RoomTypes = new List<string>() { "Standard", "Puzzle", "LoreRoom", "Prize" };
+    public List<string> RoomTypes = new List<string>() { "Standard", "Puzzle", "LoreRoom", "Prize", "Trap1", "Trap2" };
 
     // Default constructor
     public SimpleRoomInfo(int x, int y, string r)
@@ -66,6 +68,12 @@ public class Map : MonoBehaviour
     private int lastMapY;
     public GameObject cameraBox;
     private GameManager gameManager;
+    private Rigidbody2D rb2D;
+
+    void Start()
+    {
+        rb2D = GetComponent<Rigidbody2D>();
+    }
 
     void Awake()
     {
@@ -243,17 +251,144 @@ public class Map : MonoBehaviour
         }
 
         // Configure Trap Room
-        if (room.RoomType == "Trap")
+        if (room.RoomType == "Trap1")
         {
             doorController.OpenByMobDeath = true;
             room.EnemyCount = UnityEngine.Random.Range(0, 3);
-            var spawnLocations = _newRoom.GetComponent<SimpleRoom>().SpawnableFloorTiles;
-            var r = UnityEngine.Random.Range(0, spawnLocations.Length);
+            var spawnLocations = room.SpawnableFloorTiles;
+            var r = UnityEngine.Random.Range(0, spawnLocations.Length); // Get number of traps to place
+            var trapLocations = new List<int>();
 
-            var chestTile = room.puzzleChestSpawnLocation;
+            var picked = UnityEngine.Random.Range(0,spawnLocations.Length);
+            trapLocations.Add(picked); // add the first trap tile
 
-            GameObject trap = Instantiate(Resources.Load("arrowTurret"), chestTile.transform.position, Quaternion.identity) as GameObject;
-            trap.transform.parent = _newRoom.transform.Find("Tiles");
+            for (int i = 0; i <= (r - 1); i++)
+            {
+                var t = UnityEngine.Random.Range(0,spawnLocations.Length);
+                if ( !(t < (picked - 4)) || !(t > (picked + 4)) )
+                {
+                    trapLocations.Add(t);
+                }
+                else
+                {
+                    i--;
+                }
+            }
+
+            foreach (var location in trapLocations)
+            {
+                GameObject trapTile = Instantiate(Resources.Load("trapTile"), spawnLocations[location].transform.position, Quaternion.identity) as GameObject;
+                trapTile.transform.parent = _newRoom.transform.Find("Tiles");
+                trapTile.name = $"TrapTile {location}";
+                
+                float lastDistance = 999999.00f;
+                Vector3 tileToPlaceArrowTrap = new Vector3(69,69,69);
+
+                // Find the closest wall tile
+                foreach (var walltile in room.wallTiles)
+                {
+                    var distanceBetweenTiles = Vector3.Distance(walltile.transform.position, trapTile.transform.position);
+                    if (distanceBetweenTiles <= lastDistance)
+                    {
+                        tileToPlaceArrowTrap = walltile.transform.position;
+                        lastDistance = distanceBetweenTiles;
+                    }
+                }
+                // Place the arrow trap on the closest tile
+                GameObject arrowTrap = Instantiate(Resources.Load("arrowTrap"), tileToPlaceArrowTrap, Quaternion.identity) as GameObject;
+                trapTile.GetComponent<TrapTile>().MyTrap = arrowTrap;
+                arrowTrap.GetComponent<SpriteRenderer>().enabled = false;
+
+                arrowTrap.transform.LookAt(tileToPlaceArrowTrap);
+                Debug.DrawLine(arrowTrap.transform.position, tileToPlaceArrowTrap , Color.green, 30);
+            }
+        }
+
+        if (room.RoomType == "Trap2")
+        {
+            doorController.OpenByMobDeath = true;
+
+            var spawnLocations = _newRoom.GetComponent<SimpleRoom>().floorTiles;
+
+            // Populate the rows
+            var row1 = new List<GameObject>();
+            var row2 = new List<GameObject>();
+            var row3 = new List<GameObject>();
+            var row4 = new List<GameObject>();
+            var row5 = new List<GameObject>();
+            var row6 = new List<GameObject>();
+            var row7 = new List<GameObject>();
+            var row8 = new List<GameObject>();
+            var allRows = new List<List<GameObject>>();
+            allRows.Add(row1);
+            allRows.Add(row2);
+            allRows.Add(row3);
+            allRows.Add(row4);
+            allRows.Add(row5);
+            allRows.Add(row6);
+            allRows.Add(row7);
+            allRows.Add(row8);
+
+
+            foreach (var tile in spawnLocations)
+            {
+                int value; 
+                Int32.TryParse(tile.name, out value);
+
+                if (value >= 1 && value <= 8) row1.Add(tile);
+                if (value >= 9 && value <= 16) row2.Add(tile);
+                if (value >= 17 && value <= 24) row3.Add(tile);
+                if (value >= 25 && value <= 32) row4.Add(tile);
+                if (value >= 33 && value <= 40) row5.Add(tile);
+                if (value >= 41 && value <= 48) row6.Add(tile);
+                if (value >= 49 && value <= 56) row7.Add(tile);
+                if (value >= 57 && value <= 64) row8.Add(tile);
+            }
+            
+            // Pulse first row
+            // After one pulse cycle pulse second row
+
+            var currentRow = 0;
+            var safeTile = UnityEngine.Random.Range(1,8);
+
+            StartCoroutine(PulseManager(allRows[currentRow]));
+
+            IEnumerator PulseManager(List<GameObject> row)
+            {
+                StartCoroutine(Pulse(row));
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            IEnumerator Pulse(List<GameObject> tiles)
+            {
+                foreach (var tile in tiles)
+                {
+                    if (tile.tag == "Floor")
+                    {
+                        if (Int32.Parse(tile.name) == safeTile)
+                        {
+                            continue;
+                        }
+                        tile.GetComponent<FloorTile>().StartPulsingTiles();
+                    }
+                }
+
+                yield return new WaitForSeconds(1.0f);
+
+                foreach (var tile in tiles)
+                {
+                    if (tile.tag == "Floor")
+                    {
+                        tile.GetComponent<FloorTile>().StopPulsingTiles();
+                    }
+                }
+                currentRow++;
+                if (currentRow == 8)
+                {
+                    currentRow = 0;
+                }
+                StartCoroutine(PulseManager(allRows[currentRow]));
+            }
         }
 
         // Configure Lore Room

@@ -63,8 +63,7 @@ public class GameManager : MonoBehaviour
         // deathTimer.Elapsed +=
         // //This function decreases BoomDown every second
         // (object sender, System.Timers.ElapsedEventArgs e) => timeTillDeath--;
-        
-
+        Physics2D.IgnoreLayerCollision(25,17); // TileTrap arrows ignore walls 
     }
 
     public void LoadHostScript(string host)
@@ -185,8 +184,8 @@ public class GameManager : MonoBehaviour
 
             if (timeTillDeath <= 0 && GameLevelType == "Main")
             {
-                GameObject.FindGameObjectWithTag("Player").GetComponent<Health>().Die();
-                Debug.Log("killing player");
+                // GameObject.FindGameObjectWithTag("Player").GetComponent<Health>().Die();
+                // Debug.Log("killing player");
             }
         }
 

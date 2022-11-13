@@ -2,7 +2,7 @@
 
 public class ArrowTrap : MonoBehaviour
 {
-    public GameObject arrow;
+    public GameObject trapArrow;
     private float shotCooldown = -9999;
     public float shotDelay = 5f;
     public float startDelay = 0f;
@@ -36,13 +36,30 @@ public class ArrowTrap : MonoBehaviour
         active = true;
 
         //just shoot one arrow for traps and stuff
-        GameObject a = Instantiate(arrow,
+        GameObject a = Instantiate(trapArrow,
                                        transform.position,
                                        Quaternion.identity)
                                        as GameObject;
 
         a.transform.parent = transform;
+
         active = false;
+    }
+
+    public void ShootAtSpecificLocation(Vector3 tilePOS)
+    {
+        var arrowThatDoesntCollideWithWalls = Resources.Load("trapArrowThatIgnoresWalls") as GameObject;
+        GameObject a = Instantiate(arrowThatDoesntCollideWithWalls,
+                                       transform.position,
+                                       Quaternion.identity)
+                                       as GameObject;
+
+        a.transform.parent = transform;
+
+        var rb = a.GetComponent<Rigidbody2D>();
+
+        var aim = (tilePOS - transform.position).normalized;
+        rb.AddForce(aim * 0.1f);
     }
 
     public string GetDirection()
@@ -54,7 +71,7 @@ public class ArrowTrap : MonoBehaviour
     {
         if (Time.time > shotCooldown + shotDelay && canShoot)
         {
-            GameObject a = Instantiate(arrow,
+            GameObject a = Instantiate(trapArrow,
                                        transform.position,
                                        Quaternion.identity)
                                        as GameObject;

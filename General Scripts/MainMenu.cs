@@ -1,22 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
 public class MainMenu : MonoBehaviour
 {
     private AudioManager audioManager;
+    public AudioClip MainMenuMusic;
 
     void Awake()
     {
         audioManager = GameObject.FindObjectOfType<AudioManager>();
+        audioManager.PlayAudioClip(MainMenuMusic);
     }
 
     public void PlayGame()
     {
         audioManager.PlayAudioClip("PlayGameMenu");
-        SceneManager.LoadScene("Lab");
+        SceneManager.LoadScene("Main");
     }
 
     public void QuitGame()

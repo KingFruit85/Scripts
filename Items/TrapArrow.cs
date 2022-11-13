@@ -16,8 +16,15 @@ public class TrapArrow : MonoBehaviour
     public bool deflected = false;
     private GameObject player;
     private AudioManager audioManager;
+    public bool ignoreWalls = false;
 
-
+    void Awake()
+    {
+        if (transform.name.Contains("trapArrowThatIgnoresWalls"))
+        {
+            ignoreWalls = true;
+        }
+    }
     void Start()
     {
         RB = GetComponent<Rigidbody2D>();
@@ -43,15 +50,8 @@ public class TrapArrow : MonoBehaviour
                 transform.rotation = Quaternion.Euler(new Vector3(0, 0, 90));
                 up = new Vector3(0,0,0);
             }
-                
-                
-            // if (direction == "down") transform.rotation = Quaternion.Euler(new Vector3(0, 0, -90));
-            // if (direction == "left") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
-            // if (direction == "right") transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0)); 
         }
-
         Fire();
-
     }
 
     public void Fire()
@@ -144,9 +144,14 @@ public class TrapArrow : MonoBehaviour
             RB.velocity = direction * speed * 2;
         }
 
-        else if (coll.gameObject.tag == "Wall")
+        else if (coll.gameObject.tag == "Wall" && !ignoreWalls)
         {
             Destroy(gameObject);
+        }
+
+        else if (coll.gameObject.tag == "Wall" && ignoreWalls)
+        {
+            return;
         }
 
     }
