@@ -34,25 +34,25 @@ public class FloorTile : MonoBehaviour
         currentGameLevel = GameObject.Find("GameManager").GetComponent<GameManager>().currentGameLevel;
         roomSprites = GameObject.Find("Room Sprites").GetComponent<RoomSprites>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        
-        var r = Random.Range(0,roomSprites.floor.Length - 1);
-        
+
+        var r = Random.Range(0, roomSprites.floor.Length - 1);
+
         sr.sprite = roomSprites.floor[r];
         defaultSprite = sr.sprite;
-        
-        r = Random.Range(0, roomSprites.critFloor.Length -1);
+
+        r = Random.Range(0, roomSprites.critFloor.Length - 1);
 
         critSprite = roomSprites.critFloor[r];
 
         SetFloorTileColor();
-              
+
     }
 
     private IEnumerator CritFlash(float duration)
     {
         sr.sprite = critSprite;
         sr.color = Color.white;
-        yield return new WaitForSeconds( duration );
+        yield return new WaitForSeconds(duration);
         sr.color = defaultColor;
         sr.sprite = defaultSprite;
     }
@@ -105,7 +105,7 @@ public class FloorTile : MonoBehaviour
         material = GetComponent<Renderer>().material;
         startColour = defaultColor;
         // endColour = defaultColor += new Color(125.00f, 0.00f, 6.00f,1);
-        endColour = defaultColor += new Color(124.00f, 2.00f, 2.00f,1);
+        endColour = defaultColor += new Color(124.00f, 2.00f, 2.00f, 1);
     }
 
     public void StopPulsingTiles()
@@ -119,11 +119,11 @@ public class FloorTile : MonoBehaviour
     {
         if (col)
         {
-            isTouchingOtherCollider = true; 
+            isTouchingOtherCollider = true;
         }
         if (col.tag == "Player" && isPulsing)
         {
-            // col.gameObject.GetComponent<Health>().TakeDamage(1,gameObject,"floorTile", true);
+            col.gameObject.GetComponent<Health>().TakeDamage(1, gameObject, "floorTile", true);
         }
     }
 
