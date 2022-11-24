@@ -19,25 +19,23 @@ public class Ghost : MonoBehaviour
     private bool isPhasing;
     private bool isPlayer = false;
 
-    public int ghostBoltDamage = 10;
-
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
         pa = GetComponent<PlayAnimations>();
 
         if (gameObject.tag == "Player")
-        
+
         {
             isPlayer = true;
             GetComponent<PlayerMovement>().moveSpeed = moveSpeed;
             //Due to the sprite scaling when you change from a human to a ghost the capsule collider is too large to move horizontally though 1 unit tall corridors
-            GetComponent<CapsuleCollider2D>().size = new Vector2(0.1f,0.2f);
+            GetComponent<CapsuleCollider2D>().size = new Vector2(0.1f, 0.2f);
             GameObject.Find("GameManager").GetComponent<GameManager>().currentHost = "Ghost";
         }
 
         isPhasing = false;
-        transform.localScale = new Vector3(3.5f,3.5f,0);
+        transform.localScale = new Vector3(3.5f, 3.5f, 0);
 
         //Set the player animations/sprites to the current host creature
         pa.idleLeft = idleLeft;
@@ -60,16 +58,16 @@ public class Ghost : MonoBehaviour
 
         if (!isPhasing)
         {
-                GameObject a = Instantiate
-                                        (
-                                            Resources.Load("Ghost_Bolt"),
-                                            transform.position,
-                                            transform.rotation
-                                        )
-                                        as GameObject;
-                                        a.transform.parent = transform;
+            GameObject a = Instantiate
+                                    (
+                                        Resources.Load("Ghost_Bolt"),
+                                        transform.position,
+                                        transform.rotation
+                                    )
+                                    as GameObject;
+            a.transform.parent = transform;
         }
-                  
+
     }
 
     void Update()
@@ -80,16 +78,16 @@ public class Ghost : MonoBehaviour
             sr.material.color = new Color(1f, 1f, 1f, 0.5f);
             isPhasing = true;
             //Can pass through enemies
-            Physics2D.IgnoreLayerCollision(12,8,true);
+            Physics2D.IgnoreLayerCollision(12, 8, true);
             //Does not pick up items
-            Physics2D.IgnoreLayerCollision(12,10,true);
+            Physics2D.IgnoreLayerCollision(12, 10, true);
         }
         else if (Input.GetKeyDown(KeyCode.Space) && isPhasing == true && isPlayer)
         {
             sr.material.color = new Color(1f, 1f, 1f, 1f);
             isPhasing = false;
-            Physics2D.IgnoreLayerCollision(12,8,false);
-            Physics2D.IgnoreLayerCollision(12,10,false);
+            Physics2D.IgnoreLayerCollision(12, 8, false);
+            Physics2D.IgnoreLayerCollision(12, 10, false);
         }
     }
 }

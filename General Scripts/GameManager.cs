@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
-    public float restartDelay= 1f;
+    public float restartDelay = 1f;
     public int currentGameLevel;
     public Color LevelWallBaseColor;
     public Color LevelFloorBaseColor;
@@ -41,9 +41,9 @@ public class GameManager : MonoBehaviour
         coinCount = PlayerPrefs.GetInt("coinCount", 0);
         currentGameLevel = PlayerPrefs.GetInt("currentGameLevel", 1);
         loreIndex = PlayerPrefs.GetInt("loreIndex", 0);
-        meleeAttackBonus = PlayerPrefs.GetInt("meleeAttackBonus",0);
-        healthBonus = PlayerPrefs.GetInt("healthBonus",0);
-        rangedAttackBonus = PlayerPrefs.GetInt("rangedAttackBonus",0);
+        meleeAttackBonus = PlayerPrefs.GetInt("meleeAttackBonus", 0);
+        healthBonus = PlayerPrefs.GetInt("healthBonus", 0);
+        rangedAttackBonus = PlayerPrefs.GetInt("rangedAttackBonus", 0);
 
         //sets a common colour for the floor/wall tiles to reference
         LevelWallBaseColor = GetColor();
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         // deathTimer.Elapsed +=
         // //This function decreases BoomDown every second
         // (object sender, System.Timers.ElapsedEventArgs e) => timeTillDeath--;
-        Physics2D.IgnoreLayerCollision(25,17); // TileTrap arrows ignore walls 
+        Physics2D.IgnoreLayerCollision(25, 17); // TileTrap arrows ignore walls 
     }
 
     public void LoadHostScript(string host)
@@ -73,24 +73,24 @@ public class GameManager : MonoBehaviour
 
         switch (currentHost)
         {
-            default:throw new System.Exception("failed to load host script, unknown currentHost value");
-            case "Human" :  
-                    player.AddComponent<Human>();
-                    player.GetComponent<Animator>().Play(player.GetComponent<Human>().idleDown);
-                    player.GetComponent<PlayAnimations>().human = GetComponent<Human>();
-                    break; 
+            default: throw new System.Exception("failed to load host script, unknown currentHost value");
+            case "Human":
+                player.AddComponent<Human>();
+                player.GetComponent<Animator>().Play(player.GetComponent<Human>().idleDown);
+                player.GetComponent<PlayAnimations>().human = GetComponent<Human>();
+                break;
 
-                case "Ghost" : 
-                    player.AddComponent<Ghost>();
-                    player.GetComponent<Animator>().Play(player.GetComponent<Ghost>().idleDown);
-                    player.GetComponent<PlayAnimations>().ghost = GetComponent<Ghost>();
-                    break;
+            case "Ghost":
+                player.AddComponent<Ghost>();
+                player.GetComponent<Animator>().Play(player.GetComponent<Ghost>().idleDown);
+                player.GetComponent<PlayAnimations>().ghost = GetComponent<Ghost>();
+                break;
 
-                case "Worm"  : 
-                    player.AddComponent<Worm>();
-                    player.GetComponent<Animator>().Play(player.GetComponent<Worm>().idleDown);
-                    player.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
-                    break;
+            case "Worm":
+                player.AddComponent<Worm>();
+                player.GetComponent<Animator>().Play(player.GetComponent<Worm>().idleDown);
+                player.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
+                break;
         }
     }
 
@@ -103,18 +103,18 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("coinCount", coinCount);
         PlayerPrefs.SetInt("currentGameLevel", currentGameLevel);
         PlayerPrefs.SetString("currentHost", currentHost);
-        PlayerPrefs.SetInt("meleeAttackBonus",meleeAttackBonus);
-        PlayerPrefs.SetInt("healthBonus",healthBonus);
-        PlayerPrefs.SetInt("loreIndex",loreIndex);
+        PlayerPrefs.SetInt("meleeAttackBonus", meleeAttackBonus);
+        PlayerPrefs.SetInt("healthBonus", healthBonus);
+        PlayerPrefs.SetInt("loreIndex", loreIndex);
 
         int rangedEquipped = 0;
-        
+
         if (rangedWeaponEquipped) rangedEquipped = 1;
         else rangedEquipped = 0;
 
-        
-        PlayerPrefs.SetInt("rangedWeaponEquipped",rangedEquipped);
-        PlayerPrefs.SetInt("rangedAttackBonus",rangedAttackBonus);
+
+        PlayerPrefs.SetInt("rangedWeaponEquipped", rangedEquipped);
+        PlayerPrefs.SetInt("rangedAttackBonus", rangedAttackBonus);
 
     }
 
@@ -134,7 +134,7 @@ public class GameManager : MonoBehaviour
 
 
     public void EndGame()
-    {       
+    {
         ResetAllStats();
         PlayerPrefs.SetFloat("XP", 0);
         PlayerPrefs.SetInt("arrowCount", 0);
@@ -145,11 +145,11 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetString("currentHost", "Human");
         currentHost = PlayerPrefs.GetString("currentHost");
 
-        PlayerPrefs.SetInt("meleeAttackBonus",0);
-        PlayerPrefs.SetInt("healthBonus",0);
+        PlayerPrefs.SetInt("meleeAttackBonus", 0);
+        PlayerPrefs.SetInt("healthBonus", 0);
 
-        PlayerPrefs.SetInt("rangedWeaponEquipped",0);
-        PlayerPrefs.SetInt("rangedAttackBonus",0);
+        PlayerPrefs.SetInt("rangedWeaponEquipped", 0);
+        PlayerPrefs.SetInt("rangedAttackBonus", 0);
 
         Invoke("Restart", restartDelay);
     }
@@ -161,6 +161,14 @@ public class GameManager : MonoBehaviour
             Restart();
         }
 
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Health>().maxHealth = 1000000000;
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Health>().currentHealth = 1000000000;
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Human>().swordDamage = 999;
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Human>().arrowDamage = 999;
+        }
+
         if (GameLevelType == "shop")
         {
             deathTimeActive = false;
@@ -169,7 +177,7 @@ public class GameManager : MonoBehaviour
         {
             deathTimeActive = true;
         }
-        
+
     }
 
     void LateUpdate()
@@ -200,7 +208,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    string[] critMessages = new string[]{"FEEL NOTHING", "YOU WILL LOVE ME", "FOCUS", "YOUR MEMORIES AREN'T REAL","KEEP DREAMING","NO","DON'T THINK","HUSH"};
+    string[] critMessages = new string[] { "FEEL NOTHING", "YOU WILL LOVE ME", "FOCUS", "YOUR MEMORIES AREN'T REAL", "KEEP DREAMING", "NO", "DON'T THINK", "HUSH" };
 
 
     private IEnumerator Hit(float duration, bool isCrit)
@@ -209,10 +217,10 @@ public class GameManager : MonoBehaviour
         // If crit
         if (isCrit)
         {
-            CritMsg.GetComponent<TextMeshProUGUI>().text = critMessages[UnityEngine.Random.Range(0,critMessages.Length)];
+            CritMsg.GetComponent<TextMeshProUGUI>().text = critMessages[UnityEngine.Random.Range(0, critMessages.Length)];
         }
-        yield return new WaitForSeconds( duration );
-        
+        yield return new WaitForSeconds(duration);
+
         CritMsg.GetComponent<TextMeshProUGUI>().text = "";
 
         playerHit = false;
@@ -220,19 +228,19 @@ public class GameManager : MonoBehaviour
 
     public void SetPlayerHit(bool isCrit)
     {
-        StartCoroutine(Hit(0.1f,isCrit));
+        StartCoroutine(Hit(0.1f, isCrit));
     }
 
     public void AddMeleeAttackBonus(int bonus)
     {
         meleeAttackBonus += bonus;
-        PlayerPrefs.SetInt("meleeAttackBonus",meleeAttackBonus);
+        PlayerPrefs.SetInt("meleeAttackBonus", meleeAttackBonus);
     }
 
     public void AddRangedAttackBonus(int bonus)
     {
         rangedAttackBonus += bonus;
-        PlayerPrefs.SetInt("rangedAttackBonus",rangedAttackBonus);
+        PlayerPrefs.SetInt("rangedAttackBonus", rangedAttackBonus);
     }
 
     public void AddHealthBonus(int bonus)
@@ -266,27 +274,6 @@ public class GameManager : MonoBehaviour
     }
 
     public Color GetColor()
-    {   
-        List<Color> baseColors = new List<Color>()
-                                                    {
-                                                    Color.red,
-                                                    Color.blue,
-                                                    Color.cyan,
-                                                    Color.gray,
-                                                    Color.green,
-                                                    Color.magenta,
-                                                    Color.white,
-                                                    Color.yellow
-                                                    };
-    
-
-        var baseColor = UnityEngine.Random.Range(0,baseColors.Count -1);
-
-        return baseColors[baseColor];
-
-    }
-
-     public Color GetColor(Color colorToRemove)
     {
         List<Color> baseColors = new List<Color>()
                                                     {
@@ -299,10 +286,31 @@ public class GameManager : MonoBehaviour
                                                     Color.white,
                                                     Color.yellow
                                                     };
-    
+
+
+        var baseColor = UnityEngine.Random.Range(0, baseColors.Count - 1);
+
+        return baseColors[baseColor];
+
+    }
+
+    public Color GetColor(Color colorToRemove)
+    {
+        List<Color> baseColors = new List<Color>()
+                                                    {
+                                                    Color.red,
+                                                    Color.blue,
+                                                    Color.cyan,
+                                                    Color.gray,
+                                                    Color.green,
+                                                    Color.magenta,
+                                                    Color.white,
+                                                    Color.yellow
+                                                    };
+
         baseColors.Remove(colorToRemove);
 
-        var baseColor = UnityEngine.Random.Range(0,baseColors.Count -1);
+        var baseColor = UnityEngine.Random.Range(0, baseColors.Count - 1);
 
         return baseColors[baseColor];
 

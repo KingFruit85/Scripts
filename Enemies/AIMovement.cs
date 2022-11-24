@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AIMovement : MonoBehaviour
 {
-    private enum State
+    public enum State
     {
         Roaming,
         ChaseTarget,
@@ -35,19 +35,19 @@ public class AIMovement : MonoBehaviour
         switch (transform.tag)
         {
             default:
-            case "Ghost": gameObject.AddComponent<Ghost>();break;
-            case "Worm" : gameObject.AddComponent<Worm>();break;
+            case "Ghost": gameObject.AddComponent<Ghost>(); break;
+            case "Worm": gameObject.AddComponent<Worm>(); break;
         }
     }
 
     private Vector3 GetRoamingPosition()
     {
         // Get random direction
-        var RD = new Vector2(UnityEngine.Random.Range(-1f,1f), 
-                             UnityEngine.Random.Range(-1f,1f)
+        var RD = new Vector2(UnityEngine.Random.Range(-1f, 1f),
+                             UnityEngine.Random.Range(-1f, 1f)
                             ).normalized;
-        
-        return startingPosition + RD * Random.Range(1f,5f);
+
+        return startingPosition + RD * Random.Range(1f, 5f);
 
     }
 
@@ -59,19 +59,19 @@ public class AIMovement : MonoBehaviour
 
         switch (state)
         {
-            default:throw new System.Exception("Invalid AI movement state");
+            default: throw new System.Exception("Invalid AI movement state");
 
-            case State.Roaming: 
-                Patrol(); 
+            case State.Roaming:
+                Patrol();
                 FindTarget();
-                break; 
+                break;
 
-            case State.ChaseTarget: 
+            case State.ChaseTarget:
                 MoveToPlayer();
                 break;
 
             case State.GoingBackToStart:
-                ReturnToStartPoint(); 
+                ReturnToStartPoint();
                 break;
 
             case State.Attacking:
@@ -90,13 +90,13 @@ public class AIMovement : MonoBehaviour
         }
     }
 
-    private void Attack(){}
+    private void Attack() { }
 
     private void FindTarget()
     {
         if (distanceApart < aggroRange)
         {
-            state = State.ChaseTarget;            
+            state = State.ChaseTarget;
         }
         else if (distanceApart > aggroRange)
         {
@@ -109,7 +109,7 @@ public class AIMovement : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, roamingPosition, speed * Time.deltaTime);
         float distanceToTarget = Vector3.Distance(transform.position, roamingPosition);
 
-        if ( distanceToTarget <= .1f )
+        if (distanceToTarget <= .1f)
         {
             roamingPosition = GetRoamingPosition();
         }
@@ -120,15 +120,15 @@ public class AIMovement : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, startingPosition, speed * Time.deltaTime);
         float distanceToTarget = Vector3.Distance(transform.position, startingPosition);
 
-        if ( distanceToTarget <= .5f )
+        if (distanceToTarget <= .5f)
         {
             state = State.Roaming;
-        } 
+        }
     }
 
     private void MoveToPlayer()
     {
-        transform.position= Vector3.MoveTowards(transform.position, playerPOS, speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, playerPOS, speed * Time.deltaTime);
 
         if (distanceApart > 15f)
         {
@@ -153,12 +153,12 @@ public class AIMovement : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         var thrust = 1.5f;
-        
+
 
         // Hit came from left so knock left
         if (direction == "Left")
         {
-            rb.AddForce(-transform.right * thrust, ForceMode2D.Impulse);    
+            rb.AddForce(-transform.right * thrust, ForceMode2D.Impulse);
         }
 
         // Hit came from right so knock right
@@ -182,10 +182,10 @@ public class AIMovement : MonoBehaviour
         yield return new WaitForSeconds(thrust);
         StartCoroutine(EndKnockBack());
     }
-    
+
     IEnumerator EndKnockBack()
     {
-        rb.velocity = new Vector2(0,0);
+        rb.velocity = new Vector2(0, 0);
         rb.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
         transform.position = this.transform.position;
         yield return new WaitForSeconds(0.5f);
@@ -194,18 +194,18 @@ public class AIMovement : MonoBehaviour
     {
         if (other.tag == "Wall")
         {
-            state = State.GoingBackToStart;           
+            state = State.GoingBackToStart;
         }
     }
 
-     public void DazeForSeconds(int seconds)
+    public void DazeForSeconds(int seconds)
     {
         isSlowed = true;
-        StartCoroutine(SlowSpeed(seconds));  
+        StartCoroutine(SlowSpeed(seconds));
     }
 
     public IEnumerator SlowSpeed(int seconds)
-    {   
+    {
         // Half speed for provided seconds
         speed = speed / 2;
         yield return new WaitForSeconds(seconds);

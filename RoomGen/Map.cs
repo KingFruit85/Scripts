@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class SimpleRoomInfo
@@ -31,10 +29,9 @@ public class SimpleRoomInfo
     public bool isUsed;
     public bool placed;
     public string RoomType;
-    public List<string> RoomTypes = new List<string>() { "Standard", "Puzzle", "LoreRoom", "Prize", "Trap1", "Trap2" };
 
     // Default constructor
-    public SimpleRoomInfo(int x, int y, string r)
+    public SimpleRoomInfo(int x, int y, string r, string roomType)
     {
         this.UpDoor = false;
         this.DownDoor = false;
@@ -43,7 +40,7 @@ public class SimpleRoomInfo
         this.IsStartRoom = false;
         this.MapPositionX = x;
         this.MapPositionY = y;
-        this.RoomType = RoomTypes[UnityEngine.Random.Range(0, RoomTypes.Count)];
+        this.RoomType = roomType;
     }
 
     public void OpenDoorInWall(SimpleRoomInfo.WallDirection wall)
@@ -116,351 +113,57 @@ public class Map : MonoBehaviour
         // If start room remove any enemies and spawn player
         if (RoomNumber == 0)
         {
-            _newRoom.name += " START ROOM";
             room.RoomType = "StartRoom";
-            GameObject player = Instantiate(Resources.Load("Player Variant 1"), _newRoom.transform.position, Quaternion.identity) as GameObject;
-            player.name = "Player";
-            var camera = GameObject.Find("Main Camera");
-            camera.transform.position = _newRoom.transform.position;
-            doorController.roomComplete = true;
-
-            // Disable the enemy spawner
-            _newRoom.transform.Find("EnemySpawner").GetComponent<EnemySpawner>().enabled = false;
-
-            // Debug: Spawn kill square 
-            Instantiate(Resources.Load("KillSquare"), room.ExitTile.transform.position, Quaternion.identity);
-
-            // Place level specific terminal with new lore
-            if (gameManager.currentGameLevel == 1)
-            {
-
-                GameObject terminal = Instantiate(Resources.Load("InteractableRune1"), room.ReturnTerminalSpawnLocation(), Quaternion.identity) as GameObject;
-                terminal.transform.parent = _newRoom.transform.Find("Tiles");
-                terminal.transform.position = _newRoom.transform.Find("CameraAnchor").transform.position;
-
-            }
-
+            room.gameObject.AddComponent<StartRoom>();
         }
 
         // If end room remove any enemies and spawn mini boss and exit tile
         if (RoomNumber == GetTotalValidRooms() - 1)
         {
-            _newRoom.name += " END ROOM";
             room.RoomType = "EndRoom";
-            GameObject mb = Instantiate(Resources.Load("GhostMiniBoss"), _newRoom.transform.position, Quaternion.identity) as GameObject;
-            room.SpawnExitTile();
-            mb.transform.parent = _newRoom.transform;
-            // Disable the enemy spawner
-            _newRoom.transform.Find("EnemySpawner").GetComponent<EnemySpawner>().enabled = false;
-
+            room.gameObject.AddComponent<EndRoom>();
         }
-
-
 
         // Configure Standard room
         if (room.RoomType == "Standard")
         {
-            doorController.OpenByMobDeath = true;
-            room.EnemyCount = UnityEngine.Random.Range(0, 3);
-            // Get the floor tiles we can spawn objects on
-            var floorTiles = room.SpawnableFloorTiles;
-            // And a random number of walls we're going to spawn
-            var wallTilesToSpawn = UnityEngine.Random.Range(0, floorTiles.Length);
-
-            // Spawn the wall tiles
-            for (int i = 0; i <= wallTilesToSpawn; i++)
-            {
-                GameObject wall = Instantiate(Resources.Load("Wall"), floorTiles[i].transform.position, Quaternion.identity) as GameObject;
-                wall.transform.parent = _newRoom.transform.Find("Tiles");
-                room.spawnedWallTiles.Add(wall);
-                //Add to room contents array
-                room.AddItemToRoomContents(wall.transform.localPosition, '#');
-
-                // Spawn arrow traps on valid wall locations
-                List<Vector3> validTrapWalls = new List<Vector3>()
-                {
-                    new Vector3(0.15f,0.15f,0),
-                    new Vector3(-0.15f,0.15f,0),
-                    new Vector3(-0.15f,-0.15f,0),
-                    new Vector3(0.15f,-0.15f,0)
-                };
-
-                var wallPOS = wall.transform.localPosition;
-                GameObject arrowTrap;
-
-                if (validTrapWalls.Contains(wallPOS))
-                {
-                    arrowTrap = Instantiate(Resources.Load("arrowTrap"), wall.transform.localPosition, Quaternion.identity) as GameObject;
-                    arrowTrap.transform.parent = _newRoom.transform.Find("Tiles");
-
-                    if (wallPOS == new Vector3(0.15f, 0.15f, 0))
-                    {
-                        arrowTrap.transform.position = new Vector3(wall.transform.position.x,
-                                                                   (wall.transform.position.y - 0.4f),
-                                                                   0);
-                        arrowTrap.GetComponent<ArrowTrap>().active = true;
-                        arrowTrap.GetComponent<ArrowTrap>().shootDown = true;
-                    }
-                    if (wallPOS == new Vector3(-0.15f, 0.15f, 0))
-                    {
-                        arrowTrap.transform.position = new Vector3(wall.transform.position.x,
-                                                                   (wall.transform.position.y - 0.4f),
-                                                                   0);
-                        arrowTrap.GetComponent<ArrowTrap>().active = true;
-                        arrowTrap.GetComponent<ArrowTrap>().shootDown = true;
-                    }
-                    if (wallPOS == new Vector3(-0.15f, -0.15f, 0))
-                    {
-                        arrowTrap.transform.rotation *= Quaternion.AngleAxis(180, transform.right);
-                        arrowTrap.transform.position = new Vector3(wall.transform.position.x,
-                                                                   (wall.transform.position.y + 0.4f),
-                                                                   0);
-
-                        arrowTrap.GetComponent<ArrowTrap>().active = true;
-                        arrowTrap.GetComponent<ArrowTrap>().shootUp = true;
-                    }
-                    if (wallPOS == new Vector3(0.15f, -0.15f, 0))
-                    {
-                        arrowTrap.transform.rotation *= Quaternion.AngleAxis(180, transform.right);
-                        arrowTrap.transform.position = new Vector3(wall.transform.position.x,
-                                                                   (wall.transform.position.y + 0.4f),
-                                                                   0);
-                        arrowTrap.GetComponent<ArrowTrap>().active = true;
-                        arrowTrap.GetComponent<ArrowTrap>().shootUp = true;
-                    }
-                }
-            }
+            room.gameObject.AddComponent<StandardRoom>();
         }
 
         // Configure Prize Room
         if (room.RoomType == "Prize")
         {
-            doorController.OpenByMobDeath = true;
-            room.EnemyCount = UnityEngine.Random.Range(3, 5);
-
-            // Get the random floor tile to spawn a chest on
-            var chestSpawnLocation = room.SpawnableFloorTiles[UnityEngine.Random.Range(0, room.SpawnableFloorTiles.Length)].transform;
-            // Spawn a chest on a random tile
-
-            GameObject bars = Instantiate(Resources.Load("verticalBars"), chestSpawnLocation.position, Quaternion.identity) as GameObject;
-            bars.transform.parent = _newRoom.transform.Find("Tiles");
-            GameObject chest = Instantiate(Resources.Load("chest"), chestSpawnLocation.position, Quaternion.identity) as GameObject;
-            chest.transform.parent = _newRoom.transform.Find("Tiles");
-            //Add to room contents array
-            room.AddItemToRoomContents(chest.transform.localPosition, 'C');
+            room.gameObject.AddComponent<PrizeRoom>();
         }
 
         // Configure Trap Room
         if (room.RoomType == "Trap1")
         {
-            doorController.OpenByMobDeath = true;
-            room.EnemyCount = UnityEngine.Random.Range(0, 3);
-            var spawnLocations = room.SpawnableFloorTiles;
-            var r = UnityEngine.Random.Range(0, spawnLocations.Length); // Get number of traps to place
-            var trapLocations = new List<int>();
-
-            var picked = UnityEngine.Random.Range(0, spawnLocations.Length);
-            trapLocations.Add(picked); // add the first trap tile
-
-            for (int i = 0; i <= (r - 1); i++)
-            {
-                var t = UnityEngine.Random.Range(0, spawnLocations.Length);
-                if (!(t < (picked - 4)) || !(t > (picked + 4)))
-                {
-                    trapLocations.Add(t);
-                }
-                else
-                {
-                    i--;
-                }
-            }
-
-            foreach (var location in trapLocations)
-            {
-                GameObject trapTile = Instantiate(Resources.Load("trapTile"), spawnLocations[location].transform.position, Quaternion.identity) as GameObject;
-                trapTile.transform.parent = _newRoom.transform.Find("Tiles");
-                trapTile.name = $"TrapTile {location}";
-
-                float lastDistance = 999999.00f;
-                Vector3 tileToPlaceArrowTrap = new Vector3(69, 69, 69);
-
-                // Find the closest wall tile
-                foreach (var walltile in room.wallTiles)
-                {
-                    var distanceBetweenTiles = Vector3.Distance(walltile.transform.position, trapTile.transform.position);
-                    if (distanceBetweenTiles <= lastDistance)
-                    {
-                        tileToPlaceArrowTrap = walltile.transform.position;
-                        lastDistance = distanceBetweenTiles;
-                    }
-                }
-                // Place the arrow trap on the closest tile
-                GameObject arrowTrap = Instantiate(Resources.Load("arrowTrap"), tileToPlaceArrowTrap, Quaternion.identity) as GameObject;
-                trapTile.GetComponent<TrapTile>().MyTrap = arrowTrap;
-                arrowTrap.GetComponent<SpriteRenderer>().enabled = false;
-
-                arrowTrap.transform.LookAt(tileToPlaceArrowTrap);
-                Debug.DrawLine(arrowTrap.transform.position, tileToPlaceArrowTrap, Color.green, 30);
-            }
+            room.gameObject.AddComponent<TrapRoom>();
         }
 
         if (room.RoomType == "Trap2")
         {
             doorController.OpenByMobDeath = true;
             room.gameObject.AddComponent<WallOfDeathRoom>();
-
         }
 
         // Configure Lore Room
         if (room.RoomType == "LoreRoom")
         {
-            doorController.OpenByMobDeath = true;
-            room.EnemyCount = UnityEngine.Random.Range(0, 3);
-            var spawnLocations = _newRoom.GetComponent<SimpleRoom>().SpawnableFloorTiles;
-            var r = UnityEngine.Random.Range(0, spawnLocations.Length);
-
-            GameObject terminal = Instantiate(Resources.Load("InteractableRune1"), spawnLocations[r].transform.position, Quaternion.identity) as GameObject;
+            room.gameObject.AddComponent<LoreRooms>();
         }
 
         // Configure Puzzle Room
         if (room.RoomType == "Puzzle")
         {
-            doorController.OpenByMobDeath = false;
-            doorController.OpenByPuzzleComplete = true;
-            room.EnemyCount = UnityEngine.Random.Range(0, 3);
+            room.gameObject.AddComponent<PuzzleRooms>();
+        }
 
-            var runeTiles = room.runeTiles;
-            var pillarTiles = room.pillarTiles;
-            var chestTile = room.puzzleChestSpawnLocation;
-            // Just one type of puzzle room right now
-
-            // Spawn puzzle pieces
-            // -Chest
-            var adjustedChestPosition = new Vector3((0.5f + chestTile.transform.position.x), (-0.5f + chestTile.transform.position.y), 0);
-            GameObject chest = Instantiate(Resources.Load("chest") as GameObject, adjustedChestPosition, Quaternion.identity);
-            chest.transform.parent = _newRoom.transform.Find("Tiles");
-
-            // Barrier
-            GameObject barrier = Instantiate(Resources.Load("verticalBars") as GameObject, adjustedChestPosition, Quaternion.identity);
-            barrier.transform.parent = _newRoom.transform.Find("Tiles");
-            barrier.GetComponent<Barrier>().SetBarrierUnlockMethod(1);
-
-            // Pillars
-            foreach (var tile in pillarTiles)
-            {
-                GameObject wall = Instantiate(Resources.Load("Wall") as GameObject, tile.transform.position, Quaternion.identity) as GameObject;
-                wall.transform.parent = _newRoom.transform.Find("Tiles");
-                // Flame bowls and arrow traps
-                GameObject flameBowl = Instantiate(Resources.Load("FlameBowl") as GameObject, tile.transform.position, Quaternion.identity) as GameObject;
-                flameBowl.transform.parent = _newRoom.transform.Find("Tiles");
-
-                if (flameBowl.transform.localPosition == new Vector3(-0.25f, 0.25f, 0))
-                {
-                    flameBowl.name = "flameBowl1";
-                    GameObject arrowTrap = Instantiate(Resources.Load("arrowTrap") as GameObject, _newRoom.GetComponent<SimpleRoom>().arrowTrap1Position.transform.position, Quaternion.identity) as GameObject;
-                    arrowTrap.transform.parent = _newRoom.transform.Find("Tiles");
-                    arrowTrap.name = "arrowTrap1";
-                    arrowTrap.GetComponent<ArrowTrap>().shootRight = true;
-
-                    arrowTrap.transform.rotation *= Quaternion.AngleAxis(90, transform.forward);
-                    arrowTrap.transform.position += new Vector3(0.4f, 0f, 0f);
-
-                }
-
-                if (flameBowl.transform.localPosition == new Vector3(0.25f, 0.25f, 0))
-                {
-                    flameBowl.name = "flameBowl2";
-                    GameObject arrowTrap = Instantiate(Resources.Load("arrowTrap") as GameObject, _newRoom.GetComponent<SimpleRoom>().arrowTrap2Position.transform.position, Quaternion.identity) as GameObject;
-                    arrowTrap.transform.parent = _newRoom.transform.Find("Tiles");
-                    arrowTrap.name = "arrowTrap2";
-                    arrowTrap.GetComponent<ArrowTrap>().shootLeft = true;
-
-                    arrowTrap.transform.rotation *= Quaternion.AngleAxis(-90, transform.forward);
-                    arrowTrap.transform.position += new Vector3(-0.4f, 0f, 0f);
-                }
-
-                if (flameBowl.transform.localPosition == new Vector3(-0.25f, -0.15f, 0))
-                {
-                    flameBowl.name = "flameBowl3";
-                    GameObject arrowTrap = Instantiate(Resources.Load("arrowTrap") as GameObject, _newRoom.GetComponent<SimpleRoom>().arrowTrap3Position.transform.position, Quaternion.identity) as GameObject;
-                    arrowTrap.transform.parent = _newRoom.transform.Find("Tiles");
-                    arrowTrap.name = "arrowTrap3";
-                    arrowTrap.GetComponent<ArrowTrap>().shootRight = true;
-
-                    arrowTrap.transform.rotation *= Quaternion.AngleAxis(90, transform.forward);
-                    arrowTrap.transform.position += new Vector3(0.4f, 0f, 0f);
-                }
-
-
-                if (flameBowl.transform.localPosition == new Vector3(0.25f, -0.15f, 0))
-                {
-                    flameBowl.name = "flameBowl4";
-                    GameObject arrowTrap = Instantiate(Resources.Load("arrowTrap") as GameObject, _newRoom.GetComponent<SimpleRoom>().arrowTrap4Position.transform.position, Quaternion.identity) as GameObject;
-                    arrowTrap.transform.parent = _newRoom.transform.Find("Tiles");
-                    arrowTrap.name = "arrowTrap4";
-                    arrowTrap.GetComponent<ArrowTrap>().shootLeft = true;
-
-                    arrowTrap.transform.rotation *= Quaternion.AngleAxis(-90, transform.forward);
-                    arrowTrap.transform.position += new Vector3(-0.4f, 0f, 0f);
-                }
-
-
-                room.AddItemToRoomContents(tile.transform.localPosition, 'P');
-            }
-
-            // -Runes - randomised placement
-            List<GameObject> runes = new List<GameObject>()
-            {
-                Resources.Load("BlueTile") as GameObject,
-                Resources.Load("GreenTile") as GameObject,
-                Resources.Load("RedTile") as GameObject,
-                Resources.Load("TealTile") as GameObject
-            };
-
-            foreach (var rune in runeTiles)
-            {
-                System.Random rnd = new System.Random();
-                int r = rnd.Next(runes.Count);
-
-                var randomRune = runes[r];
-                GameObject _rune = Instantiate(randomRune, rune.transform.position, Quaternion.identity) as GameObject;
-                _rune.GetComponent<Rune>().myUnlock = barrier;
-                _rune.transform.parent = _newRoom.transform.Find("Tiles");
-                room.AddItemToRoomContents(rune.transform.localPosition, 'R');
-                runes.RemoveAt(r);
-
-                // How to link the runes to the flamebowls????
-                if (_rune.transform.localPosition == new Vector3(-0.25f, 0.15f, 0))
-                {
-                    _rune.GetComponent<Rune>().flameBowl = _rune.transform.parent.Find("flameBowl1").GetComponent<FlameBowl>();
-                    _rune.GetComponent<Rune>().myTrap = _rune.transform.parent.Find("arrowTrap1").gameObject;
-                }
-
-                if (_rune.transform.localPosition == new Vector3(0.25f, 0.15f, 0))
-                {
-                    _rune.GetComponent<Rune>().flameBowl = _rune.transform.parent.Find("flameBowl2").GetComponent<FlameBowl>();
-                    _rune.GetComponent<Rune>().myTrap = _rune.transform.parent.Find("arrowTrap2").gameObject;
-                }
-
-                if (_rune.transform.localPosition == new Vector3(-0.25f, -0.25f, 0))
-                {
-                    _rune.GetComponent<Rune>().flameBowl = _rune.transform.parent.Find("flameBowl3").GetComponent<FlameBowl>();
-                    _rune.GetComponent<Rune>().myTrap = _rune.transform.parent.Find("arrowTrap3").gameObject;
-                }
-
-                if (_rune.transform.localPosition == new Vector3(0.25f, -0.25f, 0))
-                {
-                    _rune.GetComponent<Rune>().flameBowl = _rune.transform.parent.Find("flameBowl4").GetComponent<FlameBowl>();
-                    _rune.GetComponent<Rune>().myTrap = _rune.transform.parent.Find("arrowTrap4").gameObject;
-                }
-
-            }
-
-
-            barrier.GetComponent<Barrier>().redRune = _newRoom.transform.Find("Tiles").Find("RedTile(Clone)").gameObject;
-            barrier.GetComponent<Barrier>().blueRune = _newRoom.transform.Find("Tiles").Find("BlueTile(Clone)").gameObject;
-            barrier.GetComponent<Barrier>().greenRune = _newRoom.transform.Find("Tiles").Find("GreenTile(Clone)").gameObject;
-            barrier.GetComponent<Barrier>().tealRune = _newRoom.transform.Find("Tiles").Find("TealTile(Clone)").gameObject;
+        // Configure Puzzle Room
+        if (room.RoomType == "Swarm")
+        {
+            room.gameObject.AddComponent<SwarmRooms>();
         }
 
         foreach (var w in room.spawnedWallTiles)
@@ -480,14 +183,21 @@ public class Map : MonoBehaviour
     /// <summary> Bulk fills the 2D map array with SimpleRoomInfoObjects </summary>
     public void FillMapWithRooms()
     {
+        var roomTypes = new List<string>() { "Standard", "Puzzle", "LoreRoom", "Prize", "Trap1", "Trap2", "Swarm" };
+
         for (int x = 0; x < map.GetLength(0); x++)
         {
             for (int y = 0; y < map.GetLength(1); y++)
             {
                 if (map[x, y] == null || !map[x, y].placed)
                 {
+                    var roomType = roomTypes[UnityEngine.Random.Range(0, roomTypes.Count)];
+                    if (roomType != "Standard")
+                    {
+                        roomTypes.RemoveAll(r => r == roomType);
+                    } // this sucks
 
-                    map[x, y] = new SimpleRoomInfo(x, y, "10X10Room");
+                    map[x, y] = new SimpleRoomInfo(x, y, "10X10Room", roomType);
                     map[x, y].placed = true;
                 }
                 CurrentMapPosition = new Vector3(x, y, 0);

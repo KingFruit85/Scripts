@@ -6,7 +6,7 @@ public class Arrow : MonoBehaviour
     private int arrowSpeed;
 
     public Sprite flameArrow;
-    public bool isAlight =  false;
+    public bool isAlight = false;
 
     public Vector3 clickPoint;
     public Vector3 aim;
@@ -22,8 +22,8 @@ public class Arrow : MonoBehaviour
     {
         aim = (clickPoint - transform.position).normalized;
         //Points the arrow the direction we're shooting
-        float angle = Mathf.Atan2(aim.y,aim.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
+        float angle = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         audioManager = GameObject.FindObjectOfType<AudioManager>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Human>();
         damage = player.arrowDamage;
@@ -81,27 +81,27 @@ public class Arrow : MonoBehaviour
         {
             if (isAlight)
             {
-                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject,"FlamingPlayerArrow", false);
+                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject, "FlamingPlayerArrow", false);
             }
             else
             {
-                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject,gameObject.tag, false);
+                coll.gameObject.GetComponent<Health>().TakeDamage(damage, transform.parent.gameObject, gameObject.tag, false);
             }
-            
+
             Destroy(gameObject);
         }
-        
+
         else if (coll.collider.gameObject.tag == "TrapArrow")
         {
             var speed = lastVelocity.magnitude;
-            var direction = Vector3.Reflect(lastVelocity.normalized,coll.contacts[0].normal);
+            var direction = Vector3.Reflect(lastVelocity.normalized, coll.contacts[0].normal);
             rb.velocity = direction * speed * 2;
         }
-        
+
         else if (coll.gameObject.tag == "Wall")
         {
             //maybe have the arrow get imbedded in the wall?
-            audioManager.PlayAudioClip("ArrowHitWall");
+            // audioManager.PlayAudioClip("ArrowHitWall");
             Destroy(gameObject);
         }
 

@@ -38,7 +38,7 @@ public class Health : MonoBehaviour
         audioManager = GameObject.FindObjectOfType<AudioManager>();
         cameraShaker = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shaker>();
 
-        if(gameObject.tag == "Player")
+        if (gameObject.tag == "Player")
         {
             ChangeMaxHealth(gameManager.healthBonus);
         }
@@ -112,31 +112,39 @@ public class Health : MonoBehaviour
 
     public void RemoveHealth(int amount)
     {
-    
+
         currentHealth -= amount;
 
         if (currentHealth <= 0)
         {
             if (gameObject.tag == player.tag)
             {
-                int chance = Random.Range(0,11);
+                int chance = Random.Range(0, 11);
                 switch (lastHitBy.tag)
                 {
-                    default:Die();break;
+                    default: Die(); break;
 
                     case "Ghost":
-                        if (chance == 10){
+                        if (chance == 10)
+                        {
                             SwapHost(lastHitBy);
                             break;
-                        }else{Die();break;
+                        }
+                        else
+                        {
+                            Die(); break;
                         }
                     case "Worm":
-                        if (chance == 10){
-                                SwapHost(lastHitBy);
-                                break;
-                            }else{Die();break;
-                            }
-                }   
+                        if (chance == 10)
+                        {
+                            SwapHost(lastHitBy);
+                            break;
+                        }
+                        else
+                        {
+                            Die(); break;
+                        }
+                }
             }
             else
             {
@@ -149,41 +157,41 @@ public class Health : MonoBehaviour
     {
 
         gameManager.currentHost = newHost.tag;
-        
+
         //Remove the old host script
         switch (currentHost)
         {
-            default:throw new System.Exception("failed to remove current host script, unknown host");
-            case "Human" : 
+            default: throw new System.Exception("failed to remove current host script, unknown host");
+            case "Human":
                 Destroy(gameObject.GetComponent<Human>());
                 Destroy(GameObject.Find("SwordAim"));
                 Destroy(GameObject.Find("BowAim"));
-                break; 
-            case "Ghost" : Destroy(gameObject.GetComponent<Ghost>());break;
-            case "Worm"  : Destroy(gameObject.GetComponent<Worm>());break;
+                break;
+            case "Ghost": Destroy(gameObject.GetComponent<Ghost>()); break;
+            case "Worm": Destroy(gameObject.GetComponent<Worm>()); break;
         }
 
         //Add the new host script
         switch (newHost.tag)
         {
-            default:throw new System.Exception("Swap to new host failed, attacker host type unknown");
-            case "Human" : 
-                    gameObject.AddComponent<Human>();
-                    gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Human>().idleDown);
-                    gameObject.GetComponent<PlayAnimations>().human = GetComponent<Human>();
-                    break; 
+            default: throw new System.Exception("Swap to new host failed, attacker host type unknown");
+            case "Human":
+                gameObject.AddComponent<Human>();
+                gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Human>().idleDown);
+                gameObject.GetComponent<PlayAnimations>().human = GetComponent<Human>();
+                break;
 
-                case "Ghost" : 
-                    gameObject.AddComponent<Ghost>();
-                    gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Ghost>().idleDown);
-                    gameObject.GetComponent<PlayAnimations>().ghost = GetComponent<Ghost>();
-                    break;
+            case "Ghost":
+                gameObject.AddComponent<Ghost>();
+                gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Ghost>().idleDown);
+                gameObject.GetComponent<PlayAnimations>().ghost = GetComponent<Ghost>();
+                break;
 
-                case "Worm"  : 
-                    gameObject.AddComponent<Worm>();
-                    gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Worm>().idleDown);
-                    gameObject.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
-                    break;
+            case "Worm":
+                gameObject.AddComponent<Worm>();
+                gameObject.GetComponent<Animator>().Play(gameObject.GetComponent<Worm>().idleDown);
+                gameObject.GetComponent<PlayAnimations>().worm = GetComponent<Worm>();
+                break;
         }
 
         // Transfer health stats
@@ -191,7 +199,7 @@ public class Health : MonoBehaviour
         currentHealth = newHost.GetComponent<Health>().currentHealth;
         // gameObject.GetComponentInChildren<HealthBar>().SetMaxHealth(maxHealth);
         // gameObject.GetComponentInChildren<HealthBar>().SetHealth(currentHealth);
-        
+
 
         //Update the current host variable
         currentHost = newHost.tag;
@@ -206,7 +214,7 @@ public class Health : MonoBehaviour
     {
         if (isImmune == false)
         {
-            StartCoroutine( DisableProjectileImmunity(2f));
+            StartCoroutine(DisableProjectileImmunity(2f));
         }
         else
         {
@@ -218,7 +226,7 @@ public class Health : MonoBehaviour
     {
         if (isImmune == false)
         {
-            StartCoroutine( DisableMeleeImmunity(2f));
+            StartCoroutine(DisableMeleeImmunity(2f));
         }
         else
         {
@@ -230,7 +238,7 @@ public class Health : MonoBehaviour
     {
         sr.color = Color.red;
         isImmuneToProjectileDamage = false;
-        yield return new WaitForSeconds( duration );
+        yield return new WaitForSeconds(duration);
         isImmuneToProjectileDamage = true;
         sr.color = Color.white;
     }
@@ -239,15 +247,15 @@ public class Health : MonoBehaviour
     {
         sr.color = Color.red;
         isImmuneToMeleeDamage = false;
-        yield return new WaitForSeconds( duration );
+        yield return new WaitForSeconds(duration);
         isImmuneToMeleeDamage = true;
         sr.color = Color.white;
     }
 
     // Takes in a damage value to apply and the game object that caused the damage
-    public void TakeDamage( int damage, GameObject attacker, string damageType, bool isCrit )
-    {   
-        
+    public void TakeDamage(int damage, GameObject attacker, string damageType, bool isCrit)
+    {
+
         if (TryGetComponent(out Ghost ghost)) isImmuneToProjectileDamage = ghost.Phasing();
         if (TryGetComponent(out Human human)) isImmuneToAllDamage = human.isPlayerDashing();
 
@@ -256,7 +264,7 @@ public class Health : MonoBehaviour
         // If the host is immune to melee, return
         if (isImmuneToMeleeDamage || damageType == "melee") return;
         // If the host is immune to all damage, return
-        if(isImmuneToAllDamage) return;
+        if (isImmuneToAllDamage) return;
 
 
         ////////////////
@@ -264,16 +272,16 @@ public class Health : MonoBehaviour
         ////////////////
         if (gameObject.tag == "Player" && isCrit)
         {
-            cameraShaker.Shake(.3f,3.0f);
+            cameraShaker.Shake(.3f, 3.0f);
             gameManager.SetPlayerHit(isCrit);
-            
+
         }
         // Log attacker
         lastHitBy = attacker;
         // Display the damage as a popup
-        DamagePopup.Create( transform.position, damage, isCrit );
+        DamagePopup.Create(transform.position, damage, isCrit);
         // Flash Red to confirm hit
-        StartCoroutine(FlashColor( Color.gray, 0.3f ));
+        StartCoroutine(FlashColor(Color.gray, 0.3f));
         // Remove the health
         RemoveHealth(damage);
         // If enemy, apply knockback and reset attack delay value
@@ -298,19 +306,19 @@ public class Health : MonoBehaviour
     private void TriggerAttackDelayReset()
     {
         switch (gameObject.tag)
-            {
-                default:throw new System.Exception("unknown recipient of damage");
-                case "Ghost": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
-                case "MiniBoss": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay();break;
-                case "Worm": gameObject.GetComponent<WormAttacks>().ResetAttackDelay();break;
+        {
+            default: throw new System.Exception("unknown recipient of damage");
+            case "Ghost": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay(); break;
+            case "MiniBoss": gameObject.GetComponent<GhostAttacks>().ResetAttackDelay(); break;
+            case "Worm": gameObject.GetComponent<WormAttacks>().ResetAttackDelay(); break;
                 // case "GhostBoss" : gameObject.GetComponent<GhostBossAttacks>().ResetAttackDelay();break;
-            }
+        }
     }
 
     private IEnumerator FlashColor(Color color, float duration)
     {
         sr.color = color;
-        yield return new WaitForSeconds( duration );
+        yield return new WaitForSeconds(duration);
         sr.color = Color.white;
     }
 
@@ -323,14 +331,14 @@ public class Health : MonoBehaviour
             GetComponent<PlayerMovement>().StopPlayerMovement();
             StartCoroutine(GetComponent<PlayAnimations>().Kill());
 
-            if (TryGetComponent( out Human human))
+            if (TryGetComponent(out Human human))
             {
                 human.enabled = false;
             }
             // Removes any weapons the host may have
             foreach (Transform child in gameObject.transform)
             {
-                if(child.name == "SwordAim")
+                if (child.name == "SwordAim")
                 {
                     Destroy(child.gameObject);
                 }
@@ -338,20 +346,20 @@ public class Health : MonoBehaviour
 
             // Triggers game restart
             gameManager.EndGame();
-            
+
         }
 
         if (gameObject.tag == "GhostBoss")
         {
             // Take player to game over screen for the time being
-            currentRoom.GetComponent<SimpleRoom>().SpawnExitTile(); 
+            currentRoom.GetComponent<SimpleRoom>().SpawnExitTile();
             // gameManager.TemporaryGameComplete();
 
         }
 
         if (isBoss && gameObject.tag == "MiniBoss")
         {
-            currentRoom.GetComponent<SimpleRoom>().UnlockExitTile(); 
+            currentRoom.GetComponent<SimpleRoom>().UnlockExitTile();
             gameManager.miniBossKilled = true;
         }
 
@@ -372,14 +380,14 @@ public class Health : MonoBehaviour
 
             if (TryGetComponent(out CapsuleCollider2D cc))
             {
-                Physics2D.IgnoreCollision(cc,player.GetComponent<CapsuleCollider2D>());
+                Physics2D.IgnoreCollision(cc, player.GetComponent<CapsuleCollider2D>());
             }
 
             if (TryGetComponent(out BoxCollider2D bc))
             {
-                Physics2D.IgnoreCollision(bc,player.GetComponent<CapsuleCollider2D>());
+                Physics2D.IgnoreCollision(bc, player.GetComponent<CapsuleCollider2D>());
             }
-            
+
             //Add player XP
             if (isBoss)
             {
@@ -389,7 +397,7 @@ public class Health : MonoBehaviour
             {
                 GameObject.Find("GameManager").GetComponent<GameManager>().AddXP(XP);
             }
-            
+
 
             //Play death animation                         
             StartCoroutine(GetComponent<PlayAnimations>().Kill());
@@ -424,12 +432,12 @@ public class Health : MonoBehaviour
         }
         if (isBoss)
         {
-            sr.color = new Color(156,21,21,255);
-            currentRoom = transform.parent.gameObject;
+            sr.color = new Color(156, 21, 21, 255);
+            // currentRoom = transform.parent.gameObject;
         }
         if (gameObject.tag == "MiniBoss")
         {
-            sr.color = new Color(156,21,21,255);
+            sr.color = new Color(156, 21, 21, 255);
             currentRoom = transform.parent.gameObject;
         }
 

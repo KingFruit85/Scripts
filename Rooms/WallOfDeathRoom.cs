@@ -108,7 +108,6 @@ public class WallOfDeathRoom : MonoBehaviour
 
     IEnumerator Pulse(List<GameObject> tiles, int safeTile)
     {
-        Debug.Log(safeTile);
         foreach (var tile in tiles)
         {
             // Tiles are named 1,2,3 etc in left to right, top to bottom order

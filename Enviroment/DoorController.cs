@@ -22,7 +22,7 @@ public class DoorController : MonoBehaviour
         topLeft = transform.Find("TopLeft").gameObject;
         bottomRight = transform.Find("BottomRight").gameObject;
         GameObject.Find("CameraBox").transform.position = camAnchor.transform.position;
-        enemySpawner = transform.parent.Find("EnemySpawner").GetComponent<EnemySpawner>();
+        // enemySpawner = transform.parent.Find("EnemySpawner").GetComponent<EnemySpawner>();
 
     }
 
@@ -37,7 +37,7 @@ public class DoorController : MonoBehaviour
         if (_doors.GetChild(2).gameObject.activeSelf) doors.Add(_doors.GetChild(2).gameObject);
         if (_doors.GetChild(3).gameObject.activeSelf) doors.Add(_doors.GetChild(3).gameObject);
 
-        
+
     }
 
     public void closeThisRoomsDoors()
@@ -66,6 +66,10 @@ public class DoorController : MonoBehaviour
 
     void Update()
     {
+        if (transform.parent.GetComponent<EnemySpawner>())
+        {
+            enemySpawner = transform.parent.GetComponent<EnemySpawner>();
+        }
         if (!roomComplete && !player)
         {
             foreach (var enemy in enemies)
@@ -90,7 +94,7 @@ public class DoorController : MonoBehaviour
             var cam = GameObject.FindGameObjectWithTag("MainCamera");
             cam.transform.position = camAnchor.transform.position;
             GameObject.Find("CameraBox").transform.position = camAnchor.transform.position;
-            
+
 
             if (!roomComplete)
             {
@@ -100,17 +104,17 @@ public class DoorController : MonoBehaviour
                 {
                     if (door.GetComponent<Door>().open)
                     {
-                        Invoke("closeThisRoomsDoors",0.4f);
+                        Invoke("closeThisRoomsDoors", 0.4f);
                     }
                 }
             }
         }
-       
+
 
         // If doors open on puzzle solve
         if (OpenByPuzzleComplete)
         {
-            
+
         }
 
         // If doors are opened on all mobs killed
